@@ -18,8 +18,7 @@ It shouldn't be longer then a week, but no promises. Updates will be posted here
 # Tasks
 These should not take long to implement
 * Cleanup code
-* Prefix Customization
-* Additional json files
+* Add debug commands
 * Logging Errors
 
 # Credits
