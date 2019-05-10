@@ -26,7 +26,7 @@ $addfolder *<artist_username>* *<folder>* *<channel_id>* *<inverted>*
 
 If we looked at an artists page, such as the one below
 
-.. image:: _static/SettingUp.png
+.. image:: ../_static/SettingUp.png
 *Example image from Zander-The-Artist (With Permission) see his work* `here <https://www.deviantart.com/zander-the-artist>`_
 
 Looking above at the example image, and using it as an example you should note the following
