@@ -1,0 +1,8 @@
+{
+    "guildid": 0,
+    "logging": true,
+    "prefix": "$",
+    "publicmode": false,
+    "sync-time": 900,
+    "version": "bt-1.0.0"
+}
