@@ -1,0 +1,284 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Setting Up Listeners &mdash; DeviantCord bt-1.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Choosing a host" href="choosehost.html" />
+    <link rel="prev" title="Running the Bot" href="runningbot.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> DeviantCord
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Self Hosting:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whathost.html">Should I Self Host?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installpython.html">Setting up DeviantCord</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configure.html">Configuring DeviantCord  (Self Host)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="permissions.html">Setting Up Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="runningbot.html">Running the Bot</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Setting Up Listeners</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#things-to-note">Things to Note:</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#correct-arguments">Correct Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inverted-galleries">Inverted Galleries</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#discord-developer-mode">Discord Developer Mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#credits">Credits</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="choosehost.html">Choosing a host</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Hosting By Us:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="requesthosting.html">Requesting Hosting for DeviantCord</a></li>
+<li class="toctree-l1"><a class="reference internal" href="permissions.html">Setting Up Permissions</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Setting Up Listeners</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#things-to-note">Things to Note:</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#correct-arguments">Correct Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inverted-galleries">Inverted Galleries</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#discord-developer-mode">Discord Developer Mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#credits">Credits</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DeviantCord</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Setting Up Listeners</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/addinglisteners.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="setting-up-listeners">
+<h1>Setting Up Listeners<a class="headerlink" href="#setting-up-listeners" title="Permalink to this headline">¶</a></h1>
+<p>There are two commands in DeviantCord that adds listeners that check gallery folders for new deviations.
+However this page aims to clear misconceptions with configuring listeners.
+The addartist command is the first command that should be ran for a new artist,</p>
+<div class="section" id="things-to-note">
+<h2>Things to Note:<a class="headerlink" href="#things-to-note" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>The bot needs Exact Foldernames (Case Sensitive)</p></li>
+<li><p>The bot needs the artists name exactly (Not Case Sensitive)</p></li>
+<li><p>Artist Username should be in quotes</p></li>
+<li><p>Folder name should be in quotes</p></li>
+<li><p>The addartist command is used to add a new artist that has no other listeners</p></li>
+<li><p>The addfolder command adds another listener for an already existing artist’s folder.</p></li>
+</ul>
+<div class="section" id="correct-arguments">
+<h3>Correct Arguments<a class="headerlink" href="#correct-arguments" title="Permalink to this headline">¶</a></h3>
+<p>For Example with the addartist and addfolder command it is :</p>
+<p>$addartist <em>&lt;artist_username&gt;</em> <em>&lt;folder&gt;</em> <em>&lt;channel_id&gt;</em> <em>&lt;inverted&gt;</em></p>
+<p>$addfolder <em>&lt;artist_username&gt;</em> <em>&lt;folder&gt;</em> <em>&lt;channel_id&gt;</em> <em>&lt;inverted&gt;</em></p>
+<p>If we looked at an artists page, such as the one below</p>
+<img alt="_images/SettingUp.png" src="_images/SettingUp.png" />
+<p><em>Example image from Zander-The-Artist (With Permission) see his work</em> <a class="reference external" href="https://www.deviantart.com/zander-the-artist">here</a></p>
+<p>Looking above at the example image, and using it as an example you should note the following</p>
+<p>The addartist command should have the artist name and in this case it would be “zander-the-artist” not “zander the artist”</p>
+<p>The artist username field should be the same as the yellow highlighted area in the picture above.</p>
+<p>The folder field for the Hope in Friends Comic folder should be the exactly what it is in the sidebar on the left.
+In this case the folder for the comic Hope In Friends should be “Hope In Friends Comic” not “Hope in Friends”</p>
+<p>$addartist “zander-the-artist” “Hope In Friends Comic” <em>&lt;channel_id&gt;</em> false</p>
+<p><em>Inverted in this case would be false, but it depends on what artist and what folder</em></p>
+</div>
+<div class="section" id="inverted-galleries">
+<h3>Inverted Galleries<a class="headerlink" href="#inverted-galleries" title="Permalink to this headline">¶</a></h3>
+<p>Inverted galleries is the term we use to indicate that newest deviations are at the top instead of the bottom.
+An example of an inverted gallery can be seen <a class="reference external" href="https://www.deviantart.com/pkm-150/gallery/58231950/Eeveelution-Squad">here</a></p>
+<p>The inverted argument would be declared true or false in the addfolder command and addartist command.</p>
+</div>
+</div>
+<div class="section" id="discord-developer-mode">
+<h2>Discord Developer Mode<a class="headerlink" href="#discord-developer-mode" title="Permalink to this headline">¶</a></h2>
+<p>Discord Developer Mode is required in order to get text channel id’s,
+you will need to enable it by clicking the gear icon near your name</p>
+<img alt="_images/discordprofile.png" src="_images/discordprofile.png" />
+<p>Once you get into that menu click the Appearance Tab</p>
+<img alt="_images/appearance.png" src="_images/appearance.png" />
+<p>then scroll down to the bottom and enable Developer Mode.</p>
+<img alt="_images/developermode.png" src="_images/developermode.png" />
+</div>
+<div class="section" id="credits">
+<h2>Credits<a class="headerlink" href="#credits" title="Permalink to this headline">¶</a></h2>
+<p>Special Thanks to Tony/Zander-The-Artist for allowing DeviantCord to feature his gallery as an example
+You can see his outstanding comic Hope in Friends <a class="reference external" href="https://www.deviantart.com/zander-the-artist">over here</a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="choosehost.html" class="btn btn-neutral float-right" title="Choosing a host" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="runningbot.html" class="btn btn-neutral float-left" title="Running the Bot" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, ErriteEpticRikez
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
