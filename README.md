@@ -1,4 +1,7 @@
 ![DC Logo](https://github.com/ErriteEpticRikez/DeviantCord/blob/master/deviantcord.png)
+
+# NOTE: THE CURRENT BUILD RIGHT NOW IS KNOWN TO HAVE ISSUES WITH Debug Log's it shouldn't cause any issues, but if you encounter any issues. Please open a issue.
+
 # DeviantCord
 This repository will soon contain the source code for the Discord Bot DeviantCord. As of this time the team is still trying to cleanup code and implement needed features to ensure that the bot meets our quality standards for an open beta release.
 
@@ -11,15 +14,6 @@ DeviantCord currently is developed with Python 3.6, versions below are not suppo
 
 #### How can we check your progress on the bot?
 Until the open beta release, your best bet is the changelog file. It will contain changelogs for internal builds. 
-
-#### How long until the public beta?
-It shouldn't be longer then a week, but no promises. Updates will be posted here
-
-# Tasks
-These should not take long to implement
-* Cleanup code
-* Add debug commands
-* Logging Errors
 
 # Credits
 - [@deviantart](https://github.com/DeviantArt) for developing the DeviantArt and Sta.ch API
