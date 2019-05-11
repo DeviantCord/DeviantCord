@@ -1,6 +1,11 @@
 ![DC Logo](https://github.com/ErriteEpticRikez/DeviantCord/blob/master/deviantcord.png)
+[![Documentation Status](https://readthedocs.org/projects/deviantcord/badge/?version=latest)](https://deviantcord.readthedocs.io/en/latest/?badge=latest)
 
-# NOTE: The current build of DeviantCord, is known to bring up logging exceptions, this will not cause any issues and the bot will continue to work as it was intended to. 
+[Documentation](https://deviantcord.readthedocs.io/en/latest/)
+[Request Bot](https://forms.gle/6PiGroDvr7UdDH7h9)
+[DeviantCord Discord Server](https://discord.gg/ubmkcsk)
+
+
 
 # DeviantCord
 This repository will soon contain the source code for the Discord Bot DeviantCord. As of this time the team is still trying to cleanup code and implement needed features to ensure that the bot meets our quality standards for an open beta release.
