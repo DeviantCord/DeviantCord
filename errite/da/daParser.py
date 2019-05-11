@@ -143,7 +143,7 @@ def findFolderUUID(artist, bool, folder, accesstoken):
             return"ERROR";
         except KeyError:
             tmp = data["has_more"]
-            print("Error not triggered...")
+            print("Error was not triggered...")
 
         tmp = data["has_more"]
         # print(data);
@@ -297,7 +297,7 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
                 if tmp == False:
                     logger.info("getGalleryFolder: False entered")
                     for uuid in data['results']:
-                        logger.debug("UUID: " + uuid["deviationid"])
+                        logger.debug("UUID: " + str(uuid["deviationid"]))
                         if (findDuplicateJsonElementGallery("artdata.json", uuid["deviationid"], artist.lower(),
                                                             foldername) == False):
                             newurls.append(uuid["url"])
@@ -315,7 +315,7 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
         if inverted == False:
             providedoffset = artdata["art-data"][artist.lower()][foldername]["offset-value"]
             while finished == False:
-                logger.debug("GetGalleryFolder: Before moving to method: ", providedoffset)
+                logger.debug("GetGalleryFolder: Before moving to method: " + str(providedoffset))
                 data = getGalleryFolderArrayResponse(artist.lower(), bool, folder, accesstoken, providedoffset)
                 # print(data);
                 tmp = data["has_more"]

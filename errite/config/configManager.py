@@ -13,9 +13,12 @@ def createConfig():
             configdata = json.load(jsonFile)
             jsonFile.close()
             configdata["version"] = "bt-1.0.0"
+            configdata["logchannelid"] = 0
+            configdata["roleid"] = 0
             configdata["prefix"] = "$"
             configdata["logging"] = True
             configdata["publicmode"] = False
+            configdata["rolesetup-enabled"] = True
             configdata["guildid"] = 0
             configdata["sync-time"] = 900
             jsonFile = open("config.json", "w+")

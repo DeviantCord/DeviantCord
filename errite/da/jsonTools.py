@@ -225,8 +225,9 @@ def updateRole(roleid, guildid):
     with open("config.json", "r") as jsonFile:
         configdata = json.load(jsonFile)
         jsonFile.close()
-        logger.debug("New RoleiD ", roleid)
+        logger.debug("New RoleID " + str(roleid))
         configdata["roleid"] = int(roleid)
+        configdata["rolesetup-enabled"] = False
         configdata["guildid"] = int(guildid)
         jsonFile = open("config.json", "w+")
         jsonFile.write(json.dumps(configdata, indent=4,sort_keys=True))

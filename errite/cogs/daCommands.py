@@ -21,6 +21,7 @@ class daCog(commands.Cog):
         self.clientid = None
         self.clientsecret = None
         self.guildid = None
+        self.enablesr = False
         self.roleid = 0
         self.publicmode = None
         self.datevar = datetime.datetime.now().strftime("%Y-%m-%d%H%M%S")
@@ -79,6 +80,7 @@ class daCog(commands.Cog):
             self.clientid = sensitiveData["da-client-id"]
             self.token = dp.getToken(self.clientsecret, self.clientid)
             self.publicmode = configData["publicmode"]
+            self.enablesr = configData["rolesetup-enabled"]
             self.roleid = configData["roleid"]
             self.logchannelid = configData["logchannelid"]
             self.guildid = configData["guildid"]
@@ -140,7 +142,7 @@ class daCog(commands.Cog):
                                 currentlength = len(urls)
                                 while currentlength >= 1:
                                     self.deviantlogger.debug("New Deviation URL: ")
-                                    self.deviantlogger.debug(urls[currentlength - 1])
+                                    self.deviantlogger.debug(str(urls[currentlength - 1]))
                                     self.deviantlogger.debug("SyncGalleries: Now posting URL")
                                     await channel.send(
                                         "New deviation from " + element + " you can view it here \n" + urls[currentlength-1])
@@ -175,21 +177,30 @@ class daCog(commands.Cog):
                "help** - Gives a list of command with explaination\n**NOTE: Inverse means that newest deviations are at the top, instead of the bottom. Use true or false to answer it**\n**" + \
                self.prefix + "addfolder** *<artist_username>* *<folder>* *<channel_id>* *<inverse>* - Adds another artists gallery folder for the bot to notify the specified channel of new deviations. Use this when your adding another folder to an artist already added \n**" + \
                self.prefix\
-               + "addartist** *<aritst_username>* *<folder>* *<channel_id>* *<inverse>*- Used to add an artist and the first folder into the bots datafile. Use this command when you are adding an artist for the first time!\n**" + \
-               self.prefix \
-               + "manualSync** - Will check all configured folders for new deviations instead of waiting for the timer to trigger and start the check *DO NOT SPAM THIS* \n"
+               + "addartist** *<artist_username>* *<folder>* *<channel_id>* *<inverse>*- Used to add an artist and the first folder into the bots datafile. Use this command when you are adding an artist for the first time!\n**" + \
+               self.prefix + "manualSync** - Will check all configured folders for new deviations instead of waiting for the timer to trigger and start the check *DO NOT SPAM THIS*\n" + "**" + \
+               self.prefix + "updateinverse** *<artist_username> *<folder>* *<inverse>* - Updates the inverse property of a existing folder listener\n" + \
+               "**" + self.prefix + "updatechannel** *<artist_username> *<folder>* *<channelid>* - Updates the discord channel that notifications will be posted for an existing folder listener\n" + \
+               "** __ADMIN COMMANDS__** \n" + \
+               "**WARNING: The COMMANDS BELOW WILL RESTART DEVIANTCORD, MAKE SURE YOU OR YOUR STAFF ARE NOT ADDING ANY NEW FOLDERS BEFORE EXECUTING COMMANDS BELOW**\n"+ \
+               "**" + self.prefix + "setprefix** *<prefix>* - Updates the prefix for all commands and reloads\n" + \
+               "**" + self.prefix + "reload** - Reloads DeviantCord"
+
         await ctx.send(text)
 
     @commands.command()
     @has_permissions(administrator=True)
     async def setuprole(self, ctx, roleid):
-        if ctx.guild is None:
-            return;
-        if self.guildid is 0:
-            self.deviantlogger.info('Setup has been invoked')
-            updateRole(int(roleid), ctx.guild.id)
-            await ctx.send("Role has been setup!")
-            self.roleid = roleid
+        if self.enablesr:
+            if ctx.guild is None:
+                return;
+            if self.guildid is 0:
+                self.deviantlogger.info('Setup has been invoked')
+                updateRole(int(roleid), ctx.guild.id)
+                await ctx.send("Role has been setup!")
+                self.roleid = roleid
+        else:
+            return
 
     @commands.command()
     async def addfolder(self, ctx, artistname, foldername, channelid, inverted):
@@ -198,7 +209,6 @@ class daCog(commands.Cog):
         to an artist that is already in ArtData.
         :return: discord.ext.commands.core.Command object
         """
-        print(self.roleid)
         if ctx.guild is None:
             return;
         if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
@@ -212,8 +222,8 @@ class daCog(commands.Cog):
         if permitted:
             self.deviantlogger.info("addFolder command invoked.");
             dirpath = os.getcwd()
-            self.deviantlogger.info("current directory is : " + dirpath)
-            self.deviantlogger.info("Channel ID" + channelid)
+            self.deviantlogger.info("current directory is : " + str(dirpath))
+            self.deviantlogger.info("Channel ID" + str(channelid))
             self.deviantlogger.info("Artist: " + artistname)
             self.deviantlogger.info("Foldername: " + foldername)
             print("Inverted: " + inverted)
@@ -221,7 +231,7 @@ class daCog(commands.Cog):
             if isinstance(inverted, bool) == True:
                 self.deviantlogger.info("Inverted confirmed as bool")
                 isInverted = inverted
-                self.deviantlogger.info("Inverted Value confirmed as ", isInverted)
+                self.deviantlogger.info("Inverted Value confirmed as " + str(isInverted))
             if isinstance(inverted, str) == True:
                 self.deviantlogger.info("Inverted is confirmed as str")
                 if inverted.lower() == "true":
@@ -229,7 +239,7 @@ class daCog(commands.Cog):
                 elif inverted.lower() == "false":
                     isInverted = False
                 else:
-                    self.deviantlogger.debug("Inverted Value confirmed as ", isInverted)
+                    self.deviantlogger.debug("Inverted Value confirmed as " + str(isInverted))
                     await ctx.send("Error: Invalid inverted parameter. Must use true or false")
                     return;
             print("Checking channel")
@@ -240,7 +250,10 @@ class daCog(commands.Cog):
                     "Error: I could not link with the provided channelid, is it correct? Do I have permission to access it?" \
                     " I cannot tell because I am just a bot.")
                 return;
-            print("Checking if artist exists")
+            if channel.guild is None:
+                return;
+            if not channel.guild.id == ctx.guild.id:
+                return
             if (artistExists(artistname) == False):
                 self.deviantlogger.info("Addfolder command was just ran, but the artist is not in artdata!")
                 await channel.send(
@@ -261,7 +274,7 @@ class daCog(commands.Cog):
                     return;
                 else:
                     self.deviantlogger.info("addfolder command passed all checks, now proceeding to execution")
-                    self.deviantlogger.debug("IsInverted: ", isInverted)
+                    self.deviantlogger.debug("IsInverted: " + str(isInverted))
                     self.deviantlogger.info("Now creating folder data for " + artistname + "in " + foldername)
                     createFolderData(artistname, requestedfolderid, foldername, channelid, isInverted)
                     await channel.send("Add1ed " + artistname + "'s " + foldername + " gallery folder")
@@ -289,7 +302,7 @@ class daCog(commands.Cog):
         elif not self.publicmode:
             permitted = True
         if ctx.guild.get_role(self.roleid) is None:
-            self.deviantlogger.error("Detected invalid roleid in updatechannel ROLEID: " + self.roleid)
+            self.deviantlogger.error("Detected invalid roleid in updatechannel ROLEID: " + str(self.roleid))
             if ctx.author.server_permission.administrator:
                 skiprolecheck = True
             else:
@@ -337,7 +350,7 @@ class daCog(commands.Cog):
         elif not self.publicmode:
             permitted = True
         if ctx.guild.get_role(self.roleid) is None:
-            self.deviantlogger.error("Detected invalid roleid in updatechannel ROLEID: " + self.roleid)
+            self.deviantlogger.error("Detected invalid roleid in updatechannel ROLEID: " + str(self.roleid))
             if ctx.author.server_permission.administrator:
                 skiprolecheck = True
             else:
@@ -348,6 +361,12 @@ class daCog(commands.Cog):
         if permitted:
             if isinstance(newchannelid, int):
                 self.deviantlogger.info("New Channelid Instance of Integer")
+                channel = self.bot.get_channel(newchannelid)
+                if channel.guild is None:
+                    return;
+                if not channel.guild.id == ctx.guild.id:
+                    return
+
             elif isinstance(newchannelid, str):
                 self.deviantlogger.info("New ChannelID Instance of String")
                 try:
@@ -362,6 +381,10 @@ class daCog(commands.Cog):
                     self.deviantlogger.error("Encountered KeyError when verifying newchannelid...newchannelid is not a discordchannelid")
                     await ctx.send("Error: Invalid discord channel id provided...")
                     return;
+                if channel.guild is None:
+                    return;
+                if not channel.guild.id == ctx.guild.id:
+                    return
             if artistExists(artistname):
                 if folderExists(artistname, foldername):
                     updateDiscordChannel(artistname, foldername, newchannelid)
@@ -416,7 +439,7 @@ class daCog(commands.Cog):
                             currentlength = len(urls)
                             while currentlength >= 1:
                                 self.deviantlogger.debug("New Deviation URL: ")
-                                self.deviantlogger.debug(urls[currentlength - 1])
+                                self.deviantlogger.debug(str(urls[currentlength - 1]))
                                 self.deviantlogger.debug("SyncGalleries: Now posting URL")
                                 await channel.send(
                                     "New deviation from " + element + " you can view it here \n" + urls[
@@ -432,13 +455,11 @@ class daCog(commands.Cog):
 
     @commands.command()
     async def addartist(self, ctx, artistname, foldername, channelid, inverted):
-
         skiprolecheck = False
         if ctx.guild is None:
             return;
         elif ctx.guild.id == self.guildid:
             permitted = True
-            print
         elif not self.publicmode:
             permitted = True
         if ctx.guild.get_role(self.roleid) is None:
@@ -454,10 +475,10 @@ class daCog(commands.Cog):
             self.deviantlogger.info("addArtist command invoked.");
             dirpath = os.getcwd()
             self.deviantlogger.info("current directory is : " + dirpath)
-            self.deviantlogger.info("Channel ID" + channelid)
+            self.deviantlogger.info("Channel ID" + str(channelid))
             self.deviantlogger.info("Artist: " + artistname)
             self.deviantlogger.info("Foldername: " + foldername)
-            self.deviantlogger.info("Inverted: " + inverted)
+            self.deviantlogger.info("Inverted: " + str(inverted))
             isInverted = False
             if isinstance(inverted, bool) == True:
                 self.deviantlogger.info("Inverted confirmed as bool")
@@ -470,7 +491,7 @@ class daCog(commands.Cog):
                 elif inverted.lower() == "false":
                     isInverted = False
                 else:
-                    self.deviantlogger.debug("Inverted Value confirmed as ", isInverted)
+                    self.deviantlogger.debug("Inverted Value confirmed as " + str(isInverted))
                     await ctx.send("Error: Invalid inverted parameter. Must use true or false")
                     return;
             channel = self.bot.get_channel(int(channelid))
@@ -480,6 +501,10 @@ class daCog(commands.Cog):
                     " I cannot tell because I am just a bot.")
                 self.deviantlogger.info("Add Artist: Could not link with provided channelid")
                 return;
+            if channel.guild is None:
+                return;
+            if not channel.guild.id == ctx.guild.id:
+                return
             if (artistExists(artistname) == True):
                 self.deviantlogger.debug("This artist is already in the JSON File!")
                 await channel.send(
@@ -522,7 +547,7 @@ class daCog(commands.Cog):
         if isinstance(error, discord.ext.commands.NoPrivateMessage):
             return;
         else:
-            self.deviantlogger.error("ERROR ENCOUNTERED with help command Error: ", error)
+            self.deviantlogger.error("ERROR ENCOUNTERED with help command Error: " + str(error))
 
 
     @updateinverse.error
@@ -608,6 +633,7 @@ class daCog(commands.Cog):
                 print("You don't have admin!")
             if isinstance(error, commands.errors.NoPrivateMessage):
                 return
+
 
     @addfolder.error
     async def addfolder_errorhandler(self, ctx, error):
@@ -724,7 +750,7 @@ def error_handler(loop, context):
             os._exit(210)
     else:
         print("Exception encountered: ", context['exception'])
-        logger.error("Exception Encountered ", context['exception'])
+        logger.error("Exception Encountered " + str(context['exception']))
 
 
 def setup(bot):

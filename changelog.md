@@ -4,23 +4,92 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [Beta]
+## [bt-1.0.1] - 2019-05-10
+### Fixes
+- Fixed an issue in regards to ChannelID's working on other servers.
+- Fixed the issues with logs all logs should work as intended
+- Fixed the setprefix error handler
+- Updated the help command
+- Fixed an issue with configs not generating correctly
+
+
+## [bt-1.0.0] - 2019-05-10
+### Added
+- updateinverse command, this will set a folder to the inputed inverse setting (true or false)
+- Version field in all json configs. 
+- Permissions page to documentation
+- Reload command for daCommands
+- Version field in all json configs. 
+### Changed
+- Help Command is now in the daCommands Cogs
+- THe Admin only commands now use a ~$ prefix. These commands are the only ones unaffected 
+### Fixes
+- Fixed an issue with the jsonTools with folder names being improperly referenced.
+- Fixed an issue with DAParser and daCommands where artist's names were not being put in JSON in lowercase. 
+- A bug in the checks for rather a guild exists/ when DM's are used that raised an Attribute Error.
+- A potential error that would occur if roleid value was invalid. 
+- Fixed an error message from not properly sending
+- Fixed an issue with rotating log names. 
+- Put in an exception that will allow members with Administrator Permissions to bypass checks for role permissions to setup the bot.
+- Fixed a case sensitive issues with input and artdata. 
+- Fixed an issue with inverted galleries where the newest deviations would be posted in the wrong order. 
+- Fixed an issue
+- Fixed an issue with logging output.
+- Fixed an issue where logs would stop.
+- Fixed an issue with filehandlers with logs.
+
 ## [Unreleased]
-This is from Internal Builds before the official release of the bot
+## [ib-0.10.0] - 2019-05-06
+## Added
+- Sphinx is now used is the project for documentation. 
+- DocStrings to some methods. We will start going through them and documenting the functions. 
+- Cogs are now used to allow for easy reloading of the bot without having to restart the bot manually.
+- reload command, the bot can now be manually reloaded instead, of the bot automatically reloading when it needs to.  
+- setsynctime command, you can now set the frequency of when deviations are checked within the bot. 
+- updatechannel command so that admins can update an existing listener to a new channel.
+- updateprefix command so that the prefix can be changed on the fly. 
+- setuprole command so that you can define a role that will be required to access the bots commands. For the first time execution, this command needs to be executed by a user with a role that has Administrator
+- Log channel feature for admins, you can specify a channel to know if something is wrong with the bot. 
+- Parameter Checks for commands to make sure they are not empty
+- Various checks for arguments to make sure that the proper datatype is being used. 
+- More Http codes indicators for errors.
+- Messages that will now vary depending on the http code encountered to give better context. 
+- Various error messages to be more clear if something is wrong. 
+- Checks to make sure that artdata exists, and methods that will generate a blank artdata in configManager
+### Changed
+- Made all commands guild_only/ the bot will no longer respond via DM. 
+- Major refactoring, removed the com namespace in com.errite, it is now just errite.
+- com.errite.deviantart/errite.deviantart python package is now just errite.da
+- renamed the discord python package to just discordapi
+- removed the json pythonpackage
+- Permissions are now required in order to execute commands. 
+- The Bot python file no longer has the commands inside of it, it now has it in the cogs folder. 
+- Changed the Artist not found message to be more clear for when someone forgets quotations
+### Fixes
+- Fixed a Module Not found error with the discord python package and json python package
+- Fixed a bug in the multitoken check for addfolder
+- Fixed a bug with the updatechannel command
+
 ## [ib-0.9.0] - 2019-04-25
 ## Added
 - Additional error checking measures in regards to DA Clientid's and clientsecrets. 
-- config.json to store bot settings and client.json to store token information for the bot.
-- Methods to check for config files and act accordingly
-- Methods to generate the needed json objects for the new configs 
-- Exception Handler for async methods for the bots tasks. 
+- Added config.json to store bot settings and client.json to store token information for the bot.
+- Added methods to check for config files and act accordingly
+- Added methods to generate the needed json objects for the new configs 
+- Added publicmode/singletoken. It will allow you to run the bot using the same token on multiple servers. Just keep in mind
+that you need to run a separate instance of the bot per server. 
+- Added exceptionhandler for async methods for the bots tasks. 
 - Prefix customization
 - Logging Toggle, not currently used but will be in the next update. 
 ### Fixed
-- addfolder inverse field from not properly being saved due to a programming error. 
+- Fixed the addfolder inverse field from not properly being saved due to a programming error. 
 - Word spelling errors in some of the methods
 ## [ib-0.8.0] - 2019-04-24
 ### Added
 - Added folderExists to jsonTools to check if a folder truly exists for a specific user
+- Added publicmode, used for using the same discord token under several bots under a different server. Pretty useless for selfhosting.
 - Multifolder's syncs for multiple artists. The bot can now listen to multiple folders per artist instead of just one!
 - Inverse field for DAParser's 
 - Inverse field for the bots addFolder and addArtistCommand
@@ -32,3 +101,5 @@ This is from Internal Builds before the official release of the bot
 - the addfolder and addartist command now has the inverse parameter and will pass it on to the createArtistData, createFolderData and findGalleryFolder
 - Fixed a bug where the inverseparameter was not being correctly saved to artdata.json
 - JSON object references have been updated to account for Multifolder sync and inverses. 
+
+

@@ -17,7 +17,6 @@ Things to Note:
 
 Correct Arguments
 -----------------
-
 For Example with the addartist and addfolder command it is :
 
 $addartist *<artist_username>* *<folder>* *<channel_id>* *<inverted>*

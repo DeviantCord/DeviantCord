@@ -12,18 +12,6 @@ Subpackages
     errite.erritediscord
     errite.tools
 
-Submodules
-----------
-
-errite.Bot module
------------------
-
-.. automodule:: errite.Bot
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
 Module contents
 ---------------
 

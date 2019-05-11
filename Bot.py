@@ -11,9 +11,10 @@ from discord.ext.commands import has_permissions
 from errite.da.jsonTools import updateprefix, updatelogchannel
 from errite.config.configManager import createConfig, createSensitiveConfig
 from errite.tools.mis import fileExists
+from errite.config.converter import convert
 from os import listdir
 from os.path import isfile, join
-
+print("Starting DeviantBot bt-1.0.1")
 print("If this causes a HTTP 401 Error when trying to load daCommands your DeviantArt info is wrong. Set it in client.json")
 started = True
 configData = {}
@@ -48,7 +49,9 @@ if fileExists("client.json") == False:
 
 if passed == True:
     if fileExists("config.json") == True:
+
         if fileExists("client.json") == True:
+            convert()
             with open("config.json", "r") as configjsonFile:
                 with open("client.json", "r") as clientjsonFile:
                     configData = json.load(configjsonFile)
@@ -60,8 +63,8 @@ if passed == True:
                             passedJson = True
 
 if passedJson == True:
-    client = commands.Bot(command_prefix=configData["prefix"])
     prefix = configData["prefix"]
+    client = commands.Bot(command_prefix=prefix)
     # WEB API
     clientsecret = sensitiveData["da-secret"]
     clientid = sensitiveData["da-client-id"]
@@ -149,7 +152,9 @@ async def setlogchannel(ctx, logchannel):
 
 
 @client.command()
+@has_permissions(administrator=True)
 async def setprefix(ctx, suppliedprefix):
+    print("IN")
     skiprolecheck = False
     if ctx.guild is None:
         return;
@@ -157,20 +162,13 @@ async def setprefix(ctx, suppliedprefix):
         permitted = True
     elif not publicmode:
         permitted = True
-    if ctx.guild.get_role(roleid) is None:
-        if ctx.author.server_permission.administrator:
-            skiprolecheck = True
-        else:
-            return;
-    if not skiprolecheck:
-        if not ctx.author.top_role >= ctx.guild.get_role(roleid):
-            return;
     if permitted:
         updateprefix(suppliedprefix)
         try:
+            prefix = suppliedprefix
+            client.command_prefix = prefix
             client.unload_extension(cogs_dir + "." + "daCommands")
             client.load_extension(cogs_dir + "." + "daCommands")
-            prefix = suppliedprefix
             await ctx.send("Prefix updated to " + prefix)
         except Exception as e:
             await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
@@ -192,29 +190,31 @@ async def setprefix(ctx, suppliedprefix):
             await ctx.send('**`SUCCESS`**')
 
 
-    @setprefix.error
-    async def setupprefix_errorhandler(ctx, error):
-        try:
-            if ctx.guild.id is None:
-                return;
-        except AttributeError:
-            return;
-        if ctx.guild.id == guildid:
+@setprefix.error
+async def setprefix_errorhandler(ctx, error):
+    if ctx.guild is None:
+        return
+    if ctx.guild.id == guildid:
             permitted = True
-        elif not publicmode:
+    elif not publicmode:
             permitted = True
-        else:
+    else:
+        return;
+    if permitted:
+        print("Entered Permitted")
+        if isinstance(error, commands.NoPrivateMessage):
             return;
-        if permitted:
-            if isinstance(error, commands.NoPrivateMessage):
-                return;
-            if isinstance(error, commands.MissingRequiredArgument):
-                if error.param.name == 'prefix':
-                    await ctx.send(
+        elif isinstance(error, commands.MissingRequiredArgument):
+            if error.param.name == 'suppliedprefix':
+                await ctx.send(
+                    "Error: No prefix argument found, use " + prefix + "help for more information")
+        elif isinstance(error, discord.ext.commands.errors.MissingRequiredArgument):
+            if error.param.name == 'suppliedprefix':
+                await ctx.send(
                         "Error: No prefix argument found, use " + prefix + "help for more information")
-            if isinstance(error,commands.MissingPermissions):
-                print("You don't have admin!")
-            if isinstance(error, commands.errors.NoPrivateMessage):
+        elif isinstance(error,commands.MissingPermissions):
+                return;
+        elif isinstance(error, commands.errors.NoPrivateMessage):
                 return;
 
 def error_handler(loop, context):
