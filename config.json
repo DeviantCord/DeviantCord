@@ -1,8 +1,11 @@
 {
     "guildid": 0,
+    "logchannelid": 0,
     "logging": true,
     "prefix": "$",
     "publicmode": false,
+    "roleid": 0,
+    "rolesetup-enabled": true,
     "sync-time": 900,
     "version": "bt-1.0.0"
 }
