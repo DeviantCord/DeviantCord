@@ -2,7 +2,9 @@
 [![Documentation Status](https://readthedocs.org/projects/deviantcord/badge/?version=latest)](https://deviantcord.readthedocs.io/en/latest/?badge=latest)
 
 [Documentation](https://deviantcord.readthedocs.io/en/latest/)
+
 [Request Bot](https://forms.gle/6PiGroDvr7UdDH7h9)
+
 [DeviantCord Discord Server](https://discord.gg/ubmkcsk)
 
 
