@@ -10,7 +10,11 @@
 
 
 # DeviantCord
-This repository will soon contain the source code for the Discord Bot DeviantCord. As of this time the team is still trying to cleanup code and implement needed features to ensure that the bot meets our quality standards for an open beta release.
+DeviantCord is a Discord bot that will allow artists and fan communities to keep up to date on their favorite artists on DeviantArt through Discord. 
+
+For example posting links to your comic each time you post a new page is something this bot will replace. It will automatically check the configured artists folders for new entries and will post a new message in a specific Discord channel when a new deviation is found with a link to the deviation. 
+
+DeviantCord can be self hosted, or you can use our free service to host the bot for you. 
 
 # FAQ
 #### What is DeviantCord?
@@ -19,8 +23,7 @@ DeviantCord is a Discord Bot with the primary function of integrating into Devia
 #### What Programming language does the bot use?
 DeviantCord currently is developed with Python 3.6, versions below are not supported as of right now. This may change as we want to give flexiability. 
 
-#### How can we check your progress on the bot?
-Until the open beta release, your best bet is the changelog file. It will contain changelogs for internal builds. 
+More questions can be seen in the documentation!
 
 # Credits
 - [@deviantart](https://github.com/DeviantArt) for developing the DeviantArt and Sta.ch API
