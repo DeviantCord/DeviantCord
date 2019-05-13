@@ -4,57 +4,7 @@
     <bookmark url="file://$PROJECT_DIR$/Bot.py" description="for extension in [f.replace('.py', '') for f in li..." line="80" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2e57e923-5e39-45cc-93b3-8ed3fbf9a837" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/Bot.py" beforeDir="false" afterPath="$PROJECT_DIR$/Bot.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/changelog.md" beforeDir="false" afterPath="$PROJECT_DIR$/changelog.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cogs/daCommands.py" beforeDir="false" afterPath="$PROJECT_DIR$/cogs/daCommands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/doctrees/addinglisteners.doctree" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/doctrees/addinglisteners.doctree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/doctrees/choosehost.doctree" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/doctrees/choosehost.doctree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/doctrees/configure.doctree" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/doctrees/configure.doctree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/doctrees/environment.pickle" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/doctrees/environment.pickle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/doctrees/errite.cogs.doctree" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/doctrees/errite.cogs.doctree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/doctrees/errite.config.doctree" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/doctrees/errite.config.doctree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/doctrees/errite.da.doctree" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/doctrees/errite.da.doctree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/doctrees/errite.doctree" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/doctrees/errite.doctree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/doctrees/errite.erritediscord.doctree" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/doctrees/errite.erritediscord.doctree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/doctrees/errite.tools.doctree" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/doctrees/errite.tools.doctree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/doctrees/index.doctree" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/doctrees/index.doctree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/doctrees/installpython.doctree" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/doctrees/installpython.doctree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/doctrees/modules.doctree" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/doctrees/modules.doctree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/doctrees/movingfileslinux.doctree" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/doctrees/movingfileslinux.doctree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/doctrees/permissions.doctree" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/doctrees/permissions.doctree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/doctrees/requesthosting.doctree" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/doctrees/requesthosting.doctree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/doctrees/runningbot.doctree" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/doctrees/runningbot.doctree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/doctrees/ssh.doctree" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/doctrees/ssh.doctree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/doctrees/whathost.doctree" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/doctrees/whathost.doctree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/_sources/addinglisteners.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/_sources/addinglisteners.rst.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/_sources/errite.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/_sources/errite.rst.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/_sources/requesthosting.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/_sources/requesthosting.rst.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/_static/css/badge_only.css" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/_static/css/badge_only.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/_static/css/theme.css" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/_static/css/theme.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/_static/doctools.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/_static/doctools.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/_static/fonts/fontawesome-webfont.svg" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/_static/fonts/fontawesome-webfont.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/_static/jquery-3.2.1.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/_static/jquery-3.2.1.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/_static/jquery.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/_static/jquery.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/_static/js/modernizr.min.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/_static/js/modernizr.min.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/_static/js/theme.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/_static/js/theme.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/_static/searchtools.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/_static/searchtools.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/_static/underscore-1.3.1.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/_static/underscore-1.3.1.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/_static/underscore.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/_static/underscore.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/errite.cogs.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/errite.cogs.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/errite.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/errite.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/genindex.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/genindex.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/modules.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/modules.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/objects.inv" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/objects.inv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/requesthosting.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/requesthosting.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/searchindex.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/searchindex.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/source/addinglisteners.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/addinglisteners.rst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/source/requesthosting.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/requesthosting.rst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/errite/cogs/daCommands.py" beforeDir="false" afterPath="$PROJECT_DIR$/errite/cogs/daCommands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/errite/config/configManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/errite/config/configManager.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/errite/da/daParser.py" beforeDir="false" afterPath="$PROJECT_DIR$/errite/da/daParser.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/errite/da/jsonTools.py" beforeDir="false" afterPath="$PROJECT_DIR$/errite/da/jsonTools.py" afterDir="false" />
-    </list>
+    <list default="true" id="2e57e923-5e39-45cc-93b3-8ed3fbf9a837" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -270,7 +220,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -293,6 +242,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -484,11 +434,12 @@
       <workItem from="1557467968217" duration="142000" />
       <workItem from="1557468290089" duration="19000" />
       <workItem from="1557554686708" duration="715000" />
+      <workItem from="1557605702471" duration="243000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="93163000" />
+    <option name="totallyTimeSpent" value="93406000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -502,7 +453,7 @@
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4957806" visible="true" weight="0.2386059" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4957806" visible="true" weight="0.2419571" />
       <window_info id="Structure" order="1" sideWeight="0.5042194" side_tool="true" weight="0.24966975" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -724,7 +675,13 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/docs/source/choosehost.rst">
+      <provider selected="true" editor-type-id="restructured-text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/docs/source/permissions.rst">
+      <provider selected="true" editor-type-id="restructured-text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/source/addinglisteners.rst">
       <provider selected="true" editor-type-id="restructured-text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/Bot.py">
@@ -750,12 +707,6 @@
           <caret line="7" column="9" selection-end-line="9" selection-end-column="1" />
         </state>
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/docs/source/addinglisteners.rst">
-      <provider selected="true" editor-type-id="restructured-text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/docs/source/choosehost.rst">
-      <provider selected="true" editor-type-id="restructured-text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/docs/source/requesthosting.rst">
       <provider selected="true" editor-type-id="restructured-text-editor" />

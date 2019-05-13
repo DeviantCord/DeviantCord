@@ -17,6 +17,7 @@ Things to Note:
 
 Correct Arguments
 -----------------
+
 For Example with the addartist and addfolder command it is :
 
 $addartist *<artist_username>* *<folder>* *<channel_id>* *<inverted>*
@@ -25,7 +26,7 @@ $addfolder *<artist_username>* *<folder>* *<channel_id>* *<inverted>*
 
 If we looked at an artists page, such as the one below
 
-.. image:: SettingUp.png
+.. image:: SettingUp.PNG
 *Example image from Zander-The-Artist (With Permission) see his work* `here <https://www.deviantart.com/zander-the-artist>`_
 
 Looking above at the example image, and using it as an example you should note the following
@@ -40,6 +41,25 @@ In this case the folder for the comic Hope In Friends should be "Hope In Friends
 $addartist "zander-the-artist" "Hope In Friends Comic" *<channel_id>* false
 
 *Inverted in this case would be false, but it depends on what artist and what folder*
+
+Removing Folders
+----------------
+Removing a listener uses the same logic as the section above, if you haven't read the section it is suggested that you
+read it first.
+
+However there are some differences you should note. As there is only a remove folder listener command. This was
+done to prevent accidentally deleting a whole artist from the folder as multiple folders can be stored under an artist.
+
+As a result you can only delete one listener at a time.
+The command is as follows ::
+    $deletefolder <artist_username> <folder>
+
+This will delete the folder from the artist.json file and no more notifications will be posted to Discord for that folder
+unless you readd it.
+
+Additionally if you are having trouble remembering what folders are currently being listened for new deviations you can
+use the listfolders command ::
+    $listfolders
 
 
 Inverted Galleries

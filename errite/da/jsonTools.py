@@ -252,6 +252,33 @@ def updateprefix(prefix):
         jsonFile.close()
 
 
+def delfolder(artist, folder):
+
+    """
+            Method ran to delete a folder in the ArtData json file.
+
+            :param artist: The name of the artist who's deviations we are working with. This is needed for json references
+            :type artist: string
+            :param foldername: The name of the gallery folder we are working with. Used for json references
+            :type foldername: string
+            :return: bool
+    """
+    with open("artdata.json", "r") as jsonFile:
+        tempartdata = json.load(jsonFile)
+        jsonFile.close()
+        correctartistform = artist.lower()
+        if len(tempartdata["art-data"][artist.lower()]["folder-list"]) == 1:
+            del tempartdata["art-data"][artist.lower()]
+            for element in tempartdata["artist_store"]["used-artists"]:
+                print(element)
+            tempartdata["artist_store"]["used-artists"].remove(correctartistform)
+        elif len(tempartdata["art-data"][artist.lower()]["folder-list"]) > 1:
+            del tempartdata["art-data"][artist.lower()][folder]
+            tempartdata["art-data"][artist.lower()]["folder-list"].remove(folder)
+        jsonFile = open("artdata.json", "w+")
+        jsonFile.write(json.dumps(tempartdata, indent=4, sort_keys=True))
+        jsonFile.close()
+
 def dumpURLListDebug(list):
     for element in list:
         print(element)

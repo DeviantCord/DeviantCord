@@ -5,7 +5,7 @@ Errite/the group that develops the bot allows for communities to request hosting
 Though we do have a few requirements
 
 - Join the DeviantCord Discord server
-- Fill out the Google Forms for requesting hosting `Request Bot <https://forms.gle/6PiGroDvr7UdDH7h9>`_
+- Fill out the Google Forms for requesting hosting
 
 These requirements are mandatory to make sure that staff members can contact server owners by having a mutual server
 additionally it will allow for server owners/staff to be able to see announcements regarding the bot such as maintenance,

@@ -28,6 +28,7 @@ More questions can be seen in the documentation!
 # Credits
 - [@deviantart](https://github.com/DeviantArt) for developing the DeviantArt and Sta.ch API
 - [@haloman30](https://github.com/haloman30) for creating the DeviantCord logo and giving feedback on the bot. 
+- [@zander-the-artist](https://www.deviantart.com/zander-the-artist) for allowing DeviantCord to feature his gallery in the documentation for an example. His comic Hope In Friends is also awesome check it out!. 
 - [@ErriteEpticRikez](https://github.com/ErriteEpticRikez) for investigating DA's API, creating functionality for it in Python, and overall developing the bot
 - [@atomicbeast101](https://github.com/Atomicbeast101) Good friend and developer of the Jinux Bot which was very helpful for the team in terms of developing DeviantCord.
 - [@Rapptz](https://github.com/Rapptz) For developing Discord.py, a framework which made developing the Discord Bot a lot easier.

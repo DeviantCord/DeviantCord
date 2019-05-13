@@ -6,6 +6,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Beta]
+## [bt-1.1.0] - 2019-05-11
+
+### Added
+- deletefolder command, this will allow you to deletefolders
+- listfolders command, that will list all current folder listeners
+- added json lock to prevent issues during a deletion of a folder. 
+
+## Updates
+- Updated Repository for Discord.py version 1.1.1, websockets version 7.0 and urllib3 to 1.25.2
+
+## Changes
+- Changed some log messages
+- Changed the task error handler to proper indentation
+
+### Fixes
+- Fixed an issue with addFolder where a if statement would not return if an folder already exists
+- Fixed an error message back from an very old build that has since then changed 
+- Fixed an log message that was not given a level, and as a result it stopped the updateinverse command from working.
+- Fixed an conditional statement in updateinverse that would not allow the inverse to be updated to false. 
+- Fixed an error message in addartist that had a spelling error
+- Fixed an error message from returning in addartist for an invalid DA Folder UUID.
+- Fixed an error message from returning with an invalid DA Folder UUID for a completely different condition
+- Fixed ErrorHandler for Tasks to automatically release the json lock when an error occurs within a task. 
+
+
+## [Beta]
 ## [bt-1.0.1] - 2019-05-10
 ### Fixes
 - Fixed an issue in regards to ChannelID's working on other servers.

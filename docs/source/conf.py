@@ -28,7 +28,7 @@ copyright = '2019, ErriteEpticRikez'
 author = 'ErriteEpticRikez'
 
 # The full version, including alpha/beta/rc tags
-release = 'bt-1.0.0'
+release = 'bt-1.1.0'
 
 
 # -- General configuration ---------------------------------------------------

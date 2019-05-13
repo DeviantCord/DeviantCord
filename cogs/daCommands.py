@@ -9,7 +9,7 @@ from discord.ext import commands
 from discord.ext.commands import has_permissions, guild_only
 import errite.da.daParser as dp
 from errite.da.jsonTools import createArtistData, artistExists, folderExists, createFolderData, \
-    updateDiscordChannel, updateRole, updateinverseproperty
+    updateDiscordChannel, updateRole, updateinverseproperty, delfolder
 from errite.config.configManager import createConfig, createSensitiveConfig
 from errite.tools.mis import fileExists
 import urllib
@@ -22,6 +22,7 @@ class daCog(commands.Cog):
         self.clientsecret = None
         self.guildid = None
         self.enablesr = False
+        self.jsonlock = False
         self.roleid = 0
         self.publicmode = None
         self.datevar = datetime.datetime.now().strftime("%Y-%m-%d%H%M%S")
@@ -88,7 +89,7 @@ class daCog(commands.Cog):
             self.time = configData["sync-time"]
         self.deviantlogger.info("Now creating tasks...")
         self.bot.loop.create_task(self.getNewToken())
-        self.bot.loop.set_exception_handler(error_handler)
+        self.bot.loop.set_exception_handler(self.error_handler)
         self.bot.loop.create_task(self.syncGalleries())
     async def getNewToken(self):
         """
@@ -115,46 +116,58 @@ class daCog(commands.Cog):
         Checks programmed gallery folders for Deviations. This is the method that is ran to trigger every x minutes
         depending on what the user has it configured to.
         """
-        if self.passedJson == True:
+        locked = False
+        try:
+            locked = self.jsonlock
+        except NameError:
+            print("Caught Assignment Error...Returning")
+            return;
+        if not locked:
+            if self.passedJson == True:
 
-            await self.bot.wait_until_ready()
+                await self.bot.wait_until_ready()
 
-            while not self.bot.is_closed():
-                dirpath = os.getcwd()
-                self.deviantlogger.debug("Sync Galleries method ran: current directory is : " + dirpath)
-                with open("artdata.json", "r") as jsonFile:
-                    self.deviantlogger.info("SyncGalleries: Loading JSON file ArtData")
-                    artdata = json.load(jsonFile)
-                    for element in artdata["artist_store"]["used-artists"]:
-                        self.deviantlogger.debug("Now starting sync for artist " + element)
-                        for foldername in artdata["art-data"][element]["folder-list"]:
-                            self.deviantlogger.debug("Starting Sync for folder " + foldername + " from artist " + element)
-                            urls = dp.getGalleryFolder(element, True,
-                                                       artdata['art-data'][element][foldername]["artist-folder-id"],
-                                                       self.token,
-                                                       foldername,
-                                                       artdata['art-data'][element][foldername]["inverted-folder"])
-                            channel = self.bot.get_channel(
-                                int(artdata["art-data"][element][foldername]["discord-channel-id"]))
-                            if artdata["art-data"][element][foldername]["inverted-folder"]:
-                                self.deviantlogger.debug("Folder is inverse")
-                                storage = len(urls)
-                                currentlength = len(urls)
-                                while currentlength >= 1:
-                                    self.deviantlogger.debug("New Deviation URL: ")
-                                    self.deviantlogger.debug(str(urls[currentlength - 1]))
-                                    self.deviantlogger.debug("SyncGalleries: Now posting URL")
-                                    await channel.send(
-                                        "New deviation from " + element + " you can view it here \n" + urls[currentlength-1])
-                                    currentlength = currentlength - 1
+                while not self.bot.is_closed():
+                    dirpath = os.getcwd()
+                    self.deviantlogger.debug("Sync Galleries method ran: current directory is : " + dirpath)
+                    with open("artdata.json", "r") as jsonFile:
+                        self.deviantlogger.info("SyncGalleries: Loading JSON file ArtData")
+                        artdata = json.load(jsonFile)
+                        for element in artdata["artist_store"]["used-artists"]:
+                            self.deviantlogger.debug("Now starting sync for artist " + element)
+                            for foldername in artdata["art-data"][element]["folder-list"]:
+                                self.deviantlogger.debug(
+                                    "Starting Sync for folder " + foldername + " from artist " + element)
+                                urls = dp.getGalleryFolder(element, True,
+                                                           artdata['art-data'][element][foldername]["artist-folder-id"],
+                                                           self.token,
+                                                           foldername,
+                                                           artdata['art-data'][element][foldername]["inverted-folder"])
+                                channel = self.bot.get_channel(
+                                    int(artdata["art-data"][element][foldername]["discord-channel-id"]))
+                                if artdata["art-data"][element][foldername]["inverted-folder"]:
+                                    self.deviantlogger.debug("Folder is inverse")
+                                    storage = len(urls)
+                                    currentlength = len(urls)
+                                    while currentlength >= 1:
+                                        self.deviantlogger.debug("New Deviation URL: ")
+                                        self.deviantlogger.debug(str(urls[currentlength - 1]))
+                                        self.deviantlogger.debug("SyncGalleries: Now posting URL")
+                                        await channel.send(
+                                            "New deviation from " + element + " you can view it here \n" + urls[
+                                                currentlength - 1])
+                                        currentlength = currentlength - 1
 
-                            else:
-                                for url in urls:
-                                    self.deviantlogger.debug("New Deviation URL: ")
-                                    self.deviantlogger.debug(url)
-                                    self.deviantlogger.debug("SyncGalleries: Now posting URL")
-                                    await channel.send("New deviation from " + element + " you can view it here \n" + url)
-                    await asyncio.sleep(self.time)
+                                else:
+                                    for url in urls:
+                                        self.deviantlogger.debug("New Deviation URL: ")
+                                        self.deviantlogger.debug(url)
+                                        self.deviantlogger.debug("SyncGalleries: Now posting URL")
+                                        await channel.send(
+                                            "New deviation from " + element + " you can view it here \n" + url)
+                        await asyncio.sleep(self.time)
+        else:
+            await asyncio.sleep(self.time)
     @commands.command()
     async def help(self, ctx):
         self.deviantlogger.info("Help command invoked")
@@ -178,7 +191,9 @@ class daCog(commands.Cog):
                self.prefix + "addfolder** *<artist_username>* *<folder>* *<channel_id>* *<inverse>* - Adds another artists gallery folder for the bot to notify the specified channel of new deviations. Use this when your adding another folder to an artist already added \n**" + \
                self.prefix\
                + "addartist** *<artist_username>* *<folder>* *<channel_id>* *<inverse>*- Used to add an artist and the first folder into the bots datafile. Use this command when you are adding an artist for the first time!\n**" + \
+               self.prefix + "deletefolder** *<artist_username>* *<folder>* - Deletes the listener for the folder and erases it from artdata\n **" + \
                self.prefix + "manualSync** - Will check all configured folders for new deviations instead of waiting for the timer to trigger and start the check *DO NOT SPAM THIS*\n" + "**" + \
+               self.prefix + "listfolders** - Lists all the current folder listeners that the bot is listening to. \n **" + \
                self.prefix + "updateinverse** *<artist_username> *<folder>* *<inverse>* - Updates the inverse property of a existing folder listener\n" + \
                "**" + self.prefix + "updatechannel** *<artist_username> *<folder>* *<channelid>* - Updates the discord channel that notifications will be posted for an existing folder listener\n" + \
                "** __ADMIN COMMANDS__** \n" + \
@@ -201,6 +216,57 @@ class daCog(commands.Cog):
                 self.roleid = roleid
         else:
             return
+    @commands.command()
+    async def listfolders(self, ctx):
+        if ctx.guild is None:
+            return;
+        if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
+            return;
+        if ctx.guild.id == self.guildid:
+            permitted = True
+        elif not self.publicmode:
+            permitted = True
+        else:
+            return;
+        if self.jsonlock:
+            await ctx.send("There is currently a task going on using ArtData, so this data may change soon. You might want to run the command again soon.!")
+        if permitted:
+            with open("artdata.json", "r") as jsonFile:
+                tempartdata = json.load(jsonFile)
+                jsonFile.close()
+                if len(tempartdata["artist_store"]["used-artists"]) > 0:
+                    output = "**Current Folder Listeners**\n"
+                    for artist in tempartdata["artist_store"]["used-artists"]:
+                        output = output + "\n__" + artist + "___\n"
+                        for folder in tempartdata["art-data"][artist]["folder-list"]:
+                            output = output + "**" + folder + "**\n"
+                    await ctx.send(output)
+                else:
+                    await ctx.send("Bad News... there aren't any folders. Maybe they went on vacation? I can't tell because I'm a bot, not a travel agent.")
+                    return;
+    @commands.command()
+    async def deletefolder(self, ctx, artist, folder):
+        if ctx.guild is None:
+            return;
+        if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
+            return;
+        if ctx.guild.id == self.guildid:
+            permitted = True
+        elif not self.publicmode:
+            permitted = True
+        else:
+            return;
+        if self.jsonlock:
+            await ctx.send("There is currently a task going on using ArtData, so this data may change soon. You might want to run the command again soon.!")
+        if permitted:
+            if artistExists(artist.lower()):
+                if folderExists(artist, folder):
+                    delfolder(artist, folder)
+                    await ctx.send("Folder listener deleted successfully! I will no longer post updates for this folder. ")
+                else:
+                    await ctx.send("Error: This folder does not exist, so I can't delete it! You can't just delete thin air!")
+            else:
+                await ctx.send("Error: This artist does not have a listener. Is this a mistake? I can't tell I'm just a bot!")
 
     @commands.command()
     async def addfolder(self, ctx, artistname, foldername, channelid, inverted):
@@ -219,7 +285,11 @@ class daCog(commands.Cog):
             permitted = True
         else:
             return;
+        if self.jsonlock:
+            await ctx.send("ERROR: Another command using ArtData is currently running, please wait for that to finish!")
+            return;
         if permitted:
+            self.jsonlock = True
             self.deviantlogger.info("addFolder command invoked.");
             dirpath = os.getcwd()
             self.deviantlogger.info("current directory is : " + str(dirpath))
@@ -239,36 +309,45 @@ class daCog(commands.Cog):
                 elif inverted.lower() == "false":
                     isInverted = False
                 else:
+                    self.jsonlock = False
                     self.deviantlogger.debug("Inverted Value confirmed as " + str(isInverted))
                     await ctx.send("Error: Invalid inverted parameter. Must use true or false")
                     return;
             print("Checking channel")
             channel = self.bot.get_channel(int(channelid))
             if channel is None:
+                self.jsonlock = False
                 self.deviantlogger.info("Could not link with provided channelid...sending message to channel")
                 await ctx.send(
                     "Error: I could not link with the provided channelid, is it correct? Do I have permission to access it?" \
                     " I cannot tell because I am just a bot.")
                 return;
             if channel.guild is None:
+                self.jsonlock = False
                 return;
             if not channel.guild.id == ctx.guild.id:
+                self.jsonlock = False
                 return
             if (artistExists(artistname) == False):
+                self.jsonlock = False
                 self.deviantlogger.info("Addfolder command was just ran, but the artist is not in artdata!")
                 await channel.send(
                     "You need to run the addartist command for a new artist. Use the help command for more information")
                 return;
             if (folderExists(artistname, foldername) == True):
-                self.deviantlogger.info("This artist is already in the JSON File!")
+                self.jsonlock = False
+                self.deviantlogger.info("This folder is already in the JSON File!")
                 await channel.send("I already know about this folder. Do you mean a different folder?")
+                return;
             if (folderExists(artistname, foldername) == False):
                 requestedfolderid = dp.findFolderUUID(artistname, True, foldername, self.token)
                 if requestedfolderid == "ERROR":
+                    self.jsonlock = False
                     self.deviantlogger.info("Invalid artist lookup, input: " + artistname)
                     await ctx.send("Error: This Artist does not exist!")
                     return;
                 if requestedfolderid == "None":
+                    self.jsonlock = False
                     self.deviantlogger.info("Artist folder not found, for " + artistname + " in" + foldername)
                     await ctx.send("Error: Folder " + foldername + " not found")
                     return;
@@ -277,7 +356,7 @@ class daCog(commands.Cog):
                     self.deviantlogger.debug("IsInverted: " + str(isInverted))
                     self.deviantlogger.info("Now creating folder data for " + artistname + "in " + foldername)
                     createFolderData(artistname, requestedfolderid, foldername, channelid, isInverted)
-                    await channel.send("Add1ed " + artistname + "'s " + foldername + " gallery folder")
+                    await channel.send("Added " + artistname + "'s " + foldername + " gallery folder")
                     self.deviantlogger.info("Now populating folder data with deviations for " + artistname + "in " + foldername)
                     await channel.send("Now populating with current deviations...")
                     with open("artdata.json", "r") as jsonFile:
@@ -287,6 +366,7 @@ class daCog(commands.Cog):
                         dp.getGalleryFolderFT(artistname, True,
                                               artdata["art-data"][artistname.lower()][foldername]["artist-folder-id"],
                                               self.token, foldername)
+                        self.jsonlock = False
                         await channel.send(
                             "Finished populating...this channel will now receive updates on new deviations by "
                             + artistname + " in folder " + foldername)
@@ -294,6 +374,7 @@ class daCog(commands.Cog):
 
     @commands.command()
     async def updateinverse(self, ctx, artistname, foldername, inverse):
+        print("Triggered")
         skiprolecheck = False
         if ctx.guild is None:
             return;
@@ -310,33 +391,45 @@ class daCog(commands.Cog):
         if not skiprolecheck:
             if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
                 return;
+        if self.jsonlock:
+            await ctx.send("ERROR: Another command using ArtData is currently running, please wait for that to finish!")
+            return;
         if permitted:
+            print("Entered Permitted")
+            self.jsonlock = True
             if isinstance(inverse, bool):
+                print("Bool")
                 self.deviantlogger.info("New Inverse Instance of bool")
             elif isinstance(inverse, str):
                 self.deviantlogger.info("New Inverse Instance of String")
                 self.deviantlogger.debug("OBTAINED INVERSE: " + inverse)
-                self.deviantlogger("CHECK: " + inverse.lower())
+                self.deviantlogger.info("CHECK: " + inverse.lower())
+                print("Past?")
                 print(inverse.lower())
                 if inverse.lower() == "true":
                     print("Inverse is true")
-                elif inverse.lower() is "false":
+                elif inverse.lower() == "false":
                     print("Inverse is false")
                 else:
                     await ctx.send("Invalid inverse given...")
+                    self.jsonlock = False
                     return
 
+            print("Entered JSON checks")
             if artistExists(artistname):
                 if folderExists(artistname, foldername):
                     updateinverseproperty(artistname, foldername, inverse)
                     self.deviantlogger.info("Update inverse finished for " + artistname + " on" + foldername)
-                    await ctx.send("Inverse Updated for " + artistname + " in" + foldername)
+                    self.jsonlock = False
+                    await ctx.send("Inverse Updated for " + artistname + " in " + foldername)
                 else:
                     await ctx.send(
                         "I am not currently listening for new deviations on " + foldername + "is this the correct " \
                                                                                              "name for the folder?")
+                    self.jsonlock = False
                     return;
             else:
+                self.jsonlock = False
                 await ctx.send("I do not have " + artistname + "in my datafiles is this the correct artist?")
 
 
@@ -358,11 +451,15 @@ class daCog(commands.Cog):
         if not skiprolecheck:
             if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
                 return;
+        if self.jsonlock:
+            await ctx.send("ERROR: Another command using ArtData is currently running, please wait for that to finish!")
+            return;
         if permitted:
             if isinstance(newchannelid, int):
                 self.deviantlogger.info("New Channelid Instance of Integer")
                 channel = self.bot.get_channel(newchannelid)
                 if channel.guild is None:
+                    self.jsonlock = False
                     return;
                 if not channel.guild.id == ctx.guild.id:
                     return
@@ -373,30 +470,37 @@ class daCog(commands.Cog):
                     result = int(newchannelid)
                     channel = self.bot.get_channel(result)
                     if channel is None:
+                        self.jsonlock = False
                         self.deviantlogger.info("INVALID ChannelID: Could not link with provided channelid")
                         await ctx.send(
                             "Error: The new channel id you provided is invalid, is it correct? Do I have permission to access it?")
                         return;
                 except KeyError:
+                    self.jsonlock = False
                     self.deviantlogger.error("Encountered KeyError when verifying newchannelid...newchannelid is not a discordchannelid")
                     await ctx.send("Error: Invalid discord channel id provided...")
                     return;
                 if channel.guild is None:
+                    self.jsonlock = False
                     return;
                 if not channel.guild.id == ctx.guild.id:
+                    self.jsonlock = False
                     return
             if artistExists(artistname):
                 if folderExists(artistname, foldername):
                     updateDiscordChannel(artistname, foldername, newchannelid)
+                    self.jsonlock = False
                     self.deviantlogger.info("Update Discord Channel finished!")
                     await ctx.send("Channel Updated!")
                 else:
+                    self.jsonlock = False
                     self.deviantlogger.warning("Folder " + foldername + " does not exist in artdata")
                     await ctx.send(
                         "I am not currently listening for new deviations on " + foldername + "is this the correct " \
                                                                                              "name for the folder?")
                     return;
             else:
+                self.jsonlock = False
                 self.deviantlogger.warning("Artist " + artistname + " is not in artdata")
                 await ctx.send("I do not have " + artistname + "in my datafiles is this the correct artist?")
 
@@ -417,7 +521,11 @@ class daCog(commands.Cog):
         if not skiprolecheck:
             if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
                 return;
+        if self.jsonlock:
+            await ctx.send("ERROR: Another command using ArtData is currently running, please wait for that to finish!")
+            return;
         if permitted:
+            self.jsonlock = True
             dirpath = os.getcwd()
             self.deviantlogger.info("manualSync: current directory is : " + dirpath)
             with open("artdata.json", "r") as jsonFile:
@@ -431,6 +539,7 @@ class daCog(commands.Cog):
                                                    artdata['art-data'][element][foldername]["artist-folder-id"],
                                                    self.token, foldername,
                                                    artdata["art-data"][element][foldername]["inverted-folder"])
+                        self.jsonlock = False
                         channel = self.bot.get_channel(
                             int(artdata["art-data"][element][foldername]["discord-channel-id"]))
                         if artdata["art-data"][element][foldername]["inverted-folder"]:
@@ -471,7 +580,11 @@ class daCog(commands.Cog):
             if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
                 self.deviantlogger.debug("User that passed Guild check does not have permissiont to use addartist")
                 return;
+        if self.jsonlock:
+            await ctx.send("ERROR: Another command using ArtData is currently running, please wait for that to finish!")
+            return;
         if permitted:
+            self.jsonlock = True
             self.deviantlogger.info("addArtist command invoked.");
             dirpath = os.getcwd()
             self.deviantlogger.info("current directory is : " + dirpath)
@@ -491,34 +604,44 @@ class daCog(commands.Cog):
                 elif inverted.lower() == "false":
                     isInverted = False
                 else:
+                    self.jsonlock = False
                     self.deviantlogger.debug("Inverted Value confirmed as " + str(isInverted))
                     await ctx.send("Error: Invalid inverted parameter. Must use true or false")
                     return;
             channel = self.bot.get_channel(int(channelid))
             if channel is None:
+                self.jsonlock = False
                 await ctx.send(
                     "Error: I could not link with the provided channelid, is it correct? Do I have permission to access it?" \
                     " I cannot tell because I am just a bot.")
                 self.deviantlogger.info("Add Artist: Could not link with provided channelid")
                 return;
             if channel.guild is None:
+                self.jsonlock = False
                 return;
             if not channel.guild.id == ctx.guild.id:
+                self.jsonlock = False
                 return
             if (artistExists(artistname) == True):
+                self.jsonlock = False
                 self.deviantlogger.debug("This artist is already in the JSON File!")
                 await channel.send(
-                    "This artist has already been added! Only one folder can be listened to at this time!")
+                    "This artist has already been added! Use the addfolder command to add another folder")
+                return;
             if (artistExists(artistname) == False):
                 requestedfolderid = dp.findFolderUUID(artistname, True, foldername, self.token)
                 if requestedfolderid == "ERROR":
-                    self.deviantlogger.debug("addartist: findFolderUUID request failed, artist does not exis. ")
+                    self.jsonlock = False
+                    self.deviantlogger.debug("addartist: findFolderUUID request failed, artist does not exist. ")
                     await ctx.send(
                         "Error: Artist " + artistname + " does not exist. If your input did not seem to transfer" /
                         " completely surround the artist argument in quotations ")
+                    return;
                 elif requestedfolderid == "None":
-                    self.deviantlogger.warning("addartist: findFolderUUID request failed, folder does not exis. ")
+                    self.jsonlock = False
+                    self.deviantlogger.warning("addartist: findFolderUUID request failed, folder does not exist. ")
                     await ctx.send("Error: Folder " + foldername + " not found")
+                    return;
                 else:
                     self.deviantlogger.info("Successfully passed checks for addartist, creating ArtistData")
                     createArtistData(artistname, requestedfolderid, foldername, channelid, isInverted)
@@ -533,6 +656,7 @@ class daCog(commands.Cog):
                         dp.getGalleryFolderFT(artistname, True,
                                               artdata["art-data"][artistname.lower()][foldername]["artist-folder-id"],
                                               self.token, foldername)
+                        self.jsonlock = False
                         self.deviantlogger.info("Finished populating deviations for " + artistname + "in " + foldername)
                         await channel.send(
                             "Finished populating...this channel will now receive updates on new deviations by "
@@ -552,6 +676,7 @@ class daCog(commands.Cog):
 
     @updateinverse.error
     async def updateinverse_errorhandler(self, ctx, error):
+        self.jsonlock = False;
         try:
             if ctx.guild.id is None:
                 return;
@@ -583,6 +708,7 @@ class daCog(commands.Cog):
 
     @updatechannel.error
     async def updatechannel_errorhandler(self, ctx, error):
+        self.jsonlock = False;
         try:
             if ctx.guild.id is None:
                 return;
@@ -637,6 +763,7 @@ class daCog(commands.Cog):
 
     @addfolder.error
     async def addfolder_errorhandler(self, ctx, error):
+        self.jsonlock = False;
         try:
             if ctx.guild.id is None:
                 return;
@@ -683,6 +810,7 @@ class daCog(commands.Cog):
 
     @addartist.error
     async def addartist_errorhandler(self,ctx, error):
+        self.jsonlock = False;
         try:
             if ctx.guild.id is None:
                 return;
@@ -728,29 +856,30 @@ class daCog(commands.Cog):
                 return
 
 
-def error_handler(loop, context):
-    print("Exception: ", context['exception'])
-    logger = logging.getLogger("deviantcog")
-    if str(context['exception']) == "HTTP Error 401: Unauthorized":
-        print("Your DA info is invalid, please check client.json to see if it matches your DA developer page")
-        logger("Your DA info is invalid, please check client.json to see if it matches your DA developer page")
-        loop.stop()
-        try:
-            exit(211)
-        except SystemExit:
-            os._exit(211)
-    if str(context['exception']) == "HTTP Error 400: Bad request":
+    def error_handler(self,loop, context):
+        self.jsonlock = False
+        print("Exception: ", context['exception'])
+        logger = logging.getLogger("deviantcog")
+        if str(context['exception']) == "HTTP Error 401: Unauthorized":
+            print("Your DA info is invalid, please check client.json to see if it matches your DA developer page")
+            logger("Your DA info is invalid, please check client.json to see if it matches your DA developer page")
+            loop.stop()
+            try:
+                exit(211)
+            except SystemExit:
+                os._exit(211)
+        if str(context['exception']) == "HTTP Error 400: Bad request":
 
-        print("You need to setup your DA info for the bot, otherwise please check client.json")
-        logger.error("You need to setup your DA info for the bot, otherwise please check client.json")
-        loop.stop()
-        try:
-            exit(210)
-        except SystemExit:
-            os._exit(210)
-    else:
-        print("Exception encountered: ", context['exception'])
-        logger.error("Exception Encountered " + str(context['exception']))
+            print("You need to setup your DA info for the bot, otherwise please check client.json")
+            logger.error("You need t1o setup your DA info for the bot, otherwise please check client.json")
+            loop.stop()
+            try:
+                exit(210)
+            except SystemExit:
+                os._exit(210)
+        else:
+            print("Exception encountered: ", context['exception'])
+            logger.error("Exception Encountered " + str(context['exception']))
 
 
 def setup(bot):
