@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Beta]
-## [bt-1.1.0] - 2019-05-11
+## [bt-1.1.0] - 2019-05-13
 
 ### Added
 - deletefolder command, this will allow you to deletefolders
