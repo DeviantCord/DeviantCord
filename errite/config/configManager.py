@@ -12,7 +12,7 @@ def createConfig():
         with open("config.json", "r") as jsonFile:
             configdata = json.load(jsonFile)
             jsonFile.close()
-            configdata["version"] = "bt-1.0.0"
+            configdata["version"] = "bt-1.2.0"
             configdata["logchannelid"] = 0
             configdata["roleid"] = 0
             configdata["prefix"] = "$"

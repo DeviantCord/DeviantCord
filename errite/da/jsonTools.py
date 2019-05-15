@@ -15,7 +15,6 @@ def findDuplicateJsonElementGallery(file, element, artist,foldername):
             :return: bool
     """
     logger = logging.getLogger('errite.da.jsonTools')
-    logger.info("Begin Find Duplicate Array:")
     with open("artdata.json", "r") as jsonFile:
         artdata = json.load(jsonFile)
         jsonFile.close();
@@ -99,6 +98,10 @@ def createArtistData(artist, folderid, foldername, channelid, inverted):
         # newartistcontent['artist-folder-name'] = foldername
         newartistcontent['offset-value'] = 0
         newartistcontent['inverted-folder'] = inverted
+        if inverted is True:
+            newartistcontent['hybrid'] = False
+        if inverted is False:
+            newartistcontent['hybrid'] = True
         newartistcontent['discord-channel-id'] = int(channelid)
         newartistcontent['processed-uuids'] = stringarray
         folderarray.append(foldername)
@@ -137,6 +140,10 @@ def createFolderData(artist, folderid, foldername, channelid, inverted):
         newartistcontent['offset-value'] = 0
         newartistcontent['discord-channel-id'] = int(channelid)
         newartistcontent['inverted-folder'] = inverted
+        if inverted is True:
+            newartistcontent['hybrid'] = False
+        if inverted is False:
+            newartistcontent['hybrid'] = True
         newartistcontent['processed-uuids'] = stringarray
         folderarray.append(foldername)
         artdata["art-data"][artist.lower()][foldername] = newartistcontent
@@ -169,6 +176,33 @@ def updateDiscordChannel(artist, foldername, newchannelid):
         jsonFile.close()
 
 
+def updatehybridproperty(artist, foldername, hybrid):
+    """
+            Method ran to update a listeners discord channel id in the ArtData json file.
+
+            :param artist: The name of the artist who's deviations we are working with. This is needed for json references
+            :type artist: string
+            :param foldername: The name of the gallery folder we are working with. Used for json references
+            :type foldername: string
+            :param hybrid: The value the new hybrid should be in the Json file
+            :type hybrid: bool
+
+    """
+    logger = logging.getLogger('errite.da.jsonTools')
+    with open("artdata.json", "r") as jsonFile:
+        artdata = json.load(jsonFile)
+        jsonFile.close()
+        logger.info("UpdateHybrid: Updating Artdata")
+        if bool(hybrid) is True:
+            artdata["art-data"][artist.lower()][foldername]["hybrid"] = True
+        elif bool(hybrid) is False:
+            artdata["art-data"][artist.lower()][foldername]["hybrid"] = False
+        logger.info("UpdateHybrid: Writing to JSON file")
+        jsonFile = open("artdata.json", "w+")
+        jsonFile.write(json.dumps(artdata, indent=4,sort_keys=True))
+        jsonFile.close()
+
+
 def updateinverseproperty(artist, foldername, inverse):
     """
             Method ran to update a listeners discord channel id in the ArtData json file.
@@ -188,6 +222,10 @@ def updateinverseproperty(artist, foldername, inverse):
         print("New Inverse ", inverse)
         logger.info("UpdateInverse: Updating Artdata")
         artdata["art-data"][artist.lower()][foldername]["inverted-folder"] = bool(inverse)
+        if bool(inverse) is True:
+            artdata["art-data"][artist.lower()][foldername]["hybrid"] = False
+        elif bool(inverse) is False:
+            artdata["art-data"][artist.lower()][foldername]["hybrid"] = True
         logger.info("UpdateInverse: Writing to JSON file")
         jsonFile = open("artdata.json", "w+")
         jsonFile.write(json.dumps(artdata, indent=4,sort_keys=True))

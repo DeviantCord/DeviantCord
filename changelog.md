@@ -6,6 +6,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Beta]
+
+## [bt-1.2.0] - 2019-05-14
+
+### Added
+- Added Checks for invalid
+- Added additional check near the beginning for an active json lock to prevent encountered exception from turning off a json lock that may be still in use.
+- Hybrid Mode for listeners, meaning that for some artists who do not stay inverted or non-inverted with their folders this will check the first 20 deviations in a folder and also check the next 10 from the previous count. 
+- updatehybrid that will allow you to enable or disable hybrid for a folder. Just note that by default a non-inverse folder will have it enabled by default. On the otherhand 
+- Converter from bt-1.0.1 data for config and artdata to the new format bt-1.2.0
+### Changed
+- updateinverse will now set the hybrid to the appropriate setting. As the hybrid setting is ignored if it is an inverse folder. 
+
+### Fixed
+- Fixed an issue where using comparison operators on Roles when a role was first setup would not work. 
+- Fixed an issue where new config.json would have the 1.0.0 version
+- Fixed an issue with the setuprole command not properly adding the new roleid to memory.
+- Fixed an issue with deprecated role checks for Admin
+- Fixed an issue where the json lock wouldn't be closed when the roleid was invalid. 
+- Json lock was not properly enabled when using the updatechannel command
+- Fixed some areas where the json lock would not be released.
+- Fixed reload command
+- Fixed syncgalleries from not initializing the json lock
+
+
 ## [bt-1.1.0] - 2019-05-13
 
 ### Added
@@ -13,10 +37,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - listfolders command, that will list all current folder listeners
 - added json lock to prevent issues during a deletion of a folder. 
 
-## Updates
+### Updates
 - Updated Repository for Discord.py version 1.1.1, websockets version 7.0 and urllib3 to 1.25.2
 
-## Changes
+### Changes
 - Changed some log messages
 - Changed the task error handler to proper indentation
 

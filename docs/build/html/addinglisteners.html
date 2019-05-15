@@ -234,6 +234,12 @@ use the listfolders command</p>
 <p>Inverted galleries is the term we use to indicate that newest deviations are at the top instead of the bottom.
 An example of an inverted gallery can be seen <a class="reference external" href="https://www.deviantart.com/pkm-150/gallery/58231950/Eeveelution-Squad">here</a></p>
 <p>The inverted argument would be declared true or false in the addfolder command and addartist command.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>As of version bt-1.2.0, the inverse arguement should only be used for artists who have dependently posted an
+inverted gallery declaring inverse as false will now check for the 20 deviations posted at the top and will
+check for more at the bottom up until DeviantArt’s API says there is no more deviations.</p>
+</div>
 </div>
 </div>
 <div class="section" id="discord-developer-mode">

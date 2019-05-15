@@ -14,7 +14,7 @@ from errite.tools.mis import fileExists
 from errite.config.converter import convert
 from os import listdir
 from os.path import isfile, join
-print("Starting DeviantBot bt-1.1.0")
+print("Starting DeviantBot bt-1.2.0")
 print("If this causes a HTTP 401 Error when trying to load daCommands your DeviantArt info is wrong. Set it in client.json")
 started = True
 configData = {}
@@ -175,19 +175,19 @@ async def setprefix(ctx, suppliedprefix):
         else:
             await ctx.send('**`SUCCESS`**')
 
-    @client.command()
-    @has_permissions(administrator=True)
-    async def reload(ctx):
-        """Command which Reloads a Module.
-        Remember to use dot path. e.g: cogs.owner"""
+@client.command()
+@has_permissions(administrator=True)
+async def reload(ctx):
+    """Command which Reloads a Module.
+    Remember to use dot path. e.g: cogs.owner"""
 
-        try:
-            client.unload_extension(cogs_dir + "." + "daCommands")
-            client.load_extension(cogs_dir + "." + "daCommands")
-        except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
-        else:
-            await ctx.send('**`SUCCESS`**')
+    try:
+        client.unload_extension(cogs_dir + "." + "daCommands")
+        client.load_extension(cogs_dir + "." + "daCommands")
+    except Exception as e:
+        await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
+    else:
+        await ctx.send('**`SUCCESS`**')
 
 
 @setprefix.error
@@ -239,5 +239,5 @@ def error_handler(loop, context):
         print("Exception encountered: ", context['exception'])
 
 
-
+client.remove_command("setlogchannel")
 client.run(sensitiveData["discord-token"])

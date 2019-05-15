@@ -9,7 +9,7 @@ from discord.ext import commands
 from discord.ext.commands import has_permissions, guild_only
 import errite.da.daParser as dp
 from errite.da.jsonTools import createArtistData, artistExists, folderExists, createFolderData, \
-    updateDiscordChannel, updateRole, updateinverseproperty, delfolder
+    updateDiscordChannel, updateRole, updateinverseproperty, delfolder, updatehybridproperty
 from errite.config.configManager import createConfig, createSensitiveConfig
 from errite.tools.mis import fileExists
 import urllib
@@ -111,6 +111,7 @@ class daCog(commands.Cog):
         """
         self.deviantlogger.info("ManualGetToken: Getting new token")
         self.token = dp.getToken(self.clientsecret,self.clientid)
+
     async def syncGalleries(self):
         """
         Checks programmed gallery folders for Deviations. This is the method that is ran to trigger every x minutes
@@ -124,7 +125,7 @@ class daCog(commands.Cog):
             return;
         if not locked:
             if self.passedJson == True:
-
+                self.jsonlock = True
                 await self.bot.wait_until_ready()
 
                 while not self.bot.is_closed():
@@ -143,6 +144,7 @@ class daCog(commands.Cog):
                                                            self.token,
                                                            foldername,
                                                            artdata['art-data'][element][foldername]["inverted-folder"])
+                                self.jsonlock = False
                                 channel = self.bot.get_channel(
                                     int(artdata["art-data"][element][foldername]["discord-channel-id"]))
                                 if artdata["art-data"][element][foldername]["inverted-folder"]:
@@ -172,6 +174,7 @@ class daCog(commands.Cog):
     async def help(self, ctx):
         self.deviantlogger.info("Help command invoked")
         skiprolecheck = False
+        testvar = None
         if ctx.guild is None:
             return;
         elif ctx.guild.id == self.guildid:
@@ -179,9 +182,13 @@ class daCog(commands.Cog):
         elif not self.publicmode:
             permitted = True
         if ctx.guild.get_role(self.roleid) is None:
-            if ctx.author.server_permission.administrator:
+            if ctx.author.guild_permissions.administrator:
                 skiprolecheck = True
             else:
+                self.deviantlogger.error("Help Command found that RoleID Is invalid.")
+                await ctx.send("Uh oh, there is an issue with the RoleID I am supposed to be looking for."
+                               " If you are using selfhosting, set rolesetup-enabled in config.json to true or contact"
+                               " DeviantCord Support if you are using our public bot")
                 return;
         if not skiprolecheck:
             if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
@@ -194,6 +201,7 @@ class daCog(commands.Cog):
                self.prefix + "deletefolder** *<artist_username>* *<folder>* - Deletes the listener for the folder and erases it from artdata\n **" + \
                self.prefix + "manualSync** - Will check all configured folders for new deviations instead of waiting for the timer to trigger and start the check *DO NOT SPAM THIS*\n" + "**" + \
                self.prefix + "listfolders** - Lists all the current folder listeners that the bot is listening to. \n **" + \
+               self.prefix + "updatehybrid** *<artist_username> *<folder>* *<hybrid>* - Sets the hybrid property of an existing folder listener \n **" +\
                self.prefix + "updateinverse** *<artist_username> *<folder>* *<inverse>* - Updates the inverse property of a existing folder listener\n" + \
                "**" + self.prefix + "updatechannel** *<artist_username> *<folder>* *<channelid>* - Updates the discord channel that notifications will be posted for an existing folder listener\n" + \
                "** __ADMIN COMMANDS__** \n" + \
@@ -209,27 +217,48 @@ class daCog(commands.Cog):
         if self.enablesr:
             if ctx.guild is None:
                 return;
-            if self.guildid is 0:
+            if self.guildid == 0:
                 self.deviantlogger.info('Setup has been invoked')
                 updateRole(int(roleid), ctx.guild.id)
-                await ctx.send("Role has been setup!")
+                self.deviantlogger.info("Setup Role: Madeit past update method. ")
+                self.deviantlogger.debug("Before update: " + str(self.roleid))
                 self.roleid = roleid
+                self.deviantlogger.debug("After update: " + str(self.roleid))
+                await ctx.send("Role has been setup!")
         else:
             return
     @commands.command()
     async def listfolders(self, ctx):
+        skiprolecheck = False
         if ctx.guild is None:
             return;
-        if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
-            return;
+
         if ctx.guild.id == self.guildid:
             permitted = True
+        if self.jsonlock is True:
+            if ctx.guild.get_role(self.roleid) is None:
+                return
+            elif ctx.author.top_role >= ctx.guild.get_role(self.roleid):
+                await ctx.send("ERROR: Another command using ArtData is currently running, please wait for that to finish!")
+            return
         elif not self.publicmode:
             permitted = True
-        else:
-            return;
+        if ctx.guild.get_role(self.roleid) is None:
+            self.deviantlogger.error("Detected invalid roleid in listfolders ROLEID: " + str(self.roleid))
+            if ctx.author.guild_permission.administrator:
+                skiprolecheck = True
+            else:
+                await ctx.send("Uh oh, there is an issue with the RoleID I am supposed to be looking for."
+                               " If you are using selfhosting, set rolesetup-enabled in config.json to true or contact"
+                               " DeviantCord Support if you are using our public bot")
+                return;
+        if not skiprolecheck:
+            if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
+                return;
         if self.jsonlock:
             await ctx.send("There is currently a task going on using ArtData, so this data may change soon. You might want to run the command again soon.!")
+            # This is only reading data so there is no risk of just ignoring the json lock no need for return
+
         if permitted:
             with open("artdata.json", "r") as jsonFile:
                 tempartdata = json.load(jsonFile)
@@ -246,26 +275,48 @@ class daCog(commands.Cog):
                     return;
     @commands.command()
     async def deletefolder(self, ctx, artist, folder):
+        skiprolecheck = False
         if ctx.guild is None:
-            return;
-        if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
             return;
         if ctx.guild.id == self.guildid:
             permitted = True
+        if self.jsonlock is True:
+            if ctx.guild.get_role(self.roleid) is None:
+                return
+            elif ctx.author.top_role >= ctx.guild.get_role(self.roleid):
+                await ctx.send("ERROR: Another command using ArtData is currently running, please wait for that to finish!")
+            return
         elif not self.publicmode:
             permitted = True
-        else:
-            return;
+        if ctx.guild.get_role(self.roleid) is None:
+            self.deviantlogger.error("Detected invalid roleid in deletefolder ROLEID: " + str(self.roleid))
+            if ctx.author.guild_permission.administrator:
+                skiprolecheck
+            else:
+                await ctx.send("Uh oh, there is an issue with the RoleID I am supposed to be looking for."
+                               " If you are using selfhosting, set rolesetup-enabled in config.json to true or contact"
+                               " DeviantCord Support if you are using our public bot")
+                return;
+        if not skiprolecheck:
+            if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
+                return;
         if self.jsonlock:
             await ctx.send("There is currently a task going on using ArtData, so this data may change soon. You might want to run the command again soon.!")
+            return
         if permitted:
+            self.jsonlock = True
             if artistExists(artist.lower()):
                 if folderExists(artist, folder):
                     delfolder(artist, folder)
                     await ctx.send("Folder listener deleted successfully! I will no longer post updates for this folder. ")
+                    self.jsonlock = False
+                    return
                 else:
+                    self.jsonlock = False
                     await ctx.send("Error: This folder does not exist, so I can't delete it! You can't just delete thin air!")
+                    return
             else:
+                self.jsonlock = False
                 await ctx.send("Error: This artist does not have a listener. Is this a mistake? I can't tell I'm just a bot!")
 
     @commands.command()
@@ -283,8 +334,15 @@ class daCog(commands.Cog):
             permitted = True
         elif not self.publicmode:
             permitted = True
-        else:
-            return;
+        if ctx.guild.get_role(self.roleid) is None:
+            self.deviantlogger.error("Detected invalid roleid in addfolder ROLEID: " + str(self.roleid))
+            if ctx.author.guild_permission.administrator:
+                skiprolecheck = True
+            else:
+                return;
+        if not skiprolecheck:
+            if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
+                return;
         if self.jsonlock:
             await ctx.send("ERROR: Another command using ArtData is currently running, please wait for that to finish!")
             return;
@@ -377,16 +435,22 @@ class daCog(commands.Cog):
         print("Triggered")
         skiprolecheck = False
         if ctx.guild is None:
-            return;
+            return
         elif ctx.guild.id == self.guildid:
             permitted = True
+        if self.jsonlock:
+            return
         elif not self.publicmode:
             permitted = True
         if ctx.guild.get_role(self.roleid) is None:
-            self.deviantlogger.error("Detected invalid roleid in updatechannel ROLEID: " + str(self.roleid))
-            if ctx.author.server_permission.administrator:
+            self.deviantlogger.error("Detected invalid roleid in updateinverse ROLEID: " + str(self.roleid))
+            if ctx.author.guild_permissions.administrator:
                 skiprolecheck = True
             else:
+                await ctx.send("Uh oh, there is an issue with the RoleID I am supposed to be looking for."
+                               " If you are using selfhosting, set rolesetup-enabled in config.json to true or contact"
+                               " DeviantCord Support if you are using our public bot")
+                self.jsonlock = False
                 return;
         if not skiprolecheck:
             if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
@@ -415,13 +479,76 @@ class daCog(commands.Cog):
                     self.jsonlock = False
                     return
 
-            print("Entered JSON checks")
+            self.deviantlogger.info("UpdateInverse: Entered JSON checks")
             if artistExists(artistname):
                 if folderExists(artistname, foldername):
                     updateinverseproperty(artistname, foldername, inverse)
                     self.deviantlogger.info("Update inverse finished for " + artistname + " on" + foldername)
                     self.jsonlock = False
                     await ctx.send("Inverse Updated for " + artistname + " in " + foldername)
+                else:
+                    await ctx.send(
+                        "I am not currently listening for new deviations on " + foldername + "is this the correct " \
+                                                                                             "name for the folder?")
+                    self.jsonlock = False
+                    return;
+            else:
+                self.jsonlock = False
+                await ctx.send("I do not have " + artistname + "in my datafiles is this the correct artist?")
+
+    @commands.command()
+    async def updatehybrid(self, ctx, artistname, foldername, inverse):
+        print("Triggered")
+        skiprolecheck = False
+        if ctx.guild is None:
+            return
+        elif ctx.guild.id == self.guildid:
+            permitted = True
+        if self.jsonlock:
+            return
+        elif not self.publicmode:
+            permitted = True
+        if ctx.guild.get_role(self.roleid) is None:
+            self.deviantlogger.error("Detected invalid roleid in updatehybrid ROLEID: " + str(self.roleid))
+            if ctx.author.guild_permissions.administrator:
+                skiprolecheck = True
+            else:
+                await ctx.send("Uh oh, there is an issue with the RoleID I am supposed to be looking for."
+                               " If you are using selfhosting, set rolesetup-enabled in config.json to true or contact"
+                               " DeviantCord Support if you are using our public bot")
+                self.jsonlock = False
+                return;
+        if not skiprolecheck:
+            if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
+                return;
+        if self.jsonlock:
+            await ctx.send("ERROR: Another command using ArtData is currently running, please wait for that to finish!")
+            return;
+        if permitted:
+            print("Entered Permitted")
+            self.jsonlock = True
+            if isinstance(inverse, bool):
+                self.deviantlogger.info("New Inverse Instance of bool")
+            elif isinstance(inverse, str):
+                self.deviantlogger.info("New Inverse Instance of String")
+                self.deviantlogger.debug("OBTAINED HYBRID: " + inverse)
+                self.deviantlogger.info("CHECK: " + inverse.lower())
+                if inverse.lower() == "true":
+                    print("hybrid is true")
+                elif inverse.lower() == "false":
+                    print("hybrid is false")
+                else:
+                    await ctx.send("Invalid hybrid given...")
+                    self.jsonlock = False
+                    return
+
+            self.deviantlogger.info("UpdateHybrid: Entered JSON checks")
+            if artistExists(artistname):
+                if folderExists(artistname, foldername):
+                    updatehybridproperty(artistname, foldername, inverse)
+                    self.deviantlogger.info("Update hybrid finished for " + artistname + " on" + foldername)
+                    self.jsonlock = False
+                    await ctx.send("Hybrid Updated for " + artistname + " in " + foldername)
                 else:
                     await ctx.send(
                         "I am not currently listening for new deviations on " + foldername + "is this the correct " \
@@ -440,13 +567,19 @@ class daCog(commands.Cog):
             return;
         elif ctx.guild.id == self.guildid:
             permitted = True
-        elif not self.publicmode:
+        if self.jsonlock:
+            return
+        if not self.publicmode:
             permitted = True
         if ctx.guild.get_role(self.roleid) is None:
             self.deviantlogger.error("Detected invalid roleid in updatechannel ROLEID: " + str(self.roleid))
-            if ctx.author.server_permission.administrator:
+            if ctx.author.guild_permissions.administrator:
                 skiprolecheck = True
             else:
+                self.deviantlogger.error("updatechannel Command found that RoleID Is invalid.")
+                await ctx.send("Uh oh, there is an issue with the RoleID I am supposed to be looking for."
+                               " If you are using selfhosting, set rolesetup-enabled in config.json to true or contact"
+                               " DeviantCord Support if you are using our public bot")
                 return;
         if not skiprolecheck:
             if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
@@ -455,6 +588,7 @@ class daCog(commands.Cog):
             await ctx.send("ERROR: Another command using ArtData is currently running, please wait for that to finish!")
             return;
         if permitted:
+            self.jsonlock = True
             if isinstance(newchannelid, int):
                 self.deviantlogger.info("New Channelid Instance of Integer")
                 channel = self.bot.get_channel(newchannelid)
@@ -462,6 +596,7 @@ class daCog(commands.Cog):
                     self.jsonlock = False
                     return;
                 if not channel.guild.id == ctx.guild.id:
+                    self.jsonlock = False
                     return
 
             elif isinstance(newchannelid, str):
@@ -514,9 +649,13 @@ class daCog(commands.Cog):
         elif not self.publicmode:
             permitted = True
         if ctx.guild.get_role(self.roleid) is None:
-            if ctx.author.server_permission.administrator:
+            if ctx.author.guild_permissions.administrator:
                 skiprolecheck = True
             else:
+                self.deviantlogger.error("manualsync Command found that RoleID Is invalid.")
+                await ctx.send("Uh oh, there is an issue with the RoleID I am supposed to be looking for."
+                               " If you are using selfhosting, set rolesetup-enabled in config.json to true or contact"
+                               " DeviantCord Support if you are using our public bot")
                 return;
         if not skiprolecheck:
             if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
@@ -572,9 +711,14 @@ class daCog(commands.Cog):
         elif not self.publicmode:
             permitted = True
         if ctx.guild.get_role(self.roleid) is None:
-            if ctx.author.server_permission.administrator:
+            if ctx.author.guild_permissions.administrator:
                 skiprolecheck = True
             else:
+                self.deviantlogger.error("addartist Command found that RoleID Is invalid.")
+                await ctx.send("Uh oh, there is an issue with the RoleID I am supposed to be looking for."
+                               " If you are using selfhosting, set rolesetup-enabled in config.json to true or contact"
+                               " DeviantCord Support if you are using our public bot")
+                self.jsonlock = False
                 return;
         if not skiprolecheck:
             if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
@@ -672,9 +816,11 @@ class daCog(commands.Cog):
             return;
         else:
             self.deviantlogger.error("ERROR ENCOUNTERED with help command Error: " + str(error))
+            self.deviantlogger.exception(error)
 
 
     @updateinverse.error
+    @updatehybrid.error
     async def updateinverse_errorhandler(self, ctx, error):
         self.jsonlock = False;
         try:
@@ -702,8 +848,11 @@ class daCog(commands.Cog):
                 if error.param.name == 'channelid':
                     await ctx.send(
                         "Error: No channelid argument found, use " + self.prefix + "help for more information")
-            if isinstance(error, commands.errors.NoPrivateMessage):
+            elif isinstance(error, commands.errors.NoPrivateMessage):
                 return
+            else:
+                self.deviantlogger.error(error)
+                self.deviantlogger.exception(error)
 
 
     @updatechannel.error
@@ -734,8 +883,11 @@ class daCog(commands.Cog):
                 if error.param.name == 'channelid':
                     await ctx.send(
                         "Error: No channelid argument found, use " + self.prefix + "help for more information")
-            if isinstance(error, commands.errors.NoPrivateMessage):
+            elif isinstance(error, commands.errors.NoPrivateMessage):
                 return
+            else:
+                self.deviantlogger.error(error)
+                self.deviantlogger.exception(error)
 
     @setuprole.error
     async def setuprole_errorhandler(self, ctx, error):
@@ -759,6 +911,9 @@ class daCog(commands.Cog):
                 print("You don't have admin!")
             if isinstance(error, commands.errors.NoPrivateMessage):
                 return
+            else:
+                self.deviantlogger.error(error)
+                self.deviantlogger.exception(error)
 
 
     @addfolder.error
@@ -807,6 +962,9 @@ class daCog(commands.Cog):
                     return 429;
             if isinstance(error, commands.errors.NoPrivateMessage):
                 return
+            else:
+                self.deviantlogger.error(error)
+                self.deviantlogger.exception(error)
 
     @addartist.error
     async def addartist_errorhandler(self,ctx, error):
@@ -854,6 +1012,9 @@ class daCog(commands.Cog):
                     return 429;
             if isinstance(error, commands.errors.NoPrivateMessage):
                 return
+            else:
+                self.deviantlogger.error(error)
+                self.deviantlogger.exception(error)
 
 
     def error_handler(self,loop, context):

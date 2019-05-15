@@ -69,6 +69,13 @@ An example of an inverted gallery can be seen `here <https://www.deviantart.com/
 
 The inverted argument would be declared true or false in the addfolder command and addartist command.
 
+.. warning::
+    As of version bt-1.2.0, the inverse arguement should only be used for artists who have dependently posted an
+    inverted gallery declaring inverse as false will now check for the 20 deviations posted at the top and will
+    check for more at the bottom up until DeviantArt's API says there is no more deviations.
+
+
+
 
 Discord Developer Mode
 **********************

@@ -272,6 +272,8 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
     with open("artdata.json", "r") as jsonFile:
         artdata = json.load(jsonFile)
         newurls = []
+        hybridurls = []
+        finalurls = []
         jsonFile.close()
         if inverted == True:
             invertOffset = 0
@@ -313,13 +315,48 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
 
 
         if inverted == False:
+            # Begins Hybrid Check
+            if artdata["art-data"][artist.lower()][foldername]["hybrid"]:
+                invertOffset = 0
+                while invertOffset <= 20:
+                    data = getGalleryFolderArrayResponse(artist.lower(), bool, folder, accesstoken, invertOffset)
+                    # print(data);
+                    tmp = data["has_more"]
+                    if tmp == True:
+                        logger.info("For loop started for getGalleryFolder")
+                        for uuid in data['results']:
+                            # print(uuid["deviationid"])
+                            if (findDuplicateJsonElementGallery("artdata.json", uuid["deviationid"], artist.lower(),
+                                                                foldername) == False):
+                                hybridurls.append(uuid["url"])
+                                artdata["art-data"][artist.lower()][foldername]["processed-uuids"].append(
+                                    uuid["deviationid"])
+
+                            if data["next_offset"] is not None:
+                                invertOffset = data["next_offset"]
+                                artdata["art-data"][artist.lower()][foldername]["offset-value"] = data["next_offset"]
+
+                            # artdata[artist.lower()]["processed-uuids"].append(uuid['results']['folderid'])4
+
+                    if tmp == False:
+                        logger.info("getGalleryFolder: False entered")
+                        for uuid in data['results']:
+                            logger.debug("UUID: " + str(uuid["deviationid"]))
+                            if (findDuplicateJsonElementGallery("artdata.json", uuid["deviationid"], artist.lower(),
+                                                                foldername) == False):
+                                hybridurls.append(uuid["url"])
+                                artdata["art-data"][artist.lower()][foldername]["processed-uuids"].append(
+                                    uuid["deviationid"])
+
+                            if data["next_offset"] is not None:
+                                invertOffset = data["next_offset"]
+
             providedoffset = artdata["art-data"][artist.lower()][foldername]["offset-value"]
             while finished == False:
                 logger.debug("GetGalleryFolder: Before moving to method: " + str(providedoffset))
                 data = getGalleryFolderArrayResponse(artist.lower(), bool, folder, accesstoken, providedoffset)
                 # print(data);
                 tmp = data["has_more"]
-                print("Temp Check: ", tmp)
                 if tmp == True:
                     logger.info("For loop started, inverted false(NOT VARIABLE)")
                     for uuid in data['results']:
@@ -348,10 +385,21 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
                             providedoffset = data["next_offset"]
                             artdata["art-data"][artist.lower()][foldername]["offset-value"] = data["next_offset"]
                         # print (uuid.get("deviationid"))
+                    if len(hybridurls) == 0:
+                        jsonFile = open("artdata.json", "w+")
+                        jsonFile.write(json.dumps(artdata, indent=4, sort_keys=True))
+                        jsonFile.close()
+                        return newurls
+                    for url in newurls:
+                        finalurls.append(url)
+                    currentlength = len(hybridurls)
+                    while currentlength >= 1:
+                        finalurls.append(hybridurls[currentlength - 1])
+                        currentlength = currentlength - 1
                     jsonFile = open("artdata.json", "w+")
                     jsonFile.write(json.dumps(artdata, indent=4, sort_keys=True))
                     jsonFile.close()
-                    return newurls;
+                    return finalurls
 
 def getGalleryFolderOLD(artist, bool, folder, accesstoken,foldername):
     finished = False;
@@ -366,7 +414,6 @@ def getGalleryFolderOLD(artist, bool, folder, accesstoken,foldername):
                 data = getGalleryFolderArrayResponse(artist,bool,folder,accesstoken,providedoffset)
                 # print(data);
                 tmp = data["has_more"]
-                print("Temp Check: ", tmp)
                 if tmp == True:
                     print("For loop started")
                     for uuid in data['results']:
