@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Beta]
 
+## [bt-1.2.1] - 2019-05-15
+
+### Fixed
+- Really fixed the jsonlock from not unengaging in the SyncFolders
+- Fixed a bug where the offset was being saved, when it should not with inverse. 
+- Fixed a typo in permissions check
+
+
 ## [bt-1.2.0] - 2019-05-14
 
 ### Added
