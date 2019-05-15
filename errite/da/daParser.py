@@ -292,7 +292,6 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
 
                         if data["next_offset"] is not None:
                             invertOffset = data["next_offset"]
-                            artdata["art-data"][artist.lower()][foldername]["offset-value"] = data["next_offset"]
 
                         # artdata[artist.lower()]["processed-uuids"].append(uuid['results']['folderid'])4
 
@@ -334,7 +333,6 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
 
                             if data["next_offset"] is not None:
                                 invertOffset = data["next_offset"]
-                                artdata["art-data"][artist.lower()][foldername]["offset-value"] = data["next_offset"]
 
                             # artdata[artist.lower()]["processed-uuids"].append(uuid['results']['folderid'])4
 

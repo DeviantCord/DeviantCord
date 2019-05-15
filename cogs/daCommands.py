@@ -167,6 +167,7 @@ class daCog(commands.Cog):
                                         self.deviantlogger.debug("SyncGalleries: Now posting URL")
                                         await channel.send(
                                             "New deviation from " + element + " you can view it here \n" + url)
+                        self.jsonlock = False
                         await asyncio.sleep(self.time)
         else:
             await asyncio.sleep(self.time)
@@ -245,7 +246,7 @@ class daCog(commands.Cog):
             permitted = True
         if ctx.guild.get_role(self.roleid) is None:
             self.deviantlogger.error("Detected invalid roleid in listfolders ROLEID: " + str(self.roleid))
-            if ctx.author.guild_permission.administrator:
+            if ctx.author.guild_permissions.administrator:
                 skiprolecheck = True
             else:
                 await ctx.send("Uh oh, there is an issue with the RoleID I am supposed to be looking for."
@@ -290,7 +291,7 @@ class daCog(commands.Cog):
             permitted = True
         if ctx.guild.get_role(self.roleid) is None:
             self.deviantlogger.error("Detected invalid roleid in deletefolder ROLEID: " + str(self.roleid))
-            if ctx.author.guild_permission.administrator:
+            if ctx.author.guild_permissions.administrator:
                 skiprolecheck
             else:
                 await ctx.send("Uh oh, there is an issue with the RoleID I am supposed to be looking for."
@@ -336,7 +337,7 @@ class daCog(commands.Cog):
             permitted = True
         if ctx.guild.get_role(self.roleid) is None:
             self.deviantlogger.error("Detected invalid roleid in addfolder ROLEID: " + str(self.roleid))
-            if ctx.author.guild_permission.administrator:
+            if ctx.author.guild_permissions.administrator:
                 skiprolecheck = True
             else:
                 return;
@@ -693,8 +694,10 @@ class daCog(commands.Cog):
                                     "New deviation from " + element + " you can view it here \n" + urls[
                                         currentlength - 1])
                                 currentlength = currentlength - 1
+                            self.jsonlock = False
 
                         else:
+                            self.jsonlock = False
                             for url in urls:
                                 self.deviantlogger.debug("New Deviation URL: ")
                                 self.deviantlogger.debug(url)
