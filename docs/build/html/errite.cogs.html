@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>errite.cogs package &mdash; DeviantCord bt-1.1.0 documentation</title>
+  <title>errite.cogs package &mdash; DeviantCord bt-1.2.0 documentation</title>
   
 
   
@@ -17,34 +17,40 @@
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
 
+  
+  
     
 
   
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="DeviantCord bt-1.2.0 documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
 </head>
 
-<body class="wy-body-for-nav">
+<body class="wy-body-for-nav" role="document">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
 
           
@@ -104,7 +110,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" aria-label="top navigation">
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">DeviantCord</a>
@@ -112,10 +118,9 @@
       </nav>
 
 
+      
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
           
 
 
@@ -167,7 +172,7 @@
 <dl class="class">
 <dt id="errite.cogs.daCommands.daCog">
 <em class="property">class </em><code class="descclassname">errite.cogs.daCommands.</code><code class="descname">daCog</code><span class="sig-paren">(</span><em>bot</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.daCog" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">discord.ext.commands.cog.Cog</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">discord.ext.commands.cog.Cog</span></code></p>
 <p>The Deviant Art component class for DeviantCord</p>
 <dl class="attribute">
 <dt id="errite.cogs.daCommands.daCog.addartist">
@@ -189,6 +194,16 @@
 <code class="descname">addfolder_errorhandler</code><span class="sig-paren">(</span><em>ctx</em>, <em>error</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.daCog.addfolder_errorhandler" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="attribute">
+<dt id="errite.cogs.daCommands.daCog.deletefolder">
+<code class="descname">deletefolder</code><em class="property"> = &lt;discord.ext.commands.core.Command object&gt;</em><a class="headerlink" href="#errite.cogs.daCommands.daCog.deletefolder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="errite.cogs.daCommands.daCog.error_handler">
+<code class="descname">error_handler</code><span class="sig-paren">(</span><em>loop</em>, <em>context</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.daCog.error_handler" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="errite.cogs.daCommands.daCog.getNewToken">
 <code class="descname">getNewToken</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.daCog.getNewToken" title="Permalink to this definition">¶</a></dt>
@@ -206,6 +221,24 @@ This function is ran every 40 minutes. DA’s tokens last 60.</p>
 <code class="descname">help_errorhandler</code><span class="sig-paren">(</span><em>ctx</em>, <em>error</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.daCog.help_errorhandler" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="method">
+<dt id="errite.cogs.daCommands.daCog.instantTokenDiagnosisRenewal">
+<code class="descname">instantTokenDiagnosisRenewal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.daCog.instantTokenDiagnosisRenewal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a new token without any async delays from DeviantArt, and returns a bool if successful</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="errite.cogs.daCommands.daCog.instantTokenRenewal">
+<code class="descname">instantTokenRenewal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.daCog.instantTokenRenewal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a new token without any async delays from DeviantArt, when a 403 is returned this is the first
+method ran to try to fix the issue.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="errite.cogs.daCommands.daCog.listfolders">
+<code class="descname">listfolders</code><em class="property"> = &lt;discord.ext.commands.core.Command object&gt;</em><a class="headerlink" href="#errite.cogs.daCommands.daCog.listfolders" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="attribute">
 <dt id="errite.cogs.daCommands.daCog.manualSync">
 <code class="descname">manualSync</code><em class="property"> = &lt;discord.ext.commands.core.Command object&gt;</em><a class="headerlink" href="#errite.cogs.daCommands.daCog.manualSync" title="Permalink to this definition">¶</a></dt>
@@ -215,7 +248,13 @@ This function is ran every 40 minutes. DA’s tokens last 60.</p>
 <dt id="errite.cogs.daCommands.daCog.manualgetNewToken">
 <code class="descname">manualgetNewToken</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.daCog.manualgetNewToken" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets a new token from DeviantArt with no params, grabs the clientid and clientsecret from the class file.
-This function is only ran when a token error occurs and fixes it.</p>
+This function is only ran when a token error occurs having to do with async tasks also failing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="errite.cogs.daCommands.daCog.rateLimitMeasure">
+<code class="descname">rateLimitMeasure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.daCog.rateLimitMeasure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Triggered when DA sends a Rate Limit response, this tones down SyncGalleries</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -227,6 +266,15 @@ This function is only ran when a token error occurs and fixes it.</p>
 <dt id="errite.cogs.daCommands.daCog.setuprole_errorhandler">
 <code class="descname">setuprole_errorhandler</code><span class="sig-paren">(</span><em>ctx</em>, <em>error</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.daCog.setuprole_errorhandler" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="method">
+<dt id="errite.cogs.daCommands.daCog.softTokenRenewal">
+<code class="descname">softTokenRenewal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.daCog.softTokenRenewal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a new token from DeviantArt with no params, grabs the clientid and clientsecret from the class file.
+This function is only ran when a token error occurs and fixes the token only!.</p>
+<p>This is usually the second method ran to try to fix a token related issue that doesn’t involve a failure of
+automated async tasks.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="errite.cogs.daCommands.daCog.syncGalleries">
@@ -246,6 +294,11 @@ depending on what the user has it configured to.</p>
 <dd></dd></dl>
 
 <dl class="attribute">
+<dt id="errite.cogs.daCommands.daCog.updatehybrid">
+<code class="descname">updatehybrid</code><em class="property"> = &lt;discord.ext.commands.core.Command object&gt;</em><a class="headerlink" href="#errite.cogs.daCommands.daCog.updatehybrid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
 <dt id="errite.cogs.daCommands.daCog.updateinverse">
 <code class="descname">updateinverse</code><em class="property"> = &lt;discord.ext.commands.core.Command object&gt;</em><a class="headerlink" href="#errite.cogs.daCommands.daCog.updateinverse" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -256,11 +309,6 @@ depending on what the user has it configured to.</p>
 <dd></dd></dl>
 
 </dd></dl>
-
-<dl class="function">
-<dt id="errite.cogs.daCommands.error_handler">
-<code class="descclassname">errite.cogs.daCommands.</code><code class="descname">error_handler</code><span class="sig-paren">(</span><em>loop</em>, <em>context</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.error_handler" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 <dl class="function">
 <dt id="errite.cogs.daCommands.setup">
@@ -275,7 +323,9 @@ depending on what the user has it configured to.</p>
 
 
            </div>
-           
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
@@ -284,11 +334,11 @@ depending on what the user has it configured to.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, ErriteEpticRikez
+        &copy; Copyright 2019, ErriteEpticRikez.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -301,15 +351,36 @@ depending on what the user has it configured to.</p>
   
 
 
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script>
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'bt-1.2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
 
   
   
-    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
    
 
 </body>

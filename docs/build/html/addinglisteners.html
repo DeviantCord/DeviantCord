@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Setting Up Listeners &mdash; DeviantCord bt-1.1.0 documentation</title>
+  <title>Setting Up Listeners &mdash; DeviantCord bt-1.2.0 documentation</title>
   
 
   
@@ -17,36 +17,42 @@
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
 
+  
+  
     
 
   
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Choosing a host" href="choosehost.html" />
-    <link rel="prev" title="Running the Bot" href="runningbot.html" /> 
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="DeviantCord bt-1.2.0 documentation" href="index.html"/>
+        <link rel="next" title="Choosing a host" href="choosehost.html"/>
+        <link rel="prev" title="Running the Bot" href="runningbot.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
 </head>
 
-<body class="wy-body-for-nav">
+<body class="wy-body-for-nav" role="document">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
 
           
@@ -126,7 +132,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" aria-label="top navigation">
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">DeviantCord</a>
@@ -134,10 +140,9 @@
       </nav>
 
 
+      
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
           
 
 
@@ -187,12 +192,12 @@ The addartist command is the first command that should be ran for a new artist,<
 <div class="section" id="things-to-note">
 <h2>Things to Note:<a class="headerlink" href="#things-to-note" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>The bot needs Exact Foldernames (Case Sensitive)</p></li>
-<li><p>The bot needs the artists name exactly (Not Case Sensitive)</p></li>
-<li><p>Artist Username should be in quotes</p></li>
-<li><p>Folder name should be in quotes</p></li>
-<li><p>The addartist command is used to add a new artist that has no other listeners</p></li>
-<li><p>The addfolder command adds another listener for an already existing artist’s folder.</p></li>
+<li>The bot needs Exact Foldernames (Case Sensitive)</li>
+<li>The bot needs the artists name exactly (Not Case Sensitive)</li>
+<li>Artist Username should be in quotes</li>
+<li>Folder name should be in quotes</li>
+<li>The addartist command is used to add a new artist that has no other listeners</li>
+<li>The addfolder command adds another listener for an already existing artist’s folder.</li>
 </ul>
 <div class="section" id="correct-arguments">
 <h3>Correct Arguments<a class="headerlink" href="#correct-arguments" title="Permalink to this headline">¶</a></h3>
@@ -218,14 +223,14 @@ read it first.</p>
 done to prevent accidentally deleting a whole artist from the folder as multiple folders can be stored under an artist.</p>
 <p>As a result you can only delete one listener at a time.
 The command is as follows</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$deletefolder &lt;artist_username&gt; &lt;folder&gt;
+<div class="highlight-default"><div class="highlight"><pre><span></span>$deletefolder &lt;artist_username&gt; &lt;folder&gt;
 </pre></div>
 </div>
 <p>This will delete the folder from the artist.json file and no more notifications will be posted to Discord for that folder
 unless you readd it.</p>
 <p>Additionally if you are having trouble remembering what folders are currently being listened for new deviations you can
 use the listfolders command</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$listfolders
+<div class="highlight-default"><div class="highlight"><pre><span></span>$listfolders
 </pre></div>
 </div>
 </div>
@@ -235,8 +240,8 @@ use the listfolders command</p>
 An example of an inverted gallery can be seen <a class="reference external" href="https://www.deviantart.com/pkm-150/gallery/58231950/Eeveelution-Squad">here</a></p>
 <p>The inverted argument would be declared true or false in the addfolder command and addartist command.</p>
 <div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>As of version bt-1.2.0, the inverse arguement should only be used for artists who have dependently posted an
+<p class="first admonition-title">Warning</p>
+<p class="last">As of version bt-1.2.0, the inverse arguement should only be used for artists who have dependently posted an
 inverted gallery declaring inverse as false will now check for the 20 deviations posted at the top and will
 check for more at the bottom up until DeviantArt’s API says there is no more deviations.</p>
 </div>
@@ -248,9 +253,9 @@ check for more at the bottom up until DeviantArt’s API says there is no more d
 you will need to enable it by clicking the gear icon near your name</p>
 <img alt="_images/discordprofile.png" src="_images/discordprofile.png" />
 <p>Once you get into that menu click the Appearance Tab</p>
-<img alt="_images/appearance.png" src="_images/appearance.png" />
+<img alt="appearance.png" src="appearance.png" />
 <p>then scroll down to the bottom and enable Developer Mode.</p>
-<img alt="_images/developermode.png" src="_images/developermode.png" />
+<img alt="developermode.png" src="developermode.png" />
 </div>
 <div class="section" id="credits">
 <h2>Credits<a class="headerlink" href="#credits" title="Permalink to this headline">¶</a></h2>
@@ -261,7 +266,9 @@ You can see his outstanding comic Hope in Friends <a class="reference external" 
 
 
            </div>
-           
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
@@ -270,7 +277,7 @@ You can see his outstanding comic Hope in Friends <a class="reference external" 
         <a href="choosehost.html" class="btn btn-neutral float-right" title="Choosing a host" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="runningbot.html" class="btn btn-neutral float-left" title="Running the Bot" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="runningbot.html" class="btn btn-neutral" title="Running the Bot" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -279,11 +286,11 @@ You can see his outstanding comic Hope in Friends <a class="reference external" 
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, ErriteEpticRikez
+        &copy; Copyright 2019, ErriteEpticRikez.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -296,15 +303,36 @@ You can see his outstanding comic Hope in Friends <a class="reference external" 
   
 
 
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script>
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'bt-1.2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
 
   
   
-    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
    
 
 </body>

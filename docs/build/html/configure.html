@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Configuring DeviantCord (Self Host) &mdash; DeviantCord bt-1.1.0 documentation</title>
+  <title>Configuring DeviantCord (Self Host) &mdash; DeviantCord bt-1.2.0 documentation</title>
   
 
   
@@ -17,36 +17,42 @@
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
 
+  
+  
     
 
   
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Setting Up Permissions" href="permissions.html" />
-    <link rel="prev" title="Setting up DeviantCord" href="installpython.html" /> 
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="DeviantCord bt-1.2.0 documentation" href="index.html"/>
+        <link rel="next" title="Setting Up Permissions" href="permissions.html"/>
+        <link rel="prev" title="Setting up DeviantCord" href="installpython.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
 </head>
 
-<body class="wy-body-for-nav">
+<body class="wy-body-for-nav" role="document">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
 
           
@@ -113,7 +119,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" aria-label="top navigation">
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">DeviantCord</a>
@@ -121,10 +127,9 @@
       </nav>
 
 
+      
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
           
 
 
@@ -176,20 +181,20 @@ This page will guide you in getting those tokens.</p>
 respectively</p>
 <p><strong>Requirements</strong></p>
 <ul class="simple">
-<li><p>Discord Account</p></li>
-<li><p>DeviantArt Account (Preferably one that is not your primary)</p></li>
+<li>Discord Account</li>
+<li>DeviantArt Account (Preferably one that is not your primary)</li>
 </ul>
 <div class="section" id="deviantart">
 <h3>DeviantArt<a class="headerlink" href="#deviantart" title="Permalink to this headline">¶</a></h3>
 <p>First go to the developers page for DeviantArt <a class="reference external" href="https://www.deviantart.com/developers/">here</a></p>
 <p>Register Click “Register Your Application”</p>
-<img alt="_images/RegisterDAApp.png" src="_images/RegisterDAApp.png" />
+<img alt="RegisterDAApp.png" src="RegisterDAApp.png" />
 <p>Title the App whatever you want and click save. Since you are not using OAuth, you do not need to specify a callback URL</p>
 <p>This should take you to your apps in the Developer page revealing your clientid and clientsecret</p>
 <img alt="_images/tokensda.png" src="_images/tokensda.png" />
 <p>Open your client.json file where DeviantCord is being stored (With An Editor such as <a class="reference external" href="https://www.atom.io">Atom</a>
 or WinSCP’s default editor</p>
-<img alt="_images/changetokens.png" src="_images/changetokens.png" />
+<img alt="changetokens.png" src="changetokens.png" />
 <p>Replace the clientid and client secrets on the deviantart page with what is inside the file and save.</p>
 </div>
 <div class="section" id="discord">
@@ -202,7 +207,7 @@ go to the developers page <a class="reference external" href="https://www.devian
 <p>Save your changes</p>
 <p>Go to the Bot Category on the left</p>
 <p>Click Add Bot</p>
-<img alt="_images/addbotuser.png" src="_images/addbotuser.png" />
+<img alt="addbotuser.png" src="addbotuser.png" />
 <p><strong>You do not need to specify permissions at the bottom. The bot will already have it setup</strong></p>
 <p>Adding A Bot user to the bot will now make the app a full fledged bot! Now we need to invite the bot the server it will be running on</p>
 <p>Go to OAuth2</p>
@@ -211,7 +216,7 @@ go to the developers page <a class="reference external" href="https://www.devian
 <p>The Bot should appear on the server offine. Now go back to the bot tab and grab the token for the bot</p>
 <img alt="_images/bot_tokendiscord.png" src="_images/bot_tokendiscord.png" />
 <p>Grab the token and put in the client.json file where DeviantCord is stored.</p>
-<img alt="_images/changetokens.png" src="_images/changetokens.png" />
+<img alt="changetokens.png" src="changetokens.png" />
 <p>The bot is now setup!</p>
 </div>
 </div>
@@ -219,7 +224,9 @@ go to the developers page <a class="reference external" href="https://www.devian
 
 
            </div>
-           
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
@@ -228,7 +235,7 @@ go to the developers page <a class="reference external" href="https://www.devian
         <a href="permissions.html" class="btn btn-neutral float-right" title="Setting Up Permissions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="installpython.html" class="btn btn-neutral float-left" title="Setting up DeviantCord" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="installpython.html" class="btn btn-neutral" title="Setting up DeviantCord" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -237,11 +244,11 @@ go to the developers page <a class="reference external" href="https://www.devian
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, ErriteEpticRikez
+        &copy; Copyright 2019, ErriteEpticRikez.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -254,15 +261,36 @@ go to the developers page <a class="reference external" href="https://www.devian
   
 
 
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script>
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'bt-1.2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
 
   
   
-    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
    
 
 </body>

@@ -24,6 +24,7 @@ class daCog(commands.Cog):
         self.enablesr = False
         self.jsonlock = False
         self.roleid = 0
+        self.failedlogincount = 0
         self.publicmode = None
         self.datevar = datetime.datetime.now().strftime("%Y-%m-%d%H%M%S")
         self.whiletrigger = False
@@ -107,10 +108,73 @@ class daCog(commands.Cog):
     async def manualgetNewToken(self):
         """
         Gets a new token from DeviantArt with no params, grabs the clientid and clientsecret from the class file.
-        This function is only ran when a token error occurs and fixes it.
+        This function is only ran when a token error occurs having to do with async tasks also failing.
         """
+        self.deviantlogger.info("ManualGetToken: ManualGetToken invoked, Now sleeping for 20 minutes...")
+        await asyncio.sleep(1200)
         self.deviantlogger.info("ManualGetToken: Getting new token")
         self.token = dp.getToken(self.clientsecret,self.clientid)
+        self.deviantlogger.info("ManualGetToken: Recreating Tasks...")
+        self.deviantlogger.info("ManualGetToken: Creating getNewToken...")
+        self.bot.loop.create_task(self.getNewToken())
+        self.deviantlogger.info("ManualGetToken: Creating syncGalleries...")
+        self.bot.loop.create_task(self.syncGalleries())
+
+    async def softTokenRenewal(self):
+        """
+        Gets a new token from DeviantArt with no params, grabs the clientid and clientsecret from the class file.
+        This function is only ran when a token error occurs and fixes the token only!.
+
+        This is usually the second method ran to try to fix a token related issue that doesn't involve a failure of
+        automated async tasks.
+        """
+        self.deviantlogger.info("softTokenRenewall: softTokenRenewalInvoked invoked, Now sleeping for 20 minutes...")
+        await asyncio.sleep(1200)
+        self.deviantlogger.info("softTokenRenewal: Getting new token")
+        self.token = dp.getToken(self.clientsecret,self.clientid)
+        self.failedlogincount = 0
+
+    async def instantTokenRenewal(self):
+        """
+        Gets a new token without any async delays from DeviantArt, when a 403 is returned this is the first
+        method ran to try to fix the issue.
+        """
+
+        self.deviantlogger.info("instantTokenRenewal: invoked and getting new token")
+        try:
+            self.token = dp.getToken(self.clientsecret, self.clientid)
+        except urllib.error.HTTPError as Err:
+            if Err.code == 403:
+                self.deviantlogger.error("instantTokenRenewal: instant token renewal returned a 403. "
+                                         "will now try a softTokenRenewal")
+                self.deviantlogger.exception(Err)
+                await self.softTokenRenewal()
+                self.failedlogincount = 0
+            else:
+                self.deviantlogger.error("HTTP Error " + str(Err.code) + "encountered")
+                self.deviantlogger.exception(Err)
+                await self.softTokenRenewal()
+
+    async def instantTokenDiagnosisRenewal(self):
+        """
+        Gets a new token without any async delays from DeviantArt, and returns a bool if successful
+        """
+
+        self.deviantlogger.info("instantTokenRenewal: invoked and getting new token")
+        try:
+            self.token = dp.getToken(self.clientsecret, self.clientid)
+            return True
+        except urllib.error.HTTPError as Err:
+            return False
+
+    async def rateLimitMeasure(self):
+        """
+        Triggered when DA sends a Rate Limit response, this tones down SyncGalleries
+        """
+        self.deviantlogger.info("rateLimitMeasure: Invoked, now sleeping for 40 minutes")
+        await asyncio.sleep(2400)
+        self.bot.loop.create_task(self.getNewToken())
+        self.bot.loop.create_task(self.syncGalleries())
 
     async def syncGalleries(self):
         """
@@ -431,6 +495,8 @@ class daCog(commands.Cog):
                             + artistname + " in folder " + foldername)
                         self.deviantlogger.info("Finished populating folder!")
 
+
+
     @commands.command()
     async def updateinverse(self, ctx, artistname, foldername, inverse):
         print("Triggered")
@@ -496,6 +562,7 @@ class daCog(commands.Cog):
             else:
                 self.jsonlock = False
                 await ctx.send("I do not have " + artistname + "in my datafiles is this the correct artist?")
+
 
     @commands.command()
     async def updatehybrid(self, ctx, artistname, foldername, inverse):
@@ -950,9 +1017,10 @@ class daCog(commands.Cog):
             if isinstance(error, urllib.error.HTTPError):
                 if error.code == 401:
                     await ctx.send(
-                        "Error: Automatic Token renewal didn't taken place, the token is now renewed, please try again.")
+                        "Error: Automatic Token renewal didn't taken place, tokens will renew in 10 minutes, "
+                        "if issues persist past 20 minutes please contact DeviantCord support.")
                     self.deviantlogger.error("addfolder command returned a HTTP 401, ")
-                    self.manualgetNewToken()
+                    await self.softTokenRenewal()
                 if error.code == 503:
                     self.deviantlogger.error("addfolder command returned a HTTP 503, DA Servers are down for maintenance ")
                     await ctx.send("Error: DA's servers are down for maintenance. Please wait a few minutes");
@@ -1000,18 +1068,22 @@ class daCog(commands.Cog):
             if isinstance(error, urllib.error.HTTPError):
                 if error.code == 401:
                     await ctx.send(
-                        "Error: Automatic Token renewal didn't taken place, the token is now renewed, please try again.")
+                        "Error: Automatic Token renewal didn't taken place, tokens will renew in 10 minutes, if issues persist"
+                        "past 20 minutes please contact DeviantCord support.")
                     self.deviantlogger.error("AddArtist command returned a HTTP 401, ")
-                    self.manualgetNewToken()
+                    self.deviantlogger.info("Invoking softTokenRenewal")
+                    await self.softTokenRenewal()
                 if error.code == 503:
                     self.deviantlogger.error("AddArtist command returned a HTTP 503, DA Servers are down for maintenance ")
-                    await ctx.send("Error: DA's servers are down for maintenance. Please wait a few minutes");
+                    await ctx.send("Error: DA's servers are down, check DeviantArt's Twitter and DeviantCord Support for more information");
                 if error.code == 500:
                     self.deviantlogger.error("AddArtist command returned a HTTP 500, Internal Error ")
                     await ctx.send("DA's servers returned a Error 500 Internal Error. Try again in a few minutes");
                 if error.code == 429:
                     self.deviantlogger.error("AddArtist command returned a HTTP 429, DA API Overloaded ")
-                    await ctx.send("Error: DA API is currently overloaded...please wait for an hour. ")
+                    await ctx.send("Error: DA API is currently overloaded...please wait for an hour. DeviantCord"
+                                   "will continue to check for deviations at a delayed pace. Though commands will be "
+                                   "delayed")
                     return 429;
             if isinstance(error, commands.errors.NoPrivateMessage):
                 return
@@ -1020,27 +1092,38 @@ class daCog(commands.Cog):
                 self.deviantlogger.exception(error)
 
 
-    def error_handler(self,loop, context):
+    async def error_handler(self,loop, context):
         self.jsonlock = False
         print("Exception: ", context['exception'])
         logger = logging.getLogger("deviantcog")
         if str(context['exception']) == "HTTP Error 401: Unauthorized":
+            self.failedlogincount = self.failedlogincount + 1
             print("Your DA info is invalid, please check client.json to see if it matches your DA developer page")
             logger("Your DA info is invalid, please check client.json to see if it matches your DA developer page")
-            loop.stop()
-            try:
-                exit(211)
-            except SystemExit:
-                os._exit(211)
-        if str(context['exception']) == "HTTP Error 400: Bad request":
+            while self.failedlogincount <=3:
+                if self.instantTokenDiagnosisRenewal():
+                    break
+                else:
+                    self.failedlogincount = self.failedlogincount + 1
 
-            print("You need to setup your DA info for the bot, otherwise please check client.json")
-            logger.error("You need t1o setup your DA info for the bot, otherwise please check client.json")
-            loop.stop()
-            try:
-                exit(210)
-            except SystemExit:
-                os._exit(210)
+            if self.failedlogincount >= 3:
+                print("Exceeded 3 failed login limit. If this was hit when starting up then you need to check"
+                      "your DA info in client.json..Attempting softtokenrenewal ")
+                await self.softTokenRenewal()
+
+
+        if str(context['exception']) == "HTTP Error 400: Bad request":
+            logger.error("HTTP Error 400 encountered, ignoring...")
+        elif str(context['exception']).find("HTTP Error 400") > -1:
+            logger.error("HTTP Error 400 encountered, ignoring...")
+        elif str(context['exception']).find("HTTP Error 503") > -1:
+            logger.error("Encountered a HTTP Error 503: DA's servers are likely down. Now creating task to renew token"
+                         "in 20 minutes")
+            await self.manualgetNewToken()
+        elif str(context['exception']).find("HTTP Error 429") > -1:
+            logger.error("Encountered a HTTP Error 429: Received Rate Limit response, toning down responses for "
+                         "in 20 minutes")
+            await self.rateLimitMeasure()
         else:
             print("Exception encountered: ", context['exception'])
             logger.error("Exception Encountered " + str(context['exception']))

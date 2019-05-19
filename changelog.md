@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Beta]
 
+## [bt-1.2.1] - 2019-05-18
+
+
+### Added
+- Added additional log messages to the manualGetToken
+- Added Rate Limit Measures for SyncGallery, that will trigger upon getting a HTTP Error 429
+
+### Fixed
+- Fixed an issue where an error encountered in error_handler would stop all automatic tasks for the bot.
+- Fixed an issue where an 503 Error from DeviantArt would stop the bot from looking for new deviations
+- Fixed an issue where the word await was missing for the manualGetToken method.
+
+### Changed
+- manualGetToken now runs as a last resort to renew all async tasks
+- softTokenRenewal now replaces the functionality of manualGetToken
+- Error handler no longer exits when detecting an Unauthorized or bad client error.  Depending on the error, the bot will ignore it or will try to take the necessary steps to fix it.
+- Changed error_handler to async
+
+
+
 ## [bt-1.2.1] - 2019-05-15
 
 ### Fixed

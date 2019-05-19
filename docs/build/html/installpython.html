@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Setting up DeviantCord &mdash; DeviantCord bt-1.1.0 documentation</title>
+  <title>Setting up DeviantCord &mdash; DeviantCord bt-1.2.0 documentation</title>
   
 
   
@@ -17,36 +17,42 @@
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
 
+  
+  
     
 
   
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Configuring DeviantCord (Self Host)" href="configure.html" />
-    <link rel="prev" title="Should I Self Host?" href="whathost.html" /> 
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="DeviantCord bt-1.2.0 documentation" href="index.html"/>
+        <link rel="next" title="Configuring DeviantCord (Self Host)" href="configure.html"/>
+        <link rel="prev" title="Should I Self Host?" href="whathost.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
 </head>
 
-<body class="wy-body-for-nav">
+<body class="wy-body-for-nav" role="document">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
 
           
@@ -122,7 +128,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" aria-label="top navigation">
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">DeviantCord</a>
@@ -130,10 +136,9 @@
       </nav>
 
 
+      
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
           
 
 
@@ -196,7 +201,7 @@ to host your bot if you know where to look.</p>
 <p>Linux has many different types of Distributions with different Package Managers.
 Some may have Python3 already installed, however we only support Python version 3.6 minimum, check to see what your
 version of Python is (if any):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="o">--</span><span class="n">version</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="o">--</span><span class="n">version</span>
 </pre></div>
 </div>
 <p>If your distribution is not below and does not come with a version of Python3 that isnt at least 3.6, then you will have to install python
@@ -210,17 +215,17 @@ While the versions after it has 3.7 However PIP the module manager for Python
 is not installed by default. You will have to install it.</p>
 <p>To get started you first need to get the latest update headers otherwise you will not
 be able to proceed.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span>
 </pre></div>
 </div>
 <p>Then you need to run the install command for PIP otherwise
 you will not be able to install the needed modules that the bot uses.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">python3</span><span class="o">-</span><span class="n">pip</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">python3</span><span class="o">-</span><span class="n">pip</span>
 </pre></div>
 </div>
 <p>Once pip is intalled, you now have access to the pip command.
 Now lets install the required modules.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip3</span> <span class="n">install</span> <span class="n">discord</span><span class="o">.</span><span class="n">py</span> <span class="n">discord</span> <span class="n">asyncio</span> <span class="n">urllib3</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip3</span> <span class="n">install</span> <span class="n">discord</span><span class="o">.</span><span class="n">py</span> <span class="n">discord</span> <span class="n">asyncio</span> <span class="n">urllib3</span>
 </pre></div>
 </div>
 </div>
@@ -230,12 +235,12 @@ Now lets install the required modules.</p>
 It is not advised to use Python 3.5.3, as it may be deprecated within a future version.</p>
 <p>If you want to use Python 3.5.3 then all you
 need to do is install pip</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span> <span class="o">&amp;&amp;</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">python3</span><span class="o">-</span><span class="n">pip</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span> <span class="o">&amp;&amp;</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">python3</span><span class="o">-</span><span class="n">pip</span>
 </pre></div>
 </div>
 <p>Then you need to install the
 python modules for the bot</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip3</span> <span class="n">install</span> <span class="n">discord</span><span class="o">.</span><span class="n">py</span> <span class="n">asyncio</span> <span class="n">urllib3</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip3</span> <span class="n">install</span> <span class="n">discord</span><span class="o">.</span><span class="n">py</span> <span class="n">asyncio</span> <span class="n">urllib3</span>
 </pre></div>
 </div>
 <p>However, if you want to install Python 3.7 here is a guide to do so
@@ -245,28 +250,28 @@ python modules for the bot</p>
 <h4>CentOS 7<a class="headerlink" href="#centos-7" title="Permalink to this headline">¶</a></h4>
 <p>CentOS does not come with any version of Python3 by default, and as a result you will have to install it manually.
 Additionally you will need to install a repository that allows you to install python3</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">centos7</span><span class="o">.</span><span class="n">iuscommunity</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">ius</span><span class="o">-</span><span class="n">release</span><span class="o">.</span><span class="n">rpm</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">centos7</span><span class="o">.</span><span class="n">iuscommunity</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">ius</span><span class="o">-</span><span class="n">release</span><span class="o">.</span><span class="n">rpm</span>
 </pre></div>
 </div>
 <p>Once you have the repository installed, you should make sure that
 there are no updates before installing Python3</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">yum</span> <span class="n">update</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">yum</span> <span class="n">update</span>
 </pre></div>
 </div>
 <p>Then input Y and enter to confirm the update (If there are any updates).</p>
 <p>Once you have the updates installed,
 you want to use the following command to install Python3</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">python36u</span> <span class="n">python36u</span><span class="o">-</span><span class="n">libs</span> <span class="n">python36u</span><span class="o">-</span><span class="n">devel</span> <span class="n">python36u</span><span class="o">-</span><span class="n">pip</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">python36u</span> <span class="n">python36u</span><span class="o">-</span><span class="n">libs</span> <span class="n">python36u</span><span class="o">-</span><span class="n">devel</span> <span class="n">python36u</span><span class="o">-</span><span class="n">pip</span>
 </pre></div>
 </div>
 <p>After that, make sure the following
 command returns something</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span><span class="o">.</span><span class="mi">6</span> <span class="o">-</span><span class="n">V</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python3</span><span class="o">.</span><span class="mi">6</span> <span class="o">-</span><span class="n">V</span>
 </pre></div>
 </div>
 <p>If it returns something, then Python3 is installed! Now we need to install
 the required Python modules for the bot. Use the following command to accomplish it</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip3</span><span class="o">.</span><span class="mi">6</span> <span class="n">install</span> <span class="n">discord</span><span class="o">.</span><span class="n">py</span> <span class="n">asyncio</span> <span class="n">urllib3</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip3</span><span class="o">.</span><span class="mi">6</span> <span class="n">install</span> <span class="n">discord</span><span class="o">.</span><span class="n">py</span> <span class="n">asyncio</span> <span class="n">urllib3</span>
 </pre></div>
 </div>
 </div>
@@ -274,7 +279,7 @@ the required Python modules for the bot. Use the following command to accomplish
 <h4>Fedora<a class="headerlink" href="#fedora" title="Permalink to this headline">¶</a></h4>
 <p>Fedora 28+ has Python 3.6 and usually updates its python3 version consistently to newer versions.
 As a result you do not need to install Python3 or pip. So all you need to do is install the Python modules</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip3</span> <span class="n">install</span> <span class="n">discord</span><span class="o">.</span><span class="n">py</span> <span class="n">asyncio</span> <span class="n">urllib3</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip3</span> <span class="n">install</span> <span class="n">discord</span><span class="o">.</span><span class="n">py</span> <span class="n">asyncio</span> <span class="n">urllib3</span>
 </pre></div>
 </div>
 </div>
@@ -288,7 +293,7 @@ As a result you do not need to install Python3 or pip. So all you need to do is 
 <p>Go download a release of Python 3.6+ <a class="reference external" href="https://www.python.org/downloads/">here</a></p>
 <p>Once it is installed, go to your search bar for Windows and search for cmd,
 then right click it and Run as Administrator and type</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">discord</span><span class="o">.</span><span class="n">py</span> <span class="n">asyncio</span> <span class="n">urllib3</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">discord</span><span class="o">.</span><span class="n">py</span> <span class="n">asyncio</span> <span class="n">urllib3</span>
 </pre></div>
 </div>
 </div>
@@ -298,7 +303,7 @@ then right click it and Run as Administrator and type</p>
 It should be noted however, that MacOS by default packages Python2, which is not compatible with DeviantCord.</p>
 <p>You will need to install Python at their
 website. Then Run</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip3</span> <span class="n">install</span> <span class="n">discord</span><span class="o">.</span><span class="n">py</span> <span class="n">asyncio</span> <span class="n">urllib3</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip3</span> <span class="n">install</span> <span class="n">discord</span><span class="o">.</span><span class="n">py</span> <span class="n">asyncio</span> <span class="n">urllib3</span>
 </pre></div>
 </div>
 </div>
@@ -307,7 +312,9 @@ website. Then Run</p>
 
 
            </div>
-           
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
@@ -316,7 +323,7 @@ website. Then Run</p>
         <a href="configure.html" class="btn btn-neutral float-right" title="Configuring DeviantCord (Self Host)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="whathost.html" class="btn btn-neutral float-left" title="Should I Self Host?" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="whathost.html" class="btn btn-neutral" title="Should I Self Host?" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -325,11 +332,11 @@ website. Then Run</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, ErriteEpticRikez
+        &copy; Copyright 2019, ErriteEpticRikez.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -342,15 +349,36 @@ website. Then Run</p>
   
 
 
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script>
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'bt-1.2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
 
   
   
-    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
    
 
 </body>
