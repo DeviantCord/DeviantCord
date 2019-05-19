@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Beta]
 
+## [bt-1.2.3] - 2019-05-19
+
+
+### Added
+- Added command_error handler for handling invalid commands
+
+### Fixed
+- Fixed invalid commands from spamming the console.
+
+
 ## [bt-1.2.2] - 2019-05-18
 
 

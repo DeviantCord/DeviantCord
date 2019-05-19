@@ -6,7 +6,7 @@ import asyncio
 import datetime
 import logging
 from discord.ext import commands
-from discord.ext.commands import has_permissions, guild_only
+from discord.ext.commands import has_permissions, guild_only, CommandNotFound
 import errite.da.daParser as dp
 from errite.da.jsonTools import createArtistData, artistExists, folderExists, createFolderData, \
     updateDiscordChannel, updateRole, updateinverseproperty, delfolder, updatehybridproperty
@@ -876,6 +876,7 @@ class daCog(commands.Cog):
                             "Finished populating...this channel will now receive updates on new deviations by "
                             + artistname + " in folder " + foldername)
 
+
     @help.error
     async def help_errorhandler(self, ctx, error):
         if isinstance(error, commands.NoPrivateMessage):
@@ -1132,3 +1133,8 @@ class daCog(commands.Cog):
 def setup(bot):
         bot.remove_command("help")
         bot.add_cog(daCog(bot))
+
+        @bot.event
+        async def on_command_error(ctx, error):
+            if isinstance(error, CommandNotFound):
+                return
