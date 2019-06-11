@@ -14,7 +14,7 @@ from errite.tools.mis import fileExists
 from errite.config.converter import convert
 from os import listdir
 from os.path import isfile, join
-print("Starting DeviantBot bt-1.2.3")
+print("Starting DeviantCord bt-1.2.4")
 print("If this causes a HTTP 401 Error when trying to load daCommands your DeviantArt info is wrong. Set it in client.json")
 started = True
 configData = {}

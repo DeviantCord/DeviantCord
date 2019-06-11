@@ -244,6 +244,8 @@ class daCog(commands.Cog):
             return;
         elif ctx.guild.id == self.guildid:
             permitted = True
+        elif not ctx.guild.id == self.guildid:
+            return
         elif not self.publicmode:
             permitted = True
         if ctx.guild.get_role(self.roleid) is None:
@@ -297,9 +299,10 @@ class daCog(commands.Cog):
         skiprolecheck = False
         if ctx.guild is None:
             return;
-
         if ctx.guild.id == self.guildid:
             permitted = True
+        elif not ctx.guild.id == self.guildid:
+            return
         if self.jsonlock is True:
             if ctx.guild.get_role(self.roleid) is None:
                 return
@@ -345,6 +348,8 @@ class daCog(commands.Cog):
             return;
         if ctx.guild.id == self.guildid:
             permitted = True
+        elif not ctx.guild.id == self.guildid:
+            return
         if self.jsonlock is True:
             if ctx.guild.get_role(self.roleid) is None:
                 return
@@ -397,6 +402,8 @@ class daCog(commands.Cog):
             return;
         if ctx.guild.id == self.guildid:
             permitted = True
+        elif not ctx.guild.id == self.guildid:
+            return
         elif not self.publicmode:
             permitted = True
         if ctx.guild.get_role(self.roleid) is None:
@@ -505,6 +512,8 @@ class daCog(commands.Cog):
             return
         elif ctx.guild.id == self.guildid:
             permitted = True
+        elif not ctx.guild.id == self.guildid:
+            return
         if self.jsonlock:
             return
         elif not self.publicmode:
@@ -572,6 +581,8 @@ class daCog(commands.Cog):
             return
         elif ctx.guild.id == self.guildid:
             permitted = True
+        elif not ctx.guild.id == self.guildid:
+            return
         if self.jsonlock:
             return
         elif not self.publicmode:
@@ -635,6 +646,8 @@ class daCog(commands.Cog):
             return;
         elif ctx.guild.id == self.guildid:
             permitted = True
+        elif not ctx.guild.id == self.guildid:
+            return
         if self.jsonlock:
             return
         if not self.publicmode:
@@ -714,6 +727,8 @@ class daCog(commands.Cog):
             return;
         elif ctx.guild.id == self.guildid:
             permitted = True
+        elif not ctx.guild.id == self.guildid:
+            return
         elif not self.publicmode:
             permitted = True
         if ctx.guild.get_role(self.roleid) is None:
@@ -778,6 +793,8 @@ class daCog(commands.Cog):
             return;
         elif ctx.guild.id == self.guildid:
             permitted = True
+        elif not ctx.guild.id == self.guildid:
+            return
         elif not self.publicmode:
             permitted = True
         if ctx.guild.get_role(self.roleid) is None:
@@ -901,6 +918,8 @@ class daCog(commands.Cog):
             return;
         if ctx.guild.id == self.guildid:
             permitted = True
+        elif not ctx.guild.id == self.guildid:
+            return
         elif not self.publicmode:
             permitted = True
         else:
@@ -936,6 +955,8 @@ class daCog(commands.Cog):
             return;
         if ctx.guild.id == self.guildid:
             permitted = True
+        elif not ctx.guild.id == self.guildid:
+            return
         elif not self.publicmode:
             permitted = True
         else:
@@ -969,6 +990,8 @@ class daCog(commands.Cog):
             return;
         if ctx.guild.id == self.guildid:
             permitted = True
+        elif not ctx.guild.id == self.guildid:
+            return
         elif not self.publicmode:
             permitted = True
         else:
@@ -997,6 +1020,8 @@ class daCog(commands.Cog):
             return;
         if ctx.guild.id == self.guildid:
             permitted = True
+        elif not ctx.guild.id == self.guildid:
+            return
         elif not self.publicmode:
             permitted = True
         else:
@@ -1048,6 +1073,8 @@ class daCog(commands.Cog):
             return;
         if ctx.guild.id == self.guildid:
             permitted = True
+        elif not ctx.guild.id == self.guildid:
+            return
         elif not self.publicmode:
             permitted = True
         else:
@@ -1100,7 +1127,7 @@ class daCog(commands.Cog):
         if str(context['exception']) == "HTTP Error 401: Unauthorized":
             self.failedlogincount = self.failedlogincount + 1
             print("Your DA info is invalid, please check client.json to see if it matches your DA developer page")
-            logger("Your DA info is invalid, please check client.json to see if it matches your DA developer page")
+            logger.error("Your DA info is invalid, please check client.json to see if it matches your DA developer page")
             while self.failedlogincount <=3:
                 if self.instantTokenDiagnosisRenewal():
                     break

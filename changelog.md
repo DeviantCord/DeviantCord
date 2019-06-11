@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Beta]
 
+## [bt-1.2.4] - 2019-06-11
+
+### Fixed
+- An issue where the bot would not correctly catch messages meant for another server using the same token as the bot.
+
 ## [bt-1.2.3] - 2019-05-19
 
 
