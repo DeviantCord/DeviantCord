@@ -2,7 +2,7 @@ from errite.tools.mis import convertBoolString
 import urllib.request, json;
 import urllib.error;
 import logging
-from errite.da.jsonTools import findDuplicateJsonElementGallery
+from errite.da.jsonTools import findDuplicateJsonElementGallery, findDuplicateElementArray
 
 
 def getToken(clientsecret, clientid):
@@ -132,7 +132,7 @@ def findFolderUUID(artist, bool, folder, accesstoken):
     :type accesstoken: string
     :return: array
     """
-    finished = False;
+    finished = False
     providedoffset = 0
     while (finished == False):
         try:
@@ -154,13 +154,14 @@ def findFolderUUID(artist, bool, folder, accesstoken):
                 # print (uuid["folderid"])
                 if uuid["name"].lower() == folder.lower():
                         return uuid["folderid"];
-                        tmp = True;
                 providedoffset = data["next_offset"]
 
         if tmp == False:
+            for uuid in data['results']:
+                if uuid["name"].lower() == folder.lower():
+                        return uuid["folderid"]
             finished = True
     return "None";
-            # print(data)
 
 
 def refindFolderUUID(artist, bool, folder, accesstoken):
@@ -285,8 +286,9 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
                     logger.info("For loop started for getGalleryFolder")
                     for uuid in data['results']:
                         # print(uuid["deviationid"])
-                        if (findDuplicateJsonElementGallery("artdata.json", uuid["deviationid"], artist.lower(),
+                        if (findDuplicateElementArray(artdata["art-data"][artist.lower()][foldername]["processed-uuids"], uuid["deviationid"], artist.lower(),
                                                             foldername) == False):
+                            logger.info("True Inverse: , UUID " + uuid["deviationid"] + "passed")
                             newurls.append(uuid["url"])
                             artdata["art-data"][artist.lower()][foldername]["processed-uuids"].append(uuid["deviationid"])
 
@@ -299,13 +301,15 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
                     logger.info("getGalleryFolder: False entered")
                     for uuid in data['results']:
                         logger.debug("UUID: " + str(uuid["deviationid"]))
-                        if (findDuplicateJsonElementGallery("artdata.json", uuid["deviationid"], artist.lower(),
+                        if (findDuplicateElementArray(artdata["art-data"][artist.lower()][foldername]["processed-uuids"], uuid["deviationid"], artist.lower(),
                                                             foldername) == False):
+                            logger.info("False Inverse: , UUID " + uuid["deviationid"] + "passed")
                             newurls.append(uuid["url"])
                             artdata["art-data"][artist.lower()][foldername]["processed-uuids"].append(uuid["deviationid"])
 
                         if data["next_offset"] is not None:
                             invertOffset = data["next_offset"]
+                    break
             jsonFile = open("artdata.json", "w+")
             jsonFile.write(json.dumps(artdata, indent=4, sort_keys=True))
             jsonFile.close()
@@ -325,8 +329,9 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
                         logger.info("For loop started for getGalleryFolder")
                         for uuid in data['results']:
                             # print(uuid["deviationid"])
-                            if (findDuplicateJsonElementGallery("artdata.json", uuid["deviationid"], artist.lower(),
+                            if (findDuplicateElementArray(artdata["art-data"][artist.lower()][foldername]["processed-uuids"], uuid["deviationid"], artist.lower(),
                                                                 foldername) == False):
+                                logger.info("True Hybrid: , UUID " + uuid["deviationid"] + "passed")
                                 hybridurls.append(uuid["url"])
                                 artdata["art-data"][artist.lower()][foldername]["processed-uuids"].append(
                                     uuid["deviationid"])
@@ -340,14 +345,15 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
                         logger.info("getGalleryFolder: False entered")
                         for uuid in data['results']:
                             logger.debug("UUID: " + str(uuid["deviationid"]))
-                            if (findDuplicateJsonElementGallery("artdata.json", uuid["deviationid"], artist.lower(),
+                            if (findDuplicateElementArray(artdata["art-data"][artist.lower()][foldername]["processed-uuids"], uuid["deviationid"], artist.lower(),
                                                                 foldername) == False):
+                                logger.info("False Hybrid : , UUID " + uuid["deviationid"] + "passed")
                                 hybridurls.append(uuid["url"])
                                 artdata["art-data"][artist.lower()][foldername]["processed-uuids"].append(
                                     uuid["deviationid"])
-
                             if data["next_offset"] is not None:
                                 invertOffset = data["next_offset"]
+                        break
 
             providedoffset = artdata["art-data"][artist.lower()][foldername]["offset-value"]
             while finished == False:
@@ -359,8 +365,9 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
                     logger.info("For loop started, inverted false(NOT VARIABLE)")
                     for uuid in data['results']:
                         # print(uuid["deviationid"])
-                        if (findDuplicateJsonElementGallery("artdata.json", uuid["deviationid"], artist.lower(),
+                        if (findDuplicateElementArray(artdata["art-data"][artist.lower()][foldername]["processed-uuids"], uuid["deviationid"], artist.lower(),
                                                             foldername) == False):
+                            logger.info("Final True NonInverse: , UUID " + uuid["deviationid"] + "passed")
                             newurls.append(uuid["url"])
                             artdata["art-data"][artist.lower()][foldername]["processed-uuids"].append(uuid["deviationid"])
 
@@ -374,9 +381,9 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
                     logger.info("getGallery: False entered")
                     for uuid in data['results']:
                         # print("UUID: " + uuid["deviationid"])
-                        if (findDuplicateJsonElementGallery("artdata.json", uuid["deviationid"], artist.lower(),
+                        if (findDuplicateElementArray(artdata["art-data"][artist.lower()][foldername]["processed-uuids"], uuid["deviationid"], artist.lower(),
                                                             foldername) == False):
-                            print("No duplicates found")
+                            logger.info("Final False NonInverse: , UUID " + uuid["deviationid"] + "passed")
                             newurls.append(uuid["url"])
                             artdata["art-data"][artist.lower()][foldername]["processed-uuids"].append(uuid["deviationid"])
                         if data["next_offset"] is not None:

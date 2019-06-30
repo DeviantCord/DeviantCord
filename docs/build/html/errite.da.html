@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>errite.da package &mdash; DeviantCord bt-1.2.0 documentation</title>
+  <title>errite.da package &mdash; DeviantCord bt-1.3.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="DeviantCord bt-1.2.0 documentation" href="index.html"/> 
+    <link rel="top" title="DeviantCord bt-1.3.0 documentation" href="index.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -99,6 +99,8 @@
 <li class="toctree-l1"><a class="reference internal" href="requesthosting.html">Requesting Hosting for DeviantCord</a></li>
 <li class="toctree-l1"><a class="reference internal" href="permissions.html">Setting Up Permissions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="addinglisteners.html">Setting Up Listeners</a></li>
+<li class="toctree-l1"><a class="reference internal" href="error-reporting.html">Errite Error Notifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="additionalinfo.html">Additional Information</a></li>
 </ul>
 
             
@@ -431,6 +433,29 @@ This method in particular is only ran on the first time/when a new folder is add
 <dd></dd></dl>
 
 <dl class="function">
+<dt id="errite.da.jsonTools.findDuplicateElementArray">
+<code class="descclassname">errite.da.jsonTools.</code><code class="descname">findDuplicateElementArray</code><span class="sig-paren">(</span><em>array</em>, <em>element</em>, <em>artist</em>, <em>foldername</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.findDuplicateElementArray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method ran to check if a Deviation UUID is already in the array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>array</strong> (<em>array</em>) – The array that holds the current processed uuids for the particular artist</li>
+<li><strong>element</strong> (<em>string</em>) – The UUID we are comparing with the JSON file.</li>
+<li><strong>artist</strong> (<em>string</em>) – UNUSED TO BE REMOVED The name of the artist who’s deviations we are working with. This is needed for json references</li>
+<li><strong>foldername</strong> (<em>string</em>) – May be reused: The name of the gallery folder we are working with. Used for json references</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="errite.da.jsonTools.findDuplicateJsonElementGallery">
 <code class="descclassname">errite.da.jsonTools.</code><code class="descname">findDuplicateJsonElementGallery</code><span class="sig-paren">(</span><em>file</em>, <em>element</em>, <em>artist</em>, <em>foldername</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.findDuplicateJsonElementGallery" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to check if a Deviation UUID is already in the ArtData json file.</p>
@@ -502,6 +527,25 @@ This method in particular is only ran on the first time/when a new folder is add
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>roleid</strong> (<em>int</em>) – The roleid that will become the central role to the bot.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="errite.da.jsonTools.update_errite">
+<code class="descclassname">errite.da.jsonTools.</code><code class="descname">update_errite</code><span class="sig-paren">(</span><em>property</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.update_errite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method ran to toggle the errite property in the config.json file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</li>
+<li><strong>foldername</strong> (<em>string</em>) – The name of the gallery folder we are working with. Used for json references</li>
+<li><strong>hybrid</strong> (<em>bool</em>) – The value the new hybrid should be in the Json file</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
@@ -614,7 +658,7 @@ This method in particular is only ran on the first time/when a new folder is add
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'bt-1.2.0',
+            VERSION:'bt-1.3.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

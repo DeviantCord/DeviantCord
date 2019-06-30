@@ -12,12 +12,17 @@ def createConfig():
         with open("config.json", "r") as jsonFile:
             configdata = json.load(jsonFile)
             jsonFile.close()
-            configdata["version"] = "bt-1.2.0"
+            configdata["version"] = "bt-1.2.5"
             configdata["logchannelid"] = 0
             configdata["roleid"] = 0
             configdata["prefix"] = "$"
             configdata["logging"] = True
             configdata["publicmode"] = False
+            configdata["errite"] = False
+            configdata["errite-channel"] = 0
+            configdata["region"] = "not-setup"
+            configdata["server"] = "server-name"
+            configdata["client"] = "discord-server-name"
             configdata["rolesetup-enabled"] = True
             configdata["guildid"] = 0
             configdata["sync-time"] = 900

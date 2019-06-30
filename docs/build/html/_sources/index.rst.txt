@@ -40,6 +40,8 @@ This section is for those who want us to host the bot, remember that you need to
    requesthosting
    permissions
    addinglisteners
+   error-reporting
+   additionalinfo
    :maxdepth: 2
    :caption: Hosting By Us:
 

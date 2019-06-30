@@ -1,5 +1,0 @@
-**DeviantBot Help Guide**\n
-**$help** - Gives a list of command with explaination\n
-**$addFolder** *<artist_username>* *<folder>* *<channel_id>* - Adds another artists gallery folder for the bot to notify the specified channel of new deviations. Use this when your adding another folder to an artist already added \n
-**$addArtist** *<aritst_username>* *<folder>* *<channel_id>* - Used to add an artist and the first folder into the bots datafile. Use this command when you are adding an artist for the first time!
-**$manualSync** - Will check all configured folders for new deviations instead of waiting for the timer to trigger and start the check *DO NOT SPAM THIS* \n

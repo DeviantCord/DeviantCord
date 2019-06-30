@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Beta]
 
+## [bt-1.3.0] - 2019-06-26
+## Added 
+- Errite exclusive fields such as errite and errite-channel-id in config.json. This is used by the new Error Notifier that lets DeviantCord Support know of errors experienced by the public bot as soon as it happens.
+- erritetoggle command that allows for server owners using the public DeviantCord bot to opt out of the Error Notifier
+
+## Changes
+- DeviantCord now allows for third party cogs written with DiscordPy to used be alongside DeviantCord on self-hosted bots. Though we are not responsible for any cogs you use with DeviantCord.  
+- config.json version updated to bt-1.2.5
+
+## [bt-1.2.5] - 2019-06-22
+NOTE THIS BUILD: Was not released to the public, it was only used on our public hosting before an incident in the community caused us to have to implement a needed feature thus the creation of bt-1.3.0
+### Fixed
+- An inconsistency with skiprolecheck not being declared in addfolder that caused a UnBoundLocalError
+- Incorrect naming in logs for deviantcog, and the discord debug file
+- Issues with a the findFolderUUID method always returning None if the artist does not have more then 10 folders
+- An infinite loop that would occur if a gallery with less then 20 deviations uses the getGallery method. This would cause the bot to freeze and stop responding. The SSH session using the bot would also freeze/ctrl + c would not respond. 
+- An issue with the error handler not being awaited for
+
+### Changes
+- If the getGallery method in daParser interacts with a galleryfolder with less 20 deviations, the bot will recognize it and break out of the while loop to prevent an infinite loop.
+- In daParser the getGallery method now uses findDuplicateElementArray instead of findDuplicateElementJson
+- The error handler method in daCommands is no longer async.
+- The error_handler has been reworked slightly to at least perform basic diagnostics using methods from the upcoming bt-1.4.0 build of DeviantCord.
+
+### Removed
+- Some console output that could be easily misinterpreted. 
+
 ## [bt-1.2.4] - 2019-06-11
 
 ### Fixed

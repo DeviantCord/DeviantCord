@@ -25,6 +25,26 @@ def findDuplicateJsonElementGallery(file, element, artist,foldername):
                 return True;
         return False;
 
+def findDuplicateElementArray(array, element, artist,foldername):
+    """
+            Method ran to check if a Deviation UUID is already in the array.
+
+            :param array: The array that holds the current processed uuids for the particular artist
+            :type array: array
+            :param element: The UUID we are comparing with the JSON file.
+            :type element: string
+            :param artist: UNUSED TO BE REMOVED The name of the artist who's deviations we are working with. This is needed for json references
+            :type artist: string
+            :param foldername: May be reused: The name of the gallery folder we are working with. Used for json references
+            :type foldername: string
+            :return: bool
+    """
+    # TODO Change the docstring for this method
+    logger = logging.getLogger('errite.da.jsonTools')
+    for stored_uuid in array:
+        if stored_uuid == element:
+            return True
+    return False
 
 def folderExists(artist,foldername):
     """
@@ -47,7 +67,7 @@ def folderExists(artist,foldername):
             else:
                 return True
         except KeyError:
-            print("Does not exist")
+            #print("Folder check, revealed found that the folder is not present in ArtData.")
             return False
 
 def artistExists(artist):
@@ -68,7 +88,7 @@ def artistExists(artist):
             else:
                 return True
         except KeyError:
-            print("Does not exist")
+            # print("Does not exist")
             return False
 
 
@@ -229,6 +249,34 @@ def updateinverseproperty(artist, foldername, inverse):
         logger.info("UpdateInverse: Writing to JSON file")
         jsonFile = open("artdata.json", "w+")
         jsonFile.write(json.dumps(artdata, indent=4,sort_keys=True))
+        jsonFile.close()
+
+def update_errite(property):
+    """
+            Method ran to toggle the errite property in the config.json file.
+
+            :param artist: The name of the artist who's deviations we are working with. This is needed for json references
+            :type artist: string
+            :param foldername: The name of the gallery folder we are working with. Used for json references
+            :type foldername: string
+            :param hybrid: The value the new hybrid should be in the Json file
+            :type hybrid: bool
+
+    """
+    logger = logging.getLogger('errite.da.jsonTools')
+    with open("config.json", "r") as jsonFile:
+        configdata = json.load(jsonFile)
+        jsonFile.close()
+        logger.info("update_errite: Updating Config")
+        if bool(property) is True:
+            logger.info("update_errite: Updating value to True")
+            configdata["errite"] = True
+        elif bool(property) is False:
+            logger.info("update_errite: Updating value to False")
+            configdata["errite"] = False
+        logger.info("update_errite: Writing to JSON file")
+        jsonFile = open("config.json", "w+")
+        jsonFile.write(json.dumps(configdata, indent=4,sort_keys=True))
         jsonFile.close()
 
 

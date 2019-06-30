@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Choosing a host &mdash; DeviantCord bt-1.3.0 documentation</title>
+  <title>Errite Error Notifier &mdash; DeviantCord bt-1.3.0 documentation</title>
   
 
   
@@ -36,8 +36,7 @@
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="DeviantCord bt-1.3.0 documentation" href="index.html"/>
-        <link rel="next" title="Requesting Hosting for DeviantCord" href="requesthosting.html"/>
-        <link rel="prev" title="Setting Up Listeners" href="addinglisteners.html"/> 
+        <link rel="prev" title="Requesting Hosting for DeviantCord" href="requesthosting.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -87,25 +86,21 @@
             
             
               <p class="caption"><span class="caption-text">Self Hosting:</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="whathost.html">Should I Self Host?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installpython.html">Setting up DeviantCord</a></li>
 <li class="toctree-l1"><a class="reference internal" href="configure.html">Configuring DeviantCord  (Self Host)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="permissions.html">Setting Up Permissions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="runningbot.html">Running the Bot</a></li>
 <li class="toctree-l1"><a class="reference internal" href="addinglisteners.html">Setting Up Listeners</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Choosing a host</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#reasons-for-using-vps-dime">Reasons for Using VPS Dime</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#reasons-for-using-ovh">Reasons for Using OVH</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="choosehost.html">Choosing a host</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Hosting By Us:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="requesthosting.html">Requesting Hosting for DeviantCord</a></li>
 <li class="toctree-l1"><a class="reference internal" href="permissions.html">Setting Up Permissions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="addinglisteners.html">Setting Up Listeners</a></li>
-<li class="toctree-l1"><a class="reference internal" href="error-reporting.html">Errite Error Notifier</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Errite Error Notifier</a></li>
 </ul>
 
             
@@ -150,13 +145,13 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Choosing a host</li>
+      <li>Errite Error Notifier</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/choosehost.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/error-reporting.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -169,30 +164,35 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="choosing-a-host">
-<h1>Choosing a host<a class="headerlink" href="#choosing-a-host" title="Permalink to this headline">¶</a></h1>
-<p>Choosing a host for the first time can be difficult, this page aims to answer your questions on what hosting company
-you should choose for hosting your bot. As stated on the Installation page we recommend the following hosts.</p>
-<p>We recommend the following hosts,</p>
+  <div class="section" id="errite-error-notifier">
+<h1>Errite Error Notifier<a class="headerlink" href="#errite-error-notifier" title="Permalink to this headline">¶</a></h1>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">AutoError Reporting is only enabled by default for the DeviantCord public bot hosted by us. Though the same functionality
+can still enabled manually on self hosting to report errors to any Discord Server the bot user
+resides on by whoever is hosting the bot. If you are unsure that this functionality on is enabled use erritetoggle to
+disable it. It will let you know.</p>
+</div>
+<p>AutoError reporting was introduced to the DeviantCord public bot in bt-1.3.0. It notifies DeviantCord staff of issues
+encountered with the bot so that the appropriate action can be taken, and for faster response in the instance that
+issues are encountered that may not be apparent otherwise. This functionality is not mandatory and can disabled using
+the erritetoggle command.</p>
+<p>Any message sent by the Error Notifier will never contain personal identifying information of users. The Error Notifier
+can send the following information</p>
 <ul class="simple">
-<li><a class="reference external" href="https://vpsdime.com">VPS Dime (Best Price to Specs)</a></li>
-<li><a class="reference external" href="https://www.ovh.com/world/vps/">OVH (Better Security and DDoS Protection)</a></li>
+<li>Current name of Discord server</li>
+<li>Discord server id</li>
 </ul>
-<div class="section" id="reasons-for-using-vps-dime">
-<h2>Reasons for Using VPS Dime<a class="headerlink" href="#reasons-for-using-vps-dime" title="Permalink to this headline">¶</a></h2>
-<p>VPS Dime offers more power then OVH does for its VPS SSD plans for half the price. While their VPS solutions work well
-for a Discord bot, you are limited in terms of what else you can do with it, when compared with OVH there are no limits
-or additional rules. If you plan on using the VPS for other reasons as well, make sure that they are in compliance with
-VPS Dime’s <a class="reference external" href="https://vpsdime.com/#faq">TOS</a></p>
-<p>Lastly, if you are worried about DDoS Attacks DO NOT GO with VPS Dime, they do not offer DDoS Protection.
-OVH offers reliable DDoS Protection with all of their plans.</p>
-</div>
-<div class="section" id="reasons-for-using-ovh">
-<h2>Reasons for Using OVH<a class="headerlink" href="#reasons-for-using-ovh" title="Permalink to this headline">¶</a></h2>
-<p>OVH offers a cheap price for its VPS products, while offering a balance of security and efficient power for its servers.
-All of its VPS products and Dedicated servers include DDoS protection, which is great if you are planning on using the
-VPS for only the bot and do not want limitations on what you can do with the VPS OVH is the best choice.</p>
-</div>
+<p><em>Listener Related Exceptions Only</em></p>
+<ul class="simple">
+<li>artistname</li>
+<li>foldername</li>
+</ul>
+<p>Messages sent by the Error Notifier are kept securely and only the Support Team has access. An example message
+from the error notifer can be seen below for the reload command.</p>
+<img alt="_images/example_error_report.png" src="_images/example_error_report.png" />
+<p>Still have questions regarding the Error Notifier? Ask your questions on our Discord server
+<a class="reference external" href="https://discord.gg/ubmkcsk">here</a>.</p>
 </div>
 
 
@@ -205,10 +205,8 @@ VPS for only the bot and do not want limitations on what you can do with the VPS
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="requesthosting.html" class="btn btn-neutral float-right" title="Requesting Hosting for DeviantCord" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-      
-        <a href="addinglisteners.html" class="btn btn-neutral" title="Setting Up Listeners" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="requesthosting.html" class="btn btn-neutral" title="Requesting Hosting for DeviantCord" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

@@ -1,11 +1,16 @@
 {
+    "client": "discord-server-name",
+    "errite": false,
+    "errite-channel": 0,
     "guildid": 0,
     "logchannelid": 0,
     "logging": true,
     "prefix": "$",
     "publicmode": false,
+    "region": "not-setup",
     "roleid": 0,
     "rolesetup-enabled": true,
+    "server": "server-name",
     "sync-time": 900,
-    "version": "bt-1.2.0"
+    "version": "bt-1.2.5"
 }

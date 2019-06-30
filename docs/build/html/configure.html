@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Configuring DeviantCord (Self Host) &mdash; DeviantCord bt-1.2.0 documentation</title>
+  <title>Configuring DeviantCord (Self Host) &mdash; DeviantCord bt-1.3.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="DeviantCord bt-1.2.0 documentation" href="index.html"/>
+    <link rel="top" title="DeviantCord bt-1.3.0 documentation" href="index.html"/>
         <link rel="next" title="Setting Up Permissions" href="permissions.html"/>
         <link rel="prev" title="Setting up DeviantCord" href="installpython.html"/> 
 
@@ -108,6 +108,7 @@
 <li class="toctree-l1"><a class="reference internal" href="requesthosting.html">Requesting Hosting for DeviantCord</a></li>
 <li class="toctree-l1"><a class="reference internal" href="permissions.html">Setting Up Permissions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="addinglisteners.html">Setting Up Listeners</a></li>
+<li class="toctree-l1"><a class="reference internal" href="error-reporting.html">Errite Error Notifier</a></li>
 </ul>
 
             
@@ -188,13 +189,13 @@ respectively</p>
 <h3>DeviantArt<a class="headerlink" href="#deviantart" title="Permalink to this headline">¶</a></h3>
 <p>First go to the developers page for DeviantArt <a class="reference external" href="https://www.deviantart.com/developers/">here</a></p>
 <p>Register Click “Register Your Application”</p>
-<img alt="RegisterDAApp.png" src="RegisterDAApp.png" />
+<img alt="_images/RegisterDAApp.png" src="_images/RegisterDAApp.png" />
 <p>Title the App whatever you want and click save. Since you are not using OAuth, you do not need to specify a callback URL</p>
 <p>This should take you to your apps in the Developer page revealing your clientid and clientsecret</p>
 <img alt="_images/tokensda.png" src="_images/tokensda.png" />
 <p>Open your client.json file where DeviantCord is being stored (With An Editor such as <a class="reference external" href="https://www.atom.io">Atom</a>
 or WinSCP’s default editor</p>
-<img alt="changetokens.png" src="changetokens.png" />
+<img alt="_images/changetokens.png" src="_images/changetokens.png" />
 <p>Replace the clientid and client secrets on the deviantart page with what is inside the file and save.</p>
 </div>
 <div class="section" id="discord">
@@ -207,7 +208,7 @@ go to the developers page <a class="reference external" href="https://www.devian
 <p>Save your changes</p>
 <p>Go to the Bot Category on the left</p>
 <p>Click Add Bot</p>
-<img alt="addbotuser.png" src="addbotuser.png" />
+<img alt="_images/addbotuser.png" src="_images/addbotuser.png" />
 <p><strong>You do not need to specify permissions at the bottom. The bot will already have it setup</strong></p>
 <p>Adding A Bot user to the bot will now make the app a full fledged bot! Now we need to invite the bot the server it will be running on</p>
 <p>Go to OAuth2</p>
@@ -216,7 +217,7 @@ go to the developers page <a class="reference external" href="https://www.devian
 <p>The Bot should appear on the server offine. Now go back to the bot tab and grab the token for the bot</p>
 <img alt="_images/bot_tokendiscord.png" src="_images/bot_tokendiscord.png" />
 <p>Grab the token and put in the client.json file where DeviantCord is stored.</p>
-<img alt="changetokens.png" src="changetokens.png" />
+<img alt="_images/changetokens.png" src="_images/changetokens.png" />
 <p>The bot is now setup!</p>
 </div>
 </div>
@@ -266,7 +267,7 @@ go to the developers page <a class="reference external" href="https://www.devian
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'bt-1.2.0',
+            VERSION:'bt-1.3.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

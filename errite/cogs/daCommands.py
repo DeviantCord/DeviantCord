@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 import discord
 from logging.handlers import TimedRotatingFileHandler
 import asyncio
@@ -17,6 +18,7 @@ import urllib
 
 class daCog(commands.Cog):
     """The Deviant Art component class for DeviantCord"""
+
     def __init__(self, bot):
         self.clientid = None
         self.clientsecret = None
@@ -28,19 +30,12 @@ class daCog(commands.Cog):
         self.publicmode = None
         self.datevar = datetime.datetime.now().strftime("%Y-%m-%d%H%M%S")
         self.whiletrigger = False
-        self.logname = "deviantcog-" + self.datevar
-        if fileExists(self.logname + self.datevar):
-            counter = 0
-            while not self.whiletrigger:
-                counter += 1
-                tempfilename = self.logname + "-" + str(counter)
-                if not fileExists(tempfilename):
-                    self.logname = tempfilename
-                    self.whiletrigger = True
+        self.logname = "deviantcog"
 
         self.deviantlogger = logging.getLogger("deviantcog")
         self.deviantlogger.setLevel(logging.DEBUG)
-        self.dlhandler = TimedRotatingFileHandler(self.logname, when='h',interval=12, backupCount=2000, encoding='utf-8')
+        self.dlhandler = TimedRotatingFileHandler(self.logname, when='h', interval=12, backupCount=2000,
+                                                  encoding='utf-8')
         self.dlhandler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
         self.deviantlogger.addHandler(self.dlhandler)
 
@@ -88,10 +83,15 @@ class daCog(commands.Cog):
             self.guildid = configData["guildid"]
             self.prefix = configData["prefix"]
             self.time = configData["sync-time"]
+            # Errite LLC Specific Options THIS is for DeviantCord Public Hosting, these settings are what
+            # stops the bot from executing code meant for DeviantCord Public Hosting only
+            self.errite = configData["errite"]
+            self.errite_channel = configData["errite-channel"]
         self.deviantlogger.info("Now creating tasks...")
         self.bot.loop.create_task(self.getNewToken())
         self.bot.loop.set_exception_handler(self.error_handler)
         self.bot.loop.create_task(self.syncGalleries())
+
     async def getNewToken(self):
         """
         Gets a new token from DeviantArt with no params, grabs the clientid and clientsecret from the class file.
@@ -99,10 +99,9 @@ class daCog(commands.Cog):
         """
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
-
             print("Getting new token")
             self.deviantlogger.info("TASK: Obtaining new token...")
-            self.token = dp.getToken(self.clientsecret,self.clientid)
+            self.token = dp.getToken(self.clientsecret, self.clientid)
             await asyncio.sleep(2400)
 
     async def manualgetNewToken(self):
@@ -113,12 +112,37 @@ class daCog(commands.Cog):
         self.deviantlogger.info("ManualGetToken: ManualGetToken invoked, Now sleeping for 20 minutes...")
         await asyncio.sleep(1200)
         self.deviantlogger.info("ManualGetToken: Getting new token")
-        self.token = dp.getToken(self.clientsecret,self.clientid)
+        self.token = dp.getToken(self.clientsecret, self.clientid)
         self.deviantlogger.info("ManualGetToken: Recreating Tasks...")
         self.deviantlogger.info("ManualGetToken: Creating getNewToken...")
         self.bot.loop.create_task(self.getNewToken())
         self.deviantlogger.info("ManualGetToken: Creating syncGalleries...")
         self.bot.loop.create_task(self.syncGalleries())
+
+    async def fix_error(self, amount):
+        await asyncio.sleep(amount)
+        if sys.version_info >= (3, 7):
+            pending = asyncio.all_tasks()
+        elif sys.version_info >= (3, 5, 2):
+            pending = asyncio.Task.all_tasks()
+
+        token_present = False
+        sg_present = False
+
+        for element in pending:
+            if str(element).find("coro=<daCog.getNewToken()"):
+                token_present = True
+            if str(element).find("coro=<daCog.syncGalleries()"):
+                sg_present = True
+        if not token_present:
+            self.deviantlogger.warning(
+                "manualGetToken: Detected that getNewToken task is dead, creating new task")
+            self.bot.loop.create_task(self.getNewToken())
+            self.deviantlogger.warning("manualGetToken: getNewToken created!")
+        if not sg_present:
+            self.deviantlogger.warning("manualGetToken: Detected that syncGalleries task is dead, creating new task")
+            self.bot.loop.create_task(self.syncGalleries())
+            self.deviantlogger.warning("manualGetToken: syncGalleries created!")
 
     async def softTokenRenewal(self):
         """
@@ -131,7 +155,7 @@ class daCog(commands.Cog):
         self.deviantlogger.info("softTokenRenewall: softTokenRenewalInvoked invoked, Now sleeping for 20 minutes...")
         await asyncio.sleep(1200)
         self.deviantlogger.info("softTokenRenewal: Getting new token")
-        self.token = dp.getToken(self.clientsecret,self.clientid)
+        self.token = dp.getToken(self.clientsecret, self.clientid)
         self.failedlogincount = 0
 
     async def instantTokenRenewal(self):
@@ -235,6 +259,7 @@ class daCog(commands.Cog):
                         await asyncio.sleep(self.time)
         else:
             await asyncio.sleep(self.time)
+
     @commands.command()
     async def help(self, ctx):
         self.deviantlogger.info("Help command invoked")
@@ -260,19 +285,19 @@ class daCog(commands.Cog):
         if not skiprolecheck:
             if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
                 return;
-        text = "**DeviantCord Help Guide**\n**" + self.prefix +\
+        text = "**DeviantCord Help Guide**\n**" + self.prefix + \
                "help** - Gives a list of command with explaination\n**NOTE: Inverse means that newest deviations are at the top, instead of the bottom. Use true or false to answer it**\n**" + \
                self.prefix + "addfolder** *<artist_username>* *<folder>* *<channel_id>* *<inverse>* - Adds another artists gallery folder for the bot to notify the specified channel of new deviations. Use this when your adding another folder to an artist already added \n**" + \
-               self.prefix\
+               self.prefix \
                + "addartist** *<artist_username>* *<folder>* *<channel_id>* *<inverse>*- Used to add an artist and the first folder into the bots datafile. Use this command when you are adding an artist for the first time!\n**" + \
                self.prefix + "deletefolder** *<artist_username>* *<folder>* - Deletes the listener for the folder and erases it from artdata\n **" + \
                self.prefix + "manualSync** - Will check all configured folders for new deviations instead of waiting for the timer to trigger and start the check *DO NOT SPAM THIS*\n" + "**" + \
                self.prefix + "listfolders** - Lists all the current folder listeners that the bot is listening to. \n **" + \
-               self.prefix + "updatehybrid** *<artist_username> *<folder>* *<hybrid>* - Sets the hybrid property of an existing folder listener \n **" +\
+               self.prefix + "updatehybrid** *<artist_username> *<folder>* *<hybrid>* - Sets the hybrid property of an existing folder listener \n **" + \
                self.prefix + "updateinverse** *<artist_username> *<folder>* *<inverse>* - Updates the inverse property of a existing folder listener\n" + \
                "**" + self.prefix + "updatechannel** *<artist_username> *<folder>* *<channelid>* - Updates the discord channel that notifications will be posted for an existing folder listener\n" + \
                "** __ADMIN COMMANDS__** \n" + \
-               "**WARNING: The COMMANDS BELOW WILL RESTART DEVIANTCORD, MAKE SURE YOU OR YOUR STAFF ARE NOT ADDING ANY NEW FOLDERS BEFORE EXECUTING COMMANDS BELOW**\n"+ \
+               "**" + self.prefix + "erritetoggle** - Toggles the Errite Error Notifier that lets DeviantCord Support know of issues with the bot for your Discord server.\n**ONLY FOR the Official DeviantCord Public Bot NOT SELF HOSTED**\n" + \
                "**" + self.prefix + "setprefix** *<prefix>* - Updates the prefix for all commands and reloads\n" + \
                "**" + self.prefix + "reload** - Reloads DeviantCord"
 
@@ -294,6 +319,7 @@ class daCog(commands.Cog):
                 await ctx.send("Role has been setup!")
         else:
             return
+
     @commands.command()
     async def listfolders(self, ctx):
         skiprolecheck = False
@@ -307,7 +333,8 @@ class daCog(commands.Cog):
             if ctx.guild.get_role(self.roleid) is None:
                 return
             elif ctx.author.top_role >= ctx.guild.get_role(self.roleid):
-                await ctx.send("ERROR: Another command using ArtData is currently running, please wait for that to finish!")
+                await ctx.send(
+                    "ERROR: Another command using ArtData is currently running, please wait for that to finish!")
             return
         elif not self.publicmode:
             permitted = True
@@ -324,7 +351,8 @@ class daCog(commands.Cog):
             if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
                 return;
         if self.jsonlock:
-            await ctx.send("There is currently a task going on using ArtData, so this data may change soon. You might want to run the command again soon.!")
+            await ctx.send(
+                "There is currently a task going on using ArtData, so this data may change soon. You might want to run the command again soon.!")
             # This is only reading data so there is no risk of just ignoring the json lock no need for return
 
         if permitted:
@@ -339,8 +367,10 @@ class daCog(commands.Cog):
                             output = output + "**" + folder + "**\n"
                     await ctx.send(output)
                 else:
-                    await ctx.send("Bad News... there aren't any folders. Maybe they went on vacation? I can't tell because I'm a bot, not a travel agent.")
+                    await ctx.send(
+                        "Bad News... there aren't any folders. Maybe they went on vacation? I can't tell because I'm a bot, not a travel agent.")
                     return;
+
     @commands.command()
     async def deletefolder(self, ctx, artist, folder):
         skiprolecheck = False
@@ -354,7 +384,8 @@ class daCog(commands.Cog):
             if ctx.guild.get_role(self.roleid) is None:
                 return
             elif ctx.author.top_role >= ctx.guild.get_role(self.roleid):
-                await ctx.send("ERROR: Another command using ArtData is currently running, please wait for that to finish!")
+                await ctx.send(
+                    "ERROR: Another command using ArtData is currently running, please wait for that to finish!")
             return
         elif not self.publicmode:
             permitted = True
@@ -371,23 +402,27 @@ class daCog(commands.Cog):
             if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
                 return;
         if self.jsonlock:
-            await ctx.send("There is currently a task going on using ArtData, so this data may change soon. You might want to run the command again soon.!")
+            await ctx.send(
+                "There is currently a task going on using ArtData, so this data may change soon. You might want to run the command again soon.!")
             return
         if permitted:
             self.jsonlock = True
             if artistExists(artist.lower()):
                 if folderExists(artist, folder):
                     delfolder(artist, folder)
-                    await ctx.send("Folder listener deleted successfully! I will no longer post updates for this folder. ")
+                    await ctx.send(
+                        "Folder listener deleted successfully! I will no longer post updates for this folder. ")
                     self.jsonlock = False
                     return
                 else:
                     self.jsonlock = False
-                    await ctx.send("Error: This folder does not exist, so I can't delete it! You can't just delete thin air!")
+                    await ctx.send(
+                        "Error: This folder does not exist, so I can't delete it! You can't just delete thin air!")
                     return
             else:
                 self.jsonlock = False
-                await ctx.send("Error: This artist does not have a listener. Is this a mistake? I can't tell I'm just a bot!")
+                await ctx.send(
+                    "Error: This artist does not have a listener. Is this a mistake? I can't tell I'm just a bot!")
 
     @commands.command()
     async def addfolder(self, ctx, artistname, foldername, channelid, inverted):
@@ -400,6 +435,7 @@ class daCog(commands.Cog):
             return;
         if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
             return;
+        skiprolecheck = False
         if ctx.guild.id == self.guildid:
             permitted = True
         elif not ctx.guild.id == self.guildid:
@@ -426,7 +462,6 @@ class daCog(commands.Cog):
             self.deviantlogger.info("Channel ID" + str(channelid))
             self.deviantlogger.info("Artist: " + artistname)
             self.deviantlogger.info("Foldername: " + foldername)
-            print("Inverted: " + inverted)
             isInverted = False
             if isinstance(inverted, bool) == True:
                 self.deviantlogger.info("Inverted confirmed as bool")
@@ -443,7 +478,6 @@ class daCog(commands.Cog):
                     self.deviantlogger.debug("Inverted Value confirmed as " + str(isInverted))
                     await ctx.send("Error: Invalid inverted parameter. Must use true or false")
                     return;
-            print("Checking channel")
             channel = self.bot.get_channel(int(channelid))
             if channel is None:
                 self.jsonlock = False
@@ -487,7 +521,8 @@ class daCog(commands.Cog):
                     self.deviantlogger.info("Now creating folder data for " + artistname + "in " + foldername)
                     createFolderData(artistname, requestedfolderid, foldername, channelid, isInverted)
                     await channel.send("Added " + artistname + "'s " + foldername + " gallery folder")
-                    self.deviantlogger.info("Now populating folder data with deviations for " + artistname + "in " + foldername)
+                    self.deviantlogger.info(
+                        "Now populating folder data with deviations for " + artistname + "in " + foldername)
                     await channel.send("Now populating with current deviations...")
                     with open("artdata.json", "r") as jsonFile:
                         artdata = json.load(jsonFile)
@@ -502,11 +537,8 @@ class daCog(commands.Cog):
                             + artistname + " in folder " + foldername)
                         self.deviantlogger.info("Finished populating folder!")
 
-
-
     @commands.command()
     async def updateinverse(self, ctx, artistname, foldername, inverse):
-        print("Triggered")
         skiprolecheck = False
         if ctx.guild is None:
             return
@@ -535,16 +567,13 @@ class daCog(commands.Cog):
             await ctx.send("ERROR: Another command using ArtData is currently running, please wait for that to finish!")
             return;
         if permitted:
-            print("Entered Permitted")
             self.jsonlock = True
             if isinstance(inverse, bool):
-                print("Bool")
                 self.deviantlogger.info("New Inverse Instance of bool")
             elif isinstance(inverse, str):
                 self.deviantlogger.info("New Inverse Instance of String")
                 self.deviantlogger.debug("OBTAINED INVERSE: " + inverse)
                 self.deviantlogger.info("CHECK: " + inverse.lower())
-                print("Past?")
                 print(inverse.lower())
                 if inverse.lower() == "true":
                     print("Inverse is true")
@@ -572,10 +601,8 @@ class daCog(commands.Cog):
                 self.jsonlock = False
                 await ctx.send("I do not have " + artistname + "in my datafiles is this the correct artist?")
 
-
     @commands.command()
     async def updatehybrid(self, ctx, artistname, foldername, inverse):
-        print("Triggered")
         skiprolecheck = False
         if ctx.guild is None:
             return
@@ -638,7 +665,6 @@ class daCog(commands.Cog):
                 self.jsonlock = False
                 await ctx.send("I do not have " + artistname + "in my datafiles is this the correct artist?")
 
-
     @commands.command()
     async def updatechannel(self, ctx, artistname, foldername, newchannelid):
         skiprolecheck = False
@@ -693,7 +719,8 @@ class daCog(commands.Cog):
                         return;
                 except KeyError:
                     self.jsonlock = False
-                    self.deviantlogger.error("Encountered KeyError when verifying newchannelid...newchannelid is not a discordchannelid")
+                    self.deviantlogger.error(
+                        "Encountered KeyError when verifying newchannelid...newchannelid is not a discordchannelid")
                     await ctx.send("Error: Invalid discord channel id provided...")
                     return;
                 if channel.guild is None:
@@ -893,7 +920,6 @@ class daCog(commands.Cog):
                             "Finished populating...this channel will now receive updates on new deviations by "
                             + artistname + " in folder " + foldername)
 
-
     @help.error
     async def help_errorhandler(self, ctx, error):
         if isinstance(error, commands.NoPrivateMessage):
@@ -905,7 +931,6 @@ class daCog(commands.Cog):
         else:
             self.deviantlogger.error("ERROR ENCOUNTERED with help command Error: " + str(error))
             self.deviantlogger.exception(error)
-
 
     @updateinverse.error
     @updatehybrid.error
@@ -943,7 +968,6 @@ class daCog(commands.Cog):
             else:
                 self.deviantlogger.error(error)
                 self.deviantlogger.exception(error)
-
 
     @updatechannel.error
     async def updatechannel_errorhandler(self, ctx, error):
@@ -1009,7 +1033,6 @@ class daCog(commands.Cog):
                 self.deviantlogger.error(error)
                 self.deviantlogger.exception(error)
 
-
     @addfolder.error
     async def addfolder_errorhandler(self, ctx, error):
         self.jsonlock = False;
@@ -1048,7 +1071,8 @@ class daCog(commands.Cog):
                     self.deviantlogger.error("addfolder command returned a HTTP 401, ")
                     await self.softTokenRenewal()
                 if error.code == 503:
-                    self.deviantlogger.error("addfolder command returned a HTTP 503, DA Servers are down for maintenance ")
+                    self.deviantlogger.error(
+                        "addfolder command returned a HTTP 503, DA Servers are down for maintenance ")
                     await ctx.send("Error: DA's servers are down for maintenance. Please wait a few minutes");
                 if error.code == 500:
                     self.deviantlogger.error("addfolder command returned a HTTP 500, Internal Error ")
@@ -1064,7 +1088,7 @@ class daCog(commands.Cog):
                 self.deviantlogger.exception(error)
 
     @addartist.error
-    async def addartist_errorhandler(self,ctx, error):
+    async def addartist_errorhandler(self, ctx, error):
         self.jsonlock = False;
         try:
             if ctx.guild.id is None:
@@ -1102,8 +1126,10 @@ class daCog(commands.Cog):
                     self.deviantlogger.info("Invoking softTokenRenewal")
                     await self.softTokenRenewal()
                 if error.code == 503:
-                    self.deviantlogger.error("AddArtist command returned a HTTP 503, DA Servers are down for maintenance ")
-                    await ctx.send("Error: DA's servers are down, check DeviantArt's Twitter and DeviantCord Support for more information");
+                    self.deviantlogger.error(
+                        "AddArtist command returned a HTTP 503, DA Servers are down for maintenance ")
+                    await ctx.send(
+                        "Error: DA's servers are down, check DeviantArt's Twitter and DeviantCord Support for more information");
                 if error.code == 500:
                     self.deviantlogger.error("AddArtist command returned a HTTP 500, Internal Error ")
                     await ctx.send("DA's servers returned a Error 500 Internal Error. Try again in a few minutes");
@@ -1119,16 +1145,19 @@ class daCog(commands.Cog):
                 self.deviantlogger.error(error)
                 self.deviantlogger.exception(error)
 
-
-    async def error_handler(self,loop, context):
+    def error_handler(self, loop, context):
         self.jsonlock = False
         print("Exception: ", context['exception'])
         logger = logging.getLogger("deviantcog")
+        logger.exception(context["exception"])
+        if self.failedlogincount >= 3:
+            self.failedlogincount = 0
         if str(context['exception']) == "HTTP Error 401: Unauthorized":
             self.failedlogincount = self.failedlogincount + 1
             print("Your DA info is invalid, please check client.json to see if it matches your DA developer page")
-            logger.error("Your DA info is invalid, please check client.json to see if it matches your DA developer page")
-            while self.failedlogincount <=3:
+            logger.error(
+                "Your DA info is invalid, please check client.json to see if it matches your DA developer page")
+            while self.failedlogincount <= 3:
                 if self.instantTokenDiagnosisRenewal():
                     break
                 else:
@@ -1137,31 +1166,37 @@ class daCog(commands.Cog):
             if self.failedlogincount >= 3:
                 print("Exceeded 3 failed login limit. If this was hit when starting up then you need to check"
                       "your DA info in client.json..Attempting softtokenrenewal ")
-                await self.softTokenRenewal()
-
+                loop.run_until_complete(self.fix_error(1200))
 
         if str(context['exception']) == "HTTP Error 400: Bad request":
             logger.error("HTTP Error 400 encountered, ignoring...")
         elif str(context['exception']).find("HTTP Error 400") > -1:
-            logger.error("HTTP Error 400 encountered, ignoring...")
+            logger.error("HTTP Error 400 encountered")
+            loop.run_until_complete(self.fix_error(120))
+        elif str(context['exception']).find("HTTP Error 500") > -1:
+            logger.error("HTTP Error 500 Encountered")
+            loop.run_until_complete(self.fix_error(1200))
         elif str(context['exception']).find("HTTP Error 503") > -1:
             logger.error("Encountered a HTTP Error 503: DA's servers are likely down. Now creating task to renew token"
                          "in 20 minutes")
-            await self.manualgetNewToken()
+            loop.run_until_complete(self.fix_error(2400))
+            # loop.run_until_complete(self.manualgetNewToken())
         elif str(context['exception']).find("HTTP Error 429") > -1:
             logger.error("Encountered a HTTP Error 429: Received Rate Limit response, toning down responses for "
                          "in 20 minutes")
-            await self.rateLimitMeasure()
+            loop.run_until_complete(self.fix_error(600))
+            # loop.run_until_complete(self.rateLimitMeasure())
         else:
             print("Exception encountered: ", context['exception'])
             logger.error("Exception Encountered " + str(context['exception']))
+            loop.run_until_complete(self.fix_error(500))
 
 
 def setup(bot):
-        bot.remove_command("help")
-        bot.add_cog(daCog(bot))
+    bot.remove_command("help")
+    bot.add_cog(daCog(bot))
 
-        @bot.event
-        async def on_command_error(ctx, error):
-            if isinstance(error, CommandNotFound):
-                return
+    @bot.event
+    async def on_command_error(ctx, error):
+        if isinstance(error, CommandNotFound):
+            return

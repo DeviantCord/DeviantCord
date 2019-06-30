@@ -19,6 +19,14 @@ def convert():
         if configdata["version"] == "bt-1.0.1":
             triggered = True
             configdata["version"] = "bt-1.2.0"
+        if configdata["version"] == "bt-1.2.0":
+            triggered = True
+            configdata["errite"] = False
+            configdata["errite-channel"] = 0
+            configdata["region"] = "not-setup"
+            configdata["server"] = "server-name"
+            configdata["client"] = "discord-server-name"
+            configdata["version"] = "bt-1.2.5"
         if triggered:
             jsonFile = open("config.json", "w+")
             jsonFile.write(json.dumps(configdata, indent=4,sort_keys=True))
