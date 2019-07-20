@@ -1,0 +1,86 @@
+FAQ
+============================
+
+**Is DeviantCord Secure**
+DeviantCord is secure, it runs when a command is ran to make sure that the user that used the command is authorized to
+use the command is executing the command from the target server and not another server. However it doesn't hurt to limit
+DeviantCord to be able to see messages/send messages in channels meant for the bot.
+
+**Can the DeviantCord Bot make modifications to my Discord Account?**
+No, bot users cannot make changes to your account for the public bot and self hosted DeviantCord bots.
+
+**When I click view image source link from an image posted by DeviantCord I get a spooky link notice for wixmp**
+Wix owns DeviantArt and stores deviation images on its Cloud Service. This is why the link is wixmp.com and not
+DeviantArt. You can see this by right clicking the image url on the deviantart page and finding that it goes to wixmp.
+
+**What measures are put in place to protect the servers housing DeviantCord**
+DeviantCord has many measures such as:
+- Brute Force Detection
+- 2FA on all accounts in regards to Hosting Provider Accounts
+- 2FA on all Discord Accounts linked to the bot.
+- 2FA Key Encryption to login
+- DDoS Protection on all servers with no limit on protection
+
+**Does DeviantCord have DDoS Protection**
+Yes we have DDoS Protection for all of our production servers. When a DDoS Attack occurs, measures will automatically
+activate without interrupting legitmate usage.
+
+**There are rumors about X person DDoSing DeviantCord.**
+No need to worry, as said in the previous question we have very reliable DDoS Protection that will activate automatically
+on all of our servers.
+
+**How are security vulnerabilities taken care of for servers housing DeviantCord?**
+We check many CVE websites for our servers daily to make sure that there is nothing that needs patching, not to
+mention we check updates on our servers daily and will apply them depending on what the updates do.
+
+For security related updates, we will do what is necessary to apply security updates.
+
+In regards to API Vulnerabilities for any libraries that DeviantCord uses, we keep a sharp eye on announcements
+by the developers of libraries we use. In this case urllib3 and DiscordPy
+
+**How are version upgrades handled for the public bot?**
+
+In most cases bug Fixes will be applied to all server being hosted by us upon the updates being posted to Github*
+Updates always go through a testing process to make sure everything is functioning properly before a release.*
+When a new update is finished and released an announcement will be posted in the maintenance text chat.
+However if there is an update that we feel may cause issues in Discord Servers we will wait a couple days to get in
+touch with server owners before applying it to the public bot.
+
+**What Discord ID's does the public bot use?**
+    .. warning::
+    Make sure that you are looking at the latest version of the documentation. Otherwise there may be DiscordID's missing.
+
+- DeviantCord#4637
+- DeviantCord#1257
+- TestDeviantCord#0062
+
+**I found one of the bots on my server not on this list.**
+First make sure that this is the latest version of the documentation. If this is the latest version of the documentation.
+Contact DeviantCord Support
+
+**Who has access to the bots token?**
+Only Michael (The Creator/Lead Dev) has access to the bots token.
+
+**Are there any backups for our bots data?**
+
+All data is backed up daily on another server. Backups are retained for one month before being deleted.
+
+
+**Who will have access to the public bots files?**
+
+Only Errite Employee's and certain staff members will be given access outside of server owners in order to fix issues
+and maintain the bot. Those who are given access are required to have a large amount of experience with Errite or with
+the team for them to have access to the files. Not to mention they are all under legal agreements that we will not be
+detailing for obvious reasons.
+
+**What is Errite?**
+
+Errite is an organization based out of Chicago that primarily specializes in Art, Game Development, and software
+development. Most of the individuals behind the creation of the bot are in this organization.
+
+
+**Is there any difference between the self-hosting and the hosting you provide?**
+
+No, there is no major difference at this time in terms of functionality. The files provided on Github are the same ones
+used on the hosting we provide. The only difference is that we handle the management of the bot from the hosting side of
+things such as handling maintenance, and upgrading the bot.
