@@ -46,6 +46,18 @@ This section is for those who want us to host the bot, remember that you need to
    :caption: Hosting By Us:
 
 
+Important Information For DeviantCord
+=======================================
+This section is in regards to information, and announcments regarding Security for DeviantCord, the Community.
+
+.. toctree::
+   security-questions
+   community-events
+   false-positives
+   security-changelog
+   :maxdepth: 2
+   :caption: Important Information List:
+
 Indices and tables
 ==================
 
