@@ -10,6 +10,8 @@
       <change beforePath="$PROJECT_DIR$/changelog.md" beforeDir="false" afterPath="$PROJECT_DIR$/changelog.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cogs/daCommands.py" beforeDir="false" afterPath="$PROJECT_DIR$/cogs/daCommands.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/errite/cogs/daCommands.py" beforeDir="false" afterPath="$PROJECT_DIR$/errite/cogs/daCommands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/errite/config/converter.py" beforeDir="false" afterPath="$PROJECT_DIR$/errite/config/converter.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/errite/da/daParser.py" beforeDir="false" afterPath="$PROJECT_DIR$/errite/da/daParser.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -34,15 +36,6 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/artdata.json">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="30">
-              <caret line="2" column="1" selection-start-line="2" selection-start-column="1" selection-end-line="2" selection-end-column="1" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/artdataempty.json">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="90">
@@ -66,20 +59,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cogs/daCommands.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="516">
-              <caret line="1746" column="18" selection-start-line="1746" selection-start-column="18" selection-end-line="1746" selection-end-column="18" />
-              <folding>
-                <element signature="e#625#636#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/errite/cogs/daCommands.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret lean-forward="true" />
+            <state relative-caret-position="172">
+              <caret line="166" column="25" selection-start-line="166" selection-start-column="19" selection-end-line="166" selection-end-column="25" />
               <folding>
                 <element signature="e#625#636#0" expanded="true" />
               </folding>
@@ -88,6 +69,26 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/errite/da/daParser.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-1370">
+              <caret line="550" column="71" selection-start-line="550" selection-start-column="71" selection-end-line="550" selection-end-column="71" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/errite/cogs/daCommands.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
+              <folding>
+                <element signature="e#625#636#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Bot.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="225">
@@ -101,7 +102,7 @@
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
             <state split_layout="SPLIT">
               <first_editor relative-caret-position="180">
-                <caret line="12" column="26" selection-start-line="12" selection-start-column="26" selection-end-line="12" selection-end-column="26" />
+                <caret line="12" selection-start-line="12" selection-end-line="12" />
               </first_editor>
               <second_editor />
             </state>
@@ -135,7 +136,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>global</find>
       <find>artist.lower</find>
       <find>artist</find>
       <find>prefix</find>
@@ -165,6 +165,7 @@
       <find>print</find>
       <find>deleteallfolder</find>
       <find>addall</find>
+      <find>Inside</find>
     </findStrings>
     <replaceStrings>
       <replace>argument</replace>
@@ -211,7 +212,6 @@
         <option value="$PROJECT_DIR$/docs/source/permissions.rst" />
         <option value="$PROJECT_DIR$/artdataempty.json" />
         <option value="$PROJECT_DIR$/docs/source/requesthosting.rst" />
-        <option value="$PROJECT_DIR$/errite/da/daParser.py" />
         <option value="$PROJECT_DIR$/artdata.json" />
         <option value="$PROJECT_DIR$/cogs/backendCommands.py" />
         <option value="$PROJECT_DIR$/errite/config/converter.py" />
@@ -233,10 +233,11 @@
         <option value="$PROJECT_DIR$/docs/source/security-questions.rst" />
         <option value="$PROJECT_DIR$/docs/source/addinglisteners.rst" />
         <option value="$PROJECT_DIR$/docs/source/conf.py" />
-        <option value="$PROJECT_DIR$/changelog.md" />
         <option value="$PROJECT_DIR$/cogs/daCommands.py" />
         <option value="$PROJECT_DIR$/errite/cogs/daCommands.py" />
         <option value="$PROJECT_DIR$/Bot.py" />
+        <option value="$PROJECT_DIR$/changelog.md" />
+        <option value="$PROJECT_DIR$/errite/da/daParser.py" />
       </list>
     </option>
   </component>
@@ -533,11 +534,13 @@
       <workItem from="1563800231006" duration="92000" />
       <workItem from="1563801680075" duration="244000" />
       <workItem from="1563802389464" duration="64000" />
+      <workItem from="1563802850604" duration="12000" />
+      <workItem from="1563804731498" duration="251000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="201033000" />
+    <option name="totallyTimeSpent" value="201296000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -551,7 +554,7 @@
   <component name="ToolWindowManager">
     <frame x="67" y="25" width="1853" height="1055" extended-state="6" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4957806" visible="true" weight="0.3370227" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4957806" visible="true" weight="0.34477034" />
       <window_info id="Structure" order="1" sideWeight="0.5042194" side_tool="true" weight="0.24966975" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -677,16 +680,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/errite/da/daParser.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2772">
-          <caret line="158" selection-start-line="158" selection-end-line="158" />
-          <folding>
-            <element signature="e#0#46#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/docs/source/security-changelog.rst">
       <provider selected="true" editor-type-id="restructured-text-editor" />
     </entry>
@@ -743,13 +736,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/changelog.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="180">
-            <caret line="12" column="26" selection-start-line="12" selection-start-column="26" selection-end-line="12" selection-end-column="26" />
-          </first_editor>
-          <second_editor />
+    <entry file="file://$PROJECT_DIR$/errite/cogs/daCommands.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#625#636#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -762,30 +754,37 @@
     <entry file="file://$PROJECT_DIR$/docs/source/requesthosting.rst">
       <provider selected="true" editor-type-id="restructured-text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/cogs/daCommands.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="516">
-          <caret line="1746" column="18" selection-start-line="1746" selection-start-column="18" selection-end-line="1746" selection-end-column="18" />
-          <folding>
-            <element signature="e#625#636#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/errite/cogs/daCommands.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret lean-forward="true" />
-          <folding>
-            <element signature="e#625#636#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Bot.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="225">
           <caret line="36" column="36" selection-start-line="36" selection-start-column="36" selection-end-line="36" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/changelog.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="180">
+            <caret line="12" selection-start-line="12" selection-end-line="12" />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cogs/daCommands.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="172">
+          <caret line="166" column="25" selection-start-line="166" selection-start-column="19" selection-end-line="166" selection-end-column="25" />
+          <folding>
+            <element signature="e#625#636#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/errite/da/daParser.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1370">
+          <caret line="550" column="71" selection-start-line="550" selection-start-column="71" selection-end-line="550" selection-end-column="71" />
         </state>
       </provider>
     </entry>

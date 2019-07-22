@@ -541,17 +541,14 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
                 # print(data);
                 tmp = data["has_more"]
                 if tmp == True:
-                    print("Inside")
                     logger.info("For loop started for getGalleryFolder")
                     for uuid in data['results']:
                         # print(uuid["deviationid"])
                         if (findDuplicateElementArray(artdata["art-data"][artist.lower()]["folders"][foldername]["processed-uuids"], uuid["deviationid"]) == False):
                             logger.info("True Inverse: , UUID " + uuid["deviationid"] + "passed")
-                            print("Entered")
                             deviant_info["profile-pic-url"] = str(uuid["author"]["usericon"])
                             print(deviant_info["profile-pic-url"])
                             deviant_info["da-urls"].append(uuid["url"])
-                            print("after")
                             deviant_info["photo-url"].append(uuid["content"]["src"])
                             artdata["art-data"][artist.lower()]["folders"][foldername]["processed-uuids"].append(uuid["deviationid"])
 

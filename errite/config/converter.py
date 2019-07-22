@@ -60,7 +60,9 @@ def convert():
                 artdata["version"] = "bt-1.4.0"
                 if len(artdata["artist_store"]) > 0:
                     for artist in artdata["artist_store"]["used-artists"]:
+                        artdata["art-data"][artist]["folders"] = {}
                         for folder in artdata["art-data"][artist]["folder-list"]:
+                            print(folder)
                             artdata["art-data"][artist]["folders"][folder] = artdata["art-data"][artist][folder]
                             del artdata["art-data"][artist][folder]
                         artdata["art-data"][artist]["folders"]["folder-list"] = artdata["art-data"][artist]["folder-list"]

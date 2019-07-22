@@ -152,10 +152,6 @@ class daCog(commands.Cog):
         print("Starting dump")
         pending = asyncio.Task.all_tasks()
         for element in pending:
-            print(str(element))
-        print("compare")
-        for element in pending:
-            print(element)
             if str(element).find("coro=<daCog.getNewToken()") > -1:
                 print("Found getNewToken")
                 token_present = True
@@ -1715,6 +1711,9 @@ class daCog(commands.Cog):
 
         if str(context['exception']) == "HTTP Error 400: Bad request":
             logger.error("HTTP Error 400 encountered, ignoring...")
+        elif str(context['exception']).find("NoneType") > -1:
+            print("The error above is pointless, you can ignore this. Regenerating syncGalleryTask")
+            loop.run_until_complete(self.fix_error(10))
         elif str(context['exception']).find("HTTP Error 400") > -1:
             logger.error("HTTP Error 400 encountered")
             loop.run_until_complete(self.fix_error(120))

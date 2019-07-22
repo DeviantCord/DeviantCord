@@ -34,7 +34,7 @@ from os.path import isfile, join
 
 # DeviantCord Message Variables (Not all are here)
 invalid_cog_errite = "Invalid cog found on reload for discord server "
-print("Starting DeviantCord bt-1.4.1")
+print("Starting DeviantCord bt-1.4.2")
 print("If this causes a HTTP 401 Error when trying to load daCommands your DeviantArt info is wrong. Set it in client.json")
 started = True
 configData = {}
