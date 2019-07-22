@@ -1,5 +1,7 @@
 import json
 import logging
+
+
 def findDuplicateJsonElementGallery(file, element, artist,foldername):
     """
             Method ran to check if a Deviation UUID is already in the ArtData json file.
@@ -18,19 +20,19 @@ def findDuplicateJsonElementGallery(file, element, artist,foldername):
     with open("artdata.json", "r") as jsonFile:
         artdata = json.load(jsonFile)
         jsonFile.close();
-        for storeduuid in artdata["art-data"][artist.lower()][foldername]["processed-uuids"]:
+        for storeduuid in artdata["art-data"][artist.lower()]["folders"][foldername]["processed-uuids"]:
             if storeduuid == element:
                 # print("Compared element: " + element + "vs " + storeduuid)
                 # print("Triggered Found match")
                 return True;
         return False;
 
-def findDuplicateElementArray(array, element, artist,foldername):
+def findDuplicateElementArray(array, element):
     """
             Method ran to check if a Deviation UUID is already in the array.
 
             :param array: The array that holds the current processed uuids for the particular artist
-            :type array: array
+            :type file: string
             :param element: The UUID we are comparing with the JSON file.
             :type element: string
             :param artist: UNUSED TO BE REMOVED The name of the artist who's deviations we are working with. This is needed for json references
@@ -39,12 +41,30 @@ def findDuplicateElementArray(array, element, artist,foldername):
             :type foldername: string
             :return: bool
     """
-    # TODO Change the docstring for this method
     logger = logging.getLogger('errite.da.jsonTools')
     for stored_uuid in array:
         if stored_uuid == element:
+            logger.info("Found " + element + " im array")
             return True
     return False
+
+
+
+def hasAllFolder(artist):
+    logger = logging.getLogger('errite.da.jsonTools')
+    with open("artdata.json", "r") as jsonFile:
+        try:
+            artdata = json.load(jsonFile)
+            jsonFile.close()
+
+            if artdata["art-data"][artist.lower()]["all"]["currentindex"] == 255:
+                return True
+            else:
+                return True
+        except KeyError:
+            # print("Folder check, revealed found that the folder is not present in ArtData.")
+            return False
+
 
 def folderExists(artist,foldername):
     """
@@ -62,7 +82,7 @@ def folderExists(artist,foldername):
             artdata = json.load(jsonFile)
             jsonFile.close()
 
-            if artdata["art-data"][artist.lower()][foldername]["artist-folder-id"] is not None:
+            if artdata["art-data"][artist.lower()]["folders"][foldername]["artist-folder-id"] is not None:
                 return True
             else:
                 return True
@@ -83,13 +103,94 @@ def artistExists(artist):
         try:
             artdata = json.load(jsonFile)
             jsonFile.close()
-            if artdata["art-data"][artist.lower()] is not None:
+            if artdata["art-data"][artist.lower()]["folders"] is not None:
                 return True
             else:
                 return True
         except KeyError:
             # print("Does not exist")
             return False
+
+def allartistExists(artist):
+    """
+            Method ran to check if an allartist is already in the ArtData json file.
+
+            :param artist: The name of the artist who's deviations we are working with. This is needed for json references
+            :type artist: string
+            :return: bool
+    """
+    logger = logging.getLogger('errite.da.jsonTools')
+    with open("artdata.json", "r") as jsonFile:
+        try:
+            artdata = json.load(jsonFile)
+            jsonFile.close()
+            if artdata["art-data"][artist.lower()]["all-folder"] is not None:
+                return True
+            else:
+                return True
+        except KeyError:
+            # print("Does not exist")
+            return False
+
+def localFoldersExists(dictionary,artist):
+    """
+            Method ran to check if there are folders already in the ArtData json file.
+
+            :param artist: The name of the artist who's deviations we are working with. This is needed for json references
+            :type artist: string
+            :return: bool
+    """
+    logger = logging.getLogger('errite.da.jsonTools')
+    logger.info("localFolderExists invoked for artist " + artist)
+    try:
+        if dictionary["art-data"][artist.lower()]["folders"] is not None:
+            return True
+        else:
+            return True
+    except KeyError:
+        return False
+
+
+def createArtistDataAll(artist, channelid, inverted):
+    """
+            Method ran to create a new artist in the ArtData json file. With no new folder, but an allfolder only
+
+            :param artist: The name of the artist who's deviations we are working with. This is needed for json references
+            :type artist: string
+            :param channelid: The Discord channelid that notifications will be posted to.
+            :type channelid: int
+            :param inverted: Whether the newest deviations are posted at the top.
+    """
+    logger = logging.getLogger('errite.da.jsonTools')
+    newartistcontent = {}
+    emptyauthor = {}
+    workplease = {}
+    stringarray = ['test']
+    folderstep = {}
+    folderarray = []
+    with open("artdata.json", "r") as jsonFile:
+        artdata = json.load(jsonFile)
+        jsonFile.close()
+        # newartistcontent['artist-folder-name'] = foldername
+        newartistcontent["discord-channel-id"] = int(channelid)
+        if inverted:
+            newartistcontent["inverted"] = True
+        if not inverted:
+            newartistcontent["inverted"] = False
+        newartistcontent["currentindex"] = 0
+        newartistcontent["offset"] = 0
+        newartistcontent["uuid_storage"] = []
+        if not localFoldersExists(artdata, artist):
+            artdata["art-data"][artist.lower()] = emptyauthor
+            artdata["art-data"][artist.lower()]["folders"] = folderstep
+            print("past")
+            artdata["art-data"][artist.lower()]["folders"]["folder-list"] = folderarray
+            print("HERE??")
+        artdata["art-data"][artist.lower()]["all-folder"] = newartistcontent
+        jsonFile = open("artdata.json", "w+")
+        artdata["artist_store"]["all-folder-artists"].append(artist.lower())
+        jsonFile.write(json.dumps(artdata, indent=4,sort_keys=True))
+        jsonFile.close()
 
 
 def createArtistData(artist, folderid, foldername, channelid, inverted):
@@ -108,6 +209,7 @@ def createArtistData(artist, folderid, foldername, channelid, inverted):
     """
     logger = logging.getLogger('errite.da.jsonTools')
     newartistcontent = {}
+    workplease = {}
     emptyauthor = {}
     stringarray = ['test']
     folderarray = []
@@ -126,8 +228,9 @@ def createArtistData(artist, folderid, foldername, channelid, inverted):
         newartistcontent['processed-uuids'] = stringarray
         folderarray.append(foldername)
         artdata["art-data"][artist.lower()] = emptyauthor
-        artdata["art-data"][artist.lower()]['folder-list'] = folderarray
-        artdata["art-data"][artist.lower()][foldername] = newartistcontent
+        artdata["art-data"][artist.lower()]["folders"] = workplease
+        artdata["art-data"][artist.lower()]["folders"]['folder-list'] = folderarray
+        artdata["art-data"][artist.lower()]["folders"][foldername] = newartistcontent
         jsonFile = open("artdata.json", "w+")
         artdata["artist_store"]["used-artists"].append(artist.lower())
         jsonFile.write(json.dumps(artdata, indent=4,sort_keys=True))
@@ -166,9 +269,9 @@ def createFolderData(artist, folderid, foldername, channelid, inverted):
             newartistcontent['hybrid'] = True
         newartistcontent['processed-uuids'] = stringarray
         folderarray.append(foldername)
-        artdata["art-data"][artist.lower()][foldername] = newartistcontent
+        artdata["art-data"][artist.lower()]["folders"][foldername] = newartistcontent
         jsonFile = open("artdata.json", "w+")
-        artdata["art-data"][artist.lower()]["folder-list"].append(foldername)
+        artdata["art-data"][artist.lower()]["folders"]['folder-list'].append(foldername)
         jsonFile.write(json.dumps(artdata, indent=4,sort_keys=True))
         jsonFile.close()
 
@@ -190,7 +293,7 @@ def updateDiscordChannel(artist, foldername, newchannelid):
         artdata = json.load(jsonFile)
         jsonFile.close()
         print("New ChannelID ", newchannelid)
-        artdata["art-data"][artist.lower()][foldername]["discord-channel-id"] = int(newchannelid)
+        artdata["art-data"][artist.lower()]["folders"][foldername]["discord-channel-id"] = int(newchannelid)
         jsonFile = open("artdata.json", "w+")
         jsonFile.write(json.dumps(artdata, indent=4,sort_keys=True))
         jsonFile.close()
@@ -213,11 +316,16 @@ def updatehybridproperty(artist, foldername, hybrid):
         artdata = json.load(jsonFile)
         jsonFile.close()
         logger.info("UpdateHybrid: Updating Artdata")
-        if bool(hybrid) is True:
-            artdata["art-data"][artist.lower()][foldername]["hybrid"] = True
-        elif bool(hybrid) is False:
-            artdata["art-data"][artist.lower()][foldername]["hybrid"] = False
+        if str(hybrid).lower() == "true":
+            print("TRue inside")
+            logger.info("UpdateHybrid: Changing hybrid in list to True")
+            artdata["art-data"][artist.lower()]["folders"][foldername]["hybrid"] = True
+        elif str(hybrid).lower() == "false":
+            print("False inside")
+            logger.info("UpdateHybrid: Changing hybrid in list to False")
+            artdata["art-data"][artist.lower()]["folders"][foldername]["hybrid"] = False
         logger.info("UpdateHybrid: Writing to JSON file")
+        print(str(artdata["art-data"][artist.lower()]["folders"][foldername]["hybrid"]))
         jsonFile = open("artdata.json", "w+")
         jsonFile.write(json.dumps(artdata, indent=4,sort_keys=True))
         jsonFile.close()
@@ -241,11 +349,13 @@ def updateinverseproperty(artist, foldername, inverse):
         jsonFile.close()
         print("New Inverse ", inverse)
         logger.info("UpdateInverse: Updating Artdata")
-        artdata["art-data"][artist.lower()][foldername]["inverted-folder"] = bool(inverse)
-        if bool(inverse) is True:
-            artdata["art-data"][artist.lower()][foldername]["hybrid"] = False
-        elif bool(inverse) is False:
-            artdata["art-data"][artist.lower()][foldername]["hybrid"] = True
+        # artdata["art-data"][artist.lower()]["folders"][foldername]["inverted-folder"] = bool(inverse)
+        if str(inverse).lower() == "false":
+            print("Entered false")
+            artdata["art-data"][artist.lower()]["folders"][foldername]["inverse-folder"] = False
+        elif str(inverse).lower() == "true":
+            print("Entered true")
+            artdata["art-data"][artist.lower()]["folders"][foldername]["inverse-folder"] = True
         logger.info("UpdateInverse: Writing to JSON file")
         jsonFile = open("artdata.json", "w+")
         jsonFile.write(json.dumps(artdata, indent=4,sort_keys=True))
@@ -353,17 +463,52 @@ def delfolder(artist, folder):
         tempartdata = json.load(jsonFile)
         jsonFile.close()
         correctartistform = artist.lower()
-        if len(tempartdata["art-data"][artist.lower()]["folder-list"]) == 1:
-            del tempartdata["art-data"][artist.lower()]
-            for element in tempartdata["artist_store"]["used-artists"]:
-                print(element)
-            tempartdata["artist_store"]["used-artists"].remove(correctartistform)
-        elif len(tempartdata["art-data"][artist.lower()]["folder-list"]) > 1:
-            del tempartdata["art-data"][artist.lower()][folder]
-            tempartdata["art-data"][artist.lower()]["folder-list"].remove(folder)
+        if len(tempartdata["art-data"][artist.lower()]["folders"]['folder-list']) == 1:
+            if not allartistExists(artist.lower()):
+                del tempartdata["art-data"][artist.lower()]
+                for element in tempartdata["artist_store"]["used-artists"]:
+                    print(element)
+                tempartdata["artist_store"]["used-artists"].remove(correctartistform)
+            else:
+                del tempartdata["art-data"][artist.lower()]["folders"][folder]
+                tempartdata["art-data"][artist.lower()]["folders"]['folder-list'].remove(folder)
+                tempartdata["artist_store"]["used-artists"].remove(correctartistform)
+        elif len(tempartdata["art-data"][artist.lower()]["folders"]['folder-list']) > 1:
+            del tempartdata["art-data"][artist.lower()]["folders"][folder]
+            tempartdata["art-data"][artist.lower()]["folders"]['folder-list'].remove(folder)
         jsonFile = open("artdata.json", "w+")
         jsonFile.write(json.dumps(tempartdata, indent=4, sort_keys=True))
         jsonFile.close()
+
+def delAllFolder(artist):
+    """
+            Method ran to delete a folder in the ArtData json file.
+
+            :param artist: The name of the artist who's deviations we are working with. This is needed for json references
+            :type artist: string
+    """
+    print("delAllFolder jsonTool method called")
+    print("IF there is no message after this. This means that the artist variable is causing it.")
+    print("ARTIST: " + artist.lower())
+    with open("artdata.json", "r") as jsonFile:
+        tempartdata = json.load(jsonFile)
+        jsonFile.close()
+        print("Artist " + artist)
+        print("Attempting to delete key")
+        del tempartdata["art-data"][artist.lower()]["all-folder"]
+        print("Past key")
+        print("Removinng from all-folder-artists")
+        tempartdata["artist_store"]["all-folder-artists"].remove(artist.lower())
+        print("Past removal")
+        if len(tempartdata["art-data"][artist.lower()]["folders"]['folder-list']) == 0:
+            if findDuplicateElementArray(tempartdata["artist_store"]["used-artists"], artist.lower()):
+                tempartdata["artist_store"]["used-artists"].remove(artist.lower())
+            del tempartdata["art-data"][artist.lower()]
+        jsonFile = open("artdata.json", "w+")
+        jsonFile.write(json.dumps(tempartdata, indent=4, sort_keys=True))
+        jsonFile.close()
+
+
 
 def dumpURLListDebug(list):
     for element in list:

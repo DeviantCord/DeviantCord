@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>errite.da package &mdash; DeviantCord bt-1.3.0 documentation</title>
+  <title>errite.da package &mdash; DeviantCord bt-1.4.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="DeviantCord bt-1.3.0 documentation" href="index.html"/> 
+    <link rel="top" title="DeviantCord bt-1.4.0 documentation" href="index.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -178,6 +178,17 @@
 </div>
 <div class="section" id="module-errite.da.daParser">
 <span id="errite-da-daparser-module"></span><h2>errite.da.daParser module<a class="headerlink" href="#module-errite.da.daParser" title="Permalink to this headline">¶</a></h2>
+<p>Copyright 2019 Errite Games LLC / ErriteEpticRikez</p>
+<p>Licensed under the Apache License, Version 2.0 (the “License”);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at</p>
+<blockquote>
+<div><a class="reference external" href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></div></blockquote>
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.</p>
 <dl class="function">
 <dt id="errite.da.daParser.checkTokenValid">
 <code class="descclassname">errite.da.daParser.</code><code class="descname">checkTokenValid</code><span class="sig-paren">(</span><em>token</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.checkTokenValid" title="Permalink to this definition">¶</a></dt>
@@ -189,6 +200,27 @@
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>token</strong> (<em>string</em>) – The artist’s name that owns the folder.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">int (0 means valid, any other number corresponds with the DeviantArt HTTP Error Code)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="errite.da.daParser.daHasDeviations">
+<code class="descclassname">errite.da.daParser.</code><code class="descname">daHasDeviations</code><span class="sig-paren">(</span><em>artist</em>, <em>accesstoken</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.daHasDeviations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method ran to check if a an artist has Deviations on DA by checking their Gallery All View.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</li>
+<li><strong>accesstoken</strong> (<em>string</em>) – The name of the gallery folder we are working with. Used for json references</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">bool</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -209,6 +241,29 @@ Returns None if it does not exist.</p>
 <li><strong>bool</strong> (<em>bool</em>) – Whether mature folders will show or not.</li>
 <li><strong>folder</strong> (<em>string</em>) – The Exact folder name to grab the UUID of</li>
 <li><strong>accesstoken</strong> (<em>string</em>) – The DA Access token to use for this query</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="errite.da.daParser.getAllFolderArrayResponse">
+<code class="descclassname">errite.da.daParser.</code><code class="descname">getAllFolderArrayResponse</code><span class="sig-paren">(</span><em>artist</em>, <em>bool</em>, <em>accesstoken</em>, <em>offset</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.getAllFolderArrayResponse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method ran to get the Gallery Folder data all view from deviantart’s API.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>artist</strong> (<em>string</em>) – The artist’s name that owns the folder.</li>
+<li><strong>bool</strong> (<em>bool</em>) – Whether mature folders will show or not.</li>
+<li><strong>accesstoken</strong> (<em>string</em>) – The DA Access token to use for this query</li>
+<li><strong>offset</strong> (<em>int</em>) – The offset value at which to request the gallery folder contents from. The starting value</li>
 </ul>
 </td>
 </tr>
@@ -345,6 +400,56 @@ This method in particular is only ran on the first time/when a new folder is add
 </dd></dl>
 
 <dl class="function">
+<dt id="errite.da.daParser.getallFolder">
+<code class="descclassname">errite.da.daParser.</code><code class="descname">getallFolder</code><span class="sig-paren">(</span><em>artist</em>, <em>bool</em>, <em>accesstoken</em>, <em>inverted</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.getallFolder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method ran to get the all view data devations id’s and populate it into the json file.
+This method is different from the getGalleryFolderFT. Designed with Slices in mind
+This method in particular is only ran on the first time/when a new folder is added.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>artist</strong> (<em>string</em>) – The artist’s name to request the folder’s deviation id’s from</li>
+<li><strong>bool</strong> (<em>bool</em>) – Whether mature images will show or not.</li>
+<li><strong>accesstoken</strong> (<em>string</em>) – The DA Access token to use for this query</li>
+<li><strong>inverted</strong> – If the folder is inverted or not.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="errite.da.daParser.getallFolderFT">
+<code class="descclassname">errite.da.daParser.</code><code class="descname">getallFolderFT</code><span class="sig-paren">(</span><em>artist</em>, <em>bool</em>, <em>accesstoken</em>, <em>inverted</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.getallFolderFT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method ran to get the all view data devations id’s and populate it into the json file.
+This method is different from the getGalleryFolderFT. Designed with Slices in mind
+This method in particular is only ran on the first time/when a new folder is added.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>artist</strong> (<em>string</em>) – The artist’s name to request the folder’s deviation id’s from</li>
+<li><strong>bool</strong> (<em>bool</em>) – Whether mature images will show or not.</li>
+<li><strong>accesstoken</strong> (<em>string</em>) – The DA Access token to use for this query</li>
+<li><strong>inverted</strong> – If the folder is inverted or not.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="errite.da.daParser.refindFolderUUID">
 <code class="descclassname">errite.da.daParser.</code><code class="descname">refindFolderUUID</code><span class="sig-paren">(</span><em>artist</em>, <em>bool</em>, <em>folder</em>, <em>accesstoken</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.refindFolderUUID" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -355,6 +460,22 @@ This method in particular is only ran on the first time/when a new folder is add
 </div>
 <div class="section" id="module-errite.da.jsonTools">
 <span id="errite-da-jsontools-module"></span><h2>errite.da.jsonTools module<a class="headerlink" href="#module-errite.da.jsonTools" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="errite.da.jsonTools.allartistExists">
+<code class="descclassname">errite.da.jsonTools.</code><code class="descname">allartistExists</code><span class="sig-paren">(</span><em>artist</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.allartistExists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method ran to check if an allartist is already in the ArtData json file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="function">
 <dt id="errite.da.jsonTools.artistExists">
 <code class="descclassname">errite.da.jsonTools.</code><code class="descname">artistExists</code><span class="sig-paren">(</span><em>artist</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.artistExists" title="Permalink to this definition">¶</a></dt>
@@ -393,6 +514,25 @@ This method in particular is only ran on the first time/when a new folder is add
 </dd></dl>
 
 <dl class="function">
+<dt id="errite.da.jsonTools.createArtistDataAll">
+<code class="descclassname">errite.da.jsonTools.</code><code class="descname">createArtistDataAll</code><span class="sig-paren">(</span><em>artist</em>, <em>channelid</em>, <em>inverted</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.createArtistDataAll" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method ran to create a new artist in the ArtData json file. With no new folder, but an allfolder only</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</li>
+<li><strong>channelid</strong> (<em>int</em>) – The Discord channelid that notifications will be posted to.</li>
+<li><strong>inverted</strong> – Whether the newest deviations are posted at the top.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="errite.da.jsonTools.createFolderData">
 <code class="descclassname">errite.da.jsonTools.</code><code class="descname">createFolderData</code><span class="sig-paren">(</span><em>artist</em>, <em>folderid</em>, <em>foldername</em>, <em>channelid</em>, <em>inverted</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.createFolderData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to create a new folder to an existing artist in the ArtData json file.</p>
@@ -408,6 +548,20 @@ This method in particular is only ran on the first time/when a new folder is add
 <li><strong>inverted</strong> – Whether the newest deviations are posted at the top.</li>
 </ul>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="errite.da.jsonTools.delAllFolder">
+<code class="descclassname">errite.da.jsonTools.</code><code class="descname">delAllFolder</code><span class="sig-paren">(</span><em>artist</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.delAllFolder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method ran to delete a folder in the ArtData json file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</td>
 </tr>
 </tbody>
 </table>
@@ -441,14 +595,14 @@ This method in particular is only ran on the first time/when a new folder is add
 
 <dl class="function">
 <dt id="errite.da.jsonTools.findDuplicateElementArray">
-<code class="descclassname">errite.da.jsonTools.</code><code class="descname">findDuplicateElementArray</code><span class="sig-paren">(</span><em>array</em>, <em>element</em>, <em>artist</em>, <em>foldername</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.findDuplicateElementArray" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">errite.da.jsonTools.</code><code class="descname">findDuplicateElementArray</code><span class="sig-paren">(</span><em>array</em>, <em>element</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.findDuplicateElementArray" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to check if a Deviation UUID is already in the array.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>array</strong> (<em>array</em>) – The array that holds the current processed uuids for the particular artist</li>
+<li><strong>array</strong> – The array that holds the current processed uuids for the particular artist</li>
 <li><strong>element</strong> (<em>string</em>) – The UUID we are comparing with the JSON file.</li>
 <li><strong>artist</strong> (<em>string</em>) – UNUSED TO BE REMOVED The name of the artist who’s deviations we are working with. This is needed for json references</li>
 <li><strong>foldername</strong> (<em>string</em>) – May be reused: The name of the gallery folder we are working with. Used for json references</li>
@@ -501,6 +655,27 @@ This method in particular is only ran on the first time/when a new folder is add
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">bool</p>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="errite.da.jsonTools.hasAllFolder">
+<code class="descclassname">errite.da.jsonTools.</code><code class="descname">hasAllFolder</code><span class="sig-paren">(</span><em>artist</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.hasAllFolder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="errite.da.jsonTools.localFoldersExists">
+<code class="descclassname">errite.da.jsonTools.</code><code class="descname">localFoldersExists</code><span class="sig-paren">(</span><em>dictionary</em>, <em>artist</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.localFoldersExists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method ran to check if there are folders already in the ArtData json file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">bool</td>
 </tr>
 </tbody>
 </table>
@@ -665,7 +840,7 @@ This method in particular is only ran on the first time/when a new folder is add
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'bt-1.3.0',
+            VERSION:'bt-1.4.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

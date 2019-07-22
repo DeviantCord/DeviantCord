@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Beta]
 
+## [bt-1.4.0] - 2019-07-10
+
+## Added 
+- AllFolder Listeners via the addallfolder command
+- Added AllFolder related fields in artdata.json
+- Added venv for Linux and Windows for Developers
+- Devistion Notifications now use Embeds. Embeds have less of an issue resolving images.
+- More debug messages in logs for DeviantCog, and daparser
+
+## Changes
+- artdata.json version changed to bt-1.4.0
+- Json path for folderlisteners have been moved to art-data/artist/folders/foldername
+- listfolders now accounts for allfolders
+- AllFolder Listeners do not store all Deviation ID's when it is imported for the first time. Instead it stores the latest 10.
+- AllFolder Listeners use slicing when comparing UUID's for better memory usage and a faster response time.
+- listfolders 
+
+## Fixed
+- Issues with preview images not showing sometimes.
+- The update inverse and update hybrid command not working at all
+- Fixed a bug where the listfolder command could stop working if you had enough folder names that exceeded the 2000
+character limit. 
+- Fixed a crash with the bot that occurs with a discrepency with the error handler. 
+
+
 ## [bt-1.3.0] - 2019-06-26
 ## Added 
 - Errite exclusive fields such as errite and errite-channel-id in config.json. This is used by the new Error Notifier that lets DeviantCord Support know of errors experienced by the public bot as soon as it happens.

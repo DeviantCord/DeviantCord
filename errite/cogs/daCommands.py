@@ -1,3 +1,20 @@
+"""
+
+    Copyright 2019 Errite Games LLC / ErriteEpticRikez
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+"""
 import json
 import os
 import sys
@@ -10,7 +27,8 @@ from discord.ext import commands
 from discord.ext.commands import has_permissions, guild_only, CommandNotFound
 import errite.da.daParser as dp
 from errite.da.jsonTools import createArtistData, artistExists, folderExists, createFolderData, \
-    updateDiscordChannel, updateRole, updateinverseproperty, delfolder, updatehybridproperty
+    updateDiscordChannel, updateRole, updateinverseproperty, delfolder, updatehybridproperty,  \
+    hasAllFolder, createArtistDataAll, allartistExists, delAllFolder
 from errite.config.configManager import createConfig, createSensitiveConfig
 from errite.tools.mis import fileExists
 import urllib
@@ -120,7 +138,9 @@ class daCog(commands.Cog):
         self.bot.loop.create_task(self.syncGalleries())
 
     async def fix_error(self, amount):
+        print("Waiting")
         await asyncio.sleep(amount)
+        print("Past")
         if sys.version_info >= (3, 7):
             pending = asyncio.all_tasks()
         elif sys.version_info >= (3, 5, 2):
@@ -129,10 +149,18 @@ class daCog(commands.Cog):
         token_present = False
         sg_present = False
 
+        print("Starting dump")
+        pending = asyncio.Task.all_tasks()
         for element in pending:
-            if str(element).find("coro=<daCog.getNewToken()"):
+            print(str(element))
+        print("compare")
+        for element in pending:
+            print(element)
+            if str(element).find("coro=<daCog.getNewToken()") > -1:
+                print("Found getNewToken")
                 token_present = True
-            if str(element).find("coro=<daCog.syncGalleries()"):
+            if str(element).find("coro=<daCog.syncGalleries()") > -1:
+                print("Found SyncGalleries")
                 sg_present = True
         if not token_present:
             self.deviantlogger.warning(
@@ -140,10 +168,23 @@ class daCog(commands.Cog):
             self.bot.loop.create_task(self.getNewToken())
             self.deviantlogger.warning("manualGetToken: getNewToken created!")
         if not sg_present:
+            print("Inside sg ")
             self.deviantlogger.warning("manualGetToken: Detected that syncGalleries task is dead, creating new task")
             self.bot.loop.create_task(self.syncGalleries())
+            print("Finish!")
             self.deviantlogger.warning("manualGetToken: syncGalleries created!")
 
+        async def debuggetNewToken(self):
+            """
+            Gets a new token from DeviantArt with no params, grabs the clientid and clientsecret from the class file.
+            This function is only ran when a token error occurs having to do with async tasks also failing.
+            """
+            self.deviantlogger.info("ManualGetToken: Creating syncGalleries...")
+            await asyncio.sleep(400)
+            #        tokenCheckURL = "http://178.128.155.247/simulate503.php"
+            #        with urllib.request.urlopen(tokenCheckURL) as result:
+            #           print("YAY")
+            self.bot.loop.create_task(self.syncGalleries())
     async def softTokenRenewal(self):
         """
         Gets a new token from DeviantArt with no params, grabs the clientid and clientsecret from the class file.
@@ -205,11 +246,12 @@ class daCog(commands.Cog):
         Checks programmed gallery folders for Deviations. This is the method that is ran to trigger every x minutes
         depending on what the user has it configured to.
         """
+        print("SyncGalleries called")
         locked = False
         try:
             locked = self.jsonlock
         except NameError:
-            print("Caught Assignment Error...Returning")
+            self.deviantlogger.error("Caught Assignment Error...Returning")
             return;
         if not locked:
             if self.passedJson == True:
@@ -224,37 +266,142 @@ class daCog(commands.Cog):
                         artdata = json.load(jsonFile)
                         for element in artdata["artist_store"]["used-artists"]:
                             self.deviantlogger.debug("Now starting sync for artist " + element)
-                            for foldername in artdata["art-data"][element]["folder-list"]:
+                            for foldername in artdata["art-data"][element]["folders"]["folder-list"]:
                                 self.deviantlogger.debug(
                                     "Starting Sync for folder " + foldername + " from artist " + element)
                                 urls = dp.getGalleryFolder(element, True,
-                                                           artdata['art-data'][element][foldername]["artist-folder-id"],
+                                                           artdata['art-data'][element]["folders"][foldername]["artist-folder-id"],
                                                            self.token,
                                                            foldername,
-                                                           artdata['art-data'][element][foldername]["inverted-folder"])
+                                                           artdata['art-data'][element]["folders"][foldername]["inverted-folder"])
+                                self.deviantlogger.info("SyncGalleries: getGalleryFolder finished for " + foldername +
+                                                        " in artist " + element)
                                 self.jsonlock = False
                                 channel = self.bot.get_channel(
-                                    int(artdata["art-data"][element][foldername]["discord-channel-id"]))
-                                if artdata["art-data"][element][foldername]["inverted-folder"]:
+                                    int(artdata["art-data"][element]["folders"][foldername]["discord-channel-id"]))
+                                if artdata["art-data"][element]["folders"][foldername]["inverted-folder"]:
                                     self.deviantlogger.debug("Folder is inverse")
                                     storage = len(urls)
-                                    currentlength = len(urls)
-                                    while currentlength >= 1:
+                                    currentlength = len(urls["da-urls"])
+                                    while not currentlength == 0:
+                                        self.deviantlogger.info("SyncGalleries: Inverse urls is not empty!")
+                                        trest = urls["da-urls"][currentlength - 1]
+                                        self.deviantlogger.info("SyncGalleries: Current Corrected index: " + str(currentlength - 1))
+                                        self.deviantlogger.info("SyncGalleries: Creating notification embed")
+                                        notification = discord.Embed(title="New Deviation",
+                                                                     url=urls["da-urls"][currentlength-1])
+                                        self.deviantlogger.info("SyncGallieries: Setting Artist profile Picture in embed")
+                                        profilep = urls["profile-pic-url"]
+                                        self.deviantlogger.debug("SyncGalleries: Using profilepic url: " +
+                                                                 urls["profile-pic-url"])
+                                        self.deviantlogger.info(
+                                            "SyncGallieries: Setting Artist in embed")
+                                        notification.add_field(name="by " + element, value="Link above (blue text)")
+                                        self.deviantlogger.info("SyncGalleries: Setting thumbnail")
+                                        self.deviantlogger.info(
+                                            "SyncGallieries: Setting Artist profile Picture in embed")
+                                        notification.set_thumbnail(url=profilep)
+                                        self.deviantlogger.info("SyncGalleries: Finished Setting thumbnail")
+                                        self.deviantlogger.info("SyncGalleries: Setting Image in embed")
+                                        notification.set_image(url=urls["photo-url"][currentlength - 1])
+                                        self.deviantlogger.info("SyncGalleries: Finished Setting thumbnail!")
+                                        self.deviantlogger.info("SyncGalleries: Setting Footer")
+                                        notification.set_footer(
+                                            text="NOTE: DeviantArt serves its content through the Wix Media Platform.\n" +
+                                                 "This is why the image link is wixmp.com and looks weird.")
+                                        self.deviantlogger.info("SyncGalleries: Sending Notification Embed")
+                                        await channel.send(embed=notification)
                                         self.deviantlogger.debug("New Deviation URL: ")
-                                        self.deviantlogger.debug(str(urls[currentlength - 1]))
                                         self.deviantlogger.debug("SyncGalleries: Now posting URL")
-                                        await channel.send(
-                                            "New deviation from " + element + " you can view it here \n" + urls[
-                                                currentlength - 1])
                                         currentlength = currentlength - 1
-
                                 else:
-                                    for url in urls:
+                                    self.deviantlogger.info("syncGalleries: URL Array Length " +
+                                                            str(len(urls["da-urls"])))
+                                    currentlength = len(urls["da-urls"])
+                                    self.deviantlogger.debug("SyncGalleries: Profile Picture URL " + str(urls["photo-url"]))
+                                    print(len(urls["da-urls"]))
+                                    print(len(urls["photo-url"]))
+                                    while not currentlength == 0:
+                                        self.deviantlogger.info("SyncGalleries: Normal urls is not empty!")
+                                        trest = urls["da-urls"][currentlength - 1]
+                                        self.deviantlogger.info(
+                                            "SyncGalleries: Current Corrected index: " + str(currentlength - 1))
+                                        self.deviantlogger.info("SyncGalleries: Creating notification embed")
+                                        notification = discord.Embed(title="New Deviation",
+                                                                     url=urls["da-urls"][currentlength - 1])
+                                        self.deviantlogger.info(
+                                            "SyncGalleries: Setting Artist profile Picture in embed")
+                                        profilep = urls["profile-pic-url"]
+                                        self.deviantlogger.debug("SyncGalleries: Using profilepic url: " +
+                                                                 urls["profile-pic-url"])
+                                        self.deviantlogger.info(
+                                            "SyncGallieries: Setting Artist in embed")
+                                        notification.add_field(name="by " + element, value="Link above (blue text)")
+                                        self.deviantlogger.info("SyncGalleries: Setting thumbnail")
+                                        self.deviantlogger.info(
+                                            "SyncGallieries: Setting Artist profile Picture in embed")
+                                        notification.set_thumbnail(url=profilep)
+                                        self.deviantlogger.info("SyncGalleries: Finished Setting thumbnail")
+                                        self.deviantlogger.info("SyncGalleries: Setting Image in embed")
+                                        notification.set_image(url=urls["photo-url"][currentlength - 1])
+                                        self.deviantlogger.info("SyncGalleries: Finished Setting thumbnail!")
+                                        self.deviantlogger.info("SyncGalleries: Setting Footer")
+                                        notification.set_footer(
+                                            text="NOTE: DeviantArt serves its content through the Wix Media Platform.\n" +
+                                                 "This is why the image link is wixmp.com and looks weird.")
+                                        await channel.send(embed=notification)
                                         self.deviantlogger.debug("New Deviation URL: ")
-                                        self.deviantlogger.debug(url)
                                         self.deviantlogger.debug("SyncGalleries: Now posting URL")
-                                        await channel.send(
-                                            "New deviation from " + element + " you can view it here \n" + url)
+                                        currentlength = currentlength - 1
+                        self.deviantlogger.info("SyncGalleries: Now starting All Folder Checks")
+                        for element in artdata["artist_store"]["all-folder-artists"]:
+                            self.deviantlogger.info("SyncGalleries: Grabbing Channel ID of AllFolderArtist " + element)
+                            channel = self.bot.get_channel(
+                                int(artdata["art-data"][element]["all-folder"]["discord-channel-id"]))
+                            self.deviantlogger.info("SyncGalleries: Grabbed Channel id of channel " + channel.name)
+                            self.deviantlogger.info("SyncGalleries: " +
+                                                    "Grabbing AllFolder from DA for AllFolderArtist " + element)
+                            urls = dp.getallFolder(element, True, self.token,
+                                                   artdata["art-data"][element]["all-folder"]["inverted"])
+                            self.deviantlogger.info("SyncGalleries: Finished grabbing All Folder for artist " + element)
+                            self.deviantlogger.info("SyncGalleries: num_items is " + str(urls["index"]))
+                            num_items = urls["index"]
+                            if urls["trigger"]:
+                                self.deviantlogger.info("SyncGalleries: Trigger is True inside dictionary" +
+                                " returned by getAllFolder")
+                                while num_items >= 0:
+                                    self.deviantlogger.info("SyncGalleries: All Folder urls is not empty!")
+                                    self.deviantlogger.info("SyncGalleries: Current Num Item: " + num_items)
+                                    self.deviantlogger.info("SyncGalleries: Creating notification embed")
+                                    notification = discord.Embed(title="New Deviation",
+                                                                 url=urls["da-urls"][num_items])
+                                    self.deviantlogger.info("SyncGallieries: Setting Artist profile Picture in embed")
+                                    profilep = urls["profile-pic-url"]
+                                    self.deviantlogger.debug("SyncGalleries: Using profilepic url: " +
+                                                             urls["profile-pic-url"])
+                                    self.deviantlogger.info(
+                                        "SyncGallieries: Setting Artist in embed")
+                                    notification.add_field(name="by " + element, value="Link above (blue text)")
+                                    self.deviantlogger.info("SyncGalleries: Setting thumbnail")
+                                    self.deviantlogger.info(
+                                        "SyncGallieries: Setting Artist profile Picture in embed")
+                                    notification.set_thumbnail(url=profilep)
+                                    self.deviantlogger.info("SyncGalleries: Finished Setting thumbnail")
+                                    self.deviantlogger.info("SyncGalleries: Setting Image in embed")
+                                    notification.set_image(url=urls["photo-urls"][num_items])
+                                    self.deviantlogger.info("SyncGalleries: Finished Setting thumbnail!")
+                                    self.deviantlogger.info("SyncGalleries: Setting Footer")
+                                    notification.set_footer(
+                                        text="NOTE: DeviantArt serves its content through the Wix Media Platform.\n" +
+                                             "This is why the image link is wixmp.com and looks weird.")
+                                    self.deviantlogger.info("SyncGalleries: Sending Notification Embed")
+                                    await channel.send(embed=notification)
+                                    self.deviantlogger.debug("New Deviation URL: ")
+                                    self.deviantlogger.debug("SyncGalleries: Now posting URL")
+                                    if num_items == 0:
+                                        break
+                                    elif num_items > 0:
+                                        num_items = num_items - 1
                         self.jsonlock = False
                         await asyncio.sleep(self.time)
         else:
@@ -302,6 +449,90 @@ class daCog(commands.Cog):
                "**" + self.prefix + "reload** - Reloads DeviantCord"
 
         await ctx.send(text)
+
+    @commands.command()
+    async def addallfolder(self, ctx, artistname, channelid, inverted):
+        skiprolecheck = False
+        if ctx.guild is None:
+            return;
+        elif ctx.guild.id == self.guildid:
+            permitted = True
+        elif not ctx.guild.id == self.guildid:
+            return
+        elif not self.publicmode:
+            permitted = True
+        if ctx.guild.get_role(self.roleid) is None:
+            if ctx.author.guild_permissions.administrator:
+                skiprolecheck = True
+            else:
+                self.deviantlogger.error("addartist Command found that RoleID Is invalid.")
+                await ctx.send("Uh oh, there is an issue with the RoleID I am supposed to be looking for."
+                               " If you are using selfhosting, set rolesetup-enabled in config.json to true or contact"
+                               " DeviantCord Support if you are using our public bot")
+                self.jsonlock = False
+                return;
+        if not skiprolecheck:
+            if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
+                self.deviantlogger.debug("User that passed Guild check does not have permissiont to use addartist")
+                return;
+        if self.jsonlock:
+            await ctx.send("ERROR: Another command using ArtData is currently running, please wait for that to finish!")
+            return;
+        if permitted:
+            self.jsonlock = True
+            self.deviantlogger.info("addallfolder command invoked.");
+            dirpath = os.getcwd()
+            self.deviantlogger.info("current directory is : " + dirpath)
+            self.deviantlogger.info("Channel ID" + str(channelid))
+            self.deviantlogger.info("Artist: " + artistname)
+            self.deviantlogger.info("Inverted: " + str(inverted))
+            isInverted = False
+            if isinstance(inverted, bool) == True:
+                self.deviantlogger.info("Inverted confirmed as bool")
+                isInverted = inverted
+                self.deviantlogger.info("Inverted Value confirmed as ", isInverted)
+            if isinstance(inverted, str) == True:
+                self.deviantlogger.info("Inverted is confirmed as str")
+                if inverted.lower() == "true":
+                    isInverted = True
+                elif inverted.lower() == "false":
+                    isInverted = False
+                else:
+                    self.jsonlock = False
+                    self.deviantlogger.debug("Inverted Value confirmed as " + str(isInverted))
+                    await ctx.send("Error: Invalid inverted parameter. Must use true or false")
+                    return;
+            channel = self.bot.get_channel(int(channelid))
+            if channel is None:
+                self.jsonlock = False
+                await ctx.send(
+                    "Error: I could not link with the provided channelid, is it correct? Do I have permission to access it?" \
+                    " I cannot tell because I am just a bot.")
+                self.deviantlogger.info("Add Artist: Could not link with provided channelid")
+                return;
+            if channel.guild is None:
+                self.jsonlock = False
+                return;
+            if not channel.guild.id == ctx.guild.id:
+                self.jsonlock = False
+                return
+            if (allartistExists(artistname) == True):
+                self.deviantlogger.info("Addallfolder: User tried adding Artist " + artistname + " but they're already in artdata")
+                await ctx.send("There is already an allfolder for this artist!")
+            elif (allartistExists(artistname) == False):
+                deviations = dp.daHasDeviations(artistname, self.token)
+                if deviations:
+                    createArtistDataAll(artistname, channelid, inverted)
+                    await channel.send("Now importing allfolder data for artist " + artistname)
+                    dp.getallFolderFT(artistname, True, self.token, inverted)
+                    self.jsonlock = False
+                    await channel.send("Finished importing, now listening for deviations from " + artistname)
+                    return
+                elif not deviations:
+                    self.jsonlock = False
+                    await ctx.send("Does this any deviations? Check the artist you specified and try again. I can only"
+                                   + " see artists that at least have one Deviation on their account!")
+                    return
 
     @commands.command()
     @has_permissions(administrator=True)
@@ -357,19 +588,43 @@ class daCog(commands.Cog):
 
         if permitted:
             with open("artdata.json", "r") as jsonFile:
+                nofolders = False
+                noallfolders = False
                 tempartdata = json.load(jsonFile)
                 jsonFile.close()
                 if len(tempartdata["artist_store"]["used-artists"]) > 0:
                     output = "**Current Folder Listeners**\n"
                     for artist in tempartdata["artist_store"]["used-artists"]:
-                        output = output + "\n__" + artist + "___\n"
-                        for folder in tempartdata["art-data"][artist]["folder-list"]:
-                            output = output + "**" + folder + "**\n"
+                        if len(output + "\n__" + artist + "___\n") > 2000:
+                            await ctx.send(output)
+                            output = "**Continued Folder Listeners**\n" + "\n__" + artist + "___\n"
+
+                        else:
+                            output = output + "\n__" + artist + "___\n"
+                        for folder in tempartdata["art-data"][artist]["folders"]["folder-list"]:
+                            if len(output + "**" + folder + "**\n") > 2000:
+                                await ctx.send(output)
+                                output = "**Continued Folder Listeners**\n" + "\n__" + artist + "___\n" + \
+                                         "**" + folder + "**\n"
+                            else:
+                                output = output + "**" + folder + "**\n"
                     await ctx.send(output)
                 else:
+                    nofolders = True
+                if len(tempartdata["artist_store"]["all-folder-artists"]) > 0:
+                    output = "__Current AllFolder Listeners__\n"
+                    for artist in tempartdata["artist_store"]["all-folder-artists"]:
+                        if len(output + "**" + artist + "**\n") > 2000:
+                            await ctx.send(output)
+                            output = "__Current AllFolder Listeners Continued__\n" + "**" + artist + "**\n"
+                        else:
+                            output = output + "**" + artist + "**\n"
+                    await ctx.send(output)
+
+                elif nofolders:
                     await ctx.send(
                         "Bad News... there aren't any folders. Maybe they went on vacation? I can't tell because I'm a bot, not a travel agent.")
-                    return;
+
 
     @commands.command()
     async def deletefolder(self, ctx, artist, folder):
@@ -423,6 +678,59 @@ class daCog(commands.Cog):
                 self.jsonlock = False
                 await ctx.send(
                     "Error: This artist does not have a listener. Is this a mistake? I can't tell I'm just a bot!")
+
+
+    @commands.command()
+    async def deleteallfolder(self, ctx, artist):
+        print("Delete All Folder invoked")
+        skiprolecheck = False
+        if ctx.guild is None:
+            return;
+        if ctx.guild.id == self.guildid:
+            permitted = True
+        elif not ctx.guild.id == self.guildid:
+            return
+        if self.jsonlock is True:
+            if ctx.guild.get_role(self.roleid) is None:
+                return
+            elif ctx.author.top_role >= ctx.guild.get_role(self.roleid):
+                await ctx.send(
+                    "ERROR: Another command using ArtData is currently running, please wait for that to finish!")
+            return
+        elif not self.publicmode:
+            permitted = True
+        if ctx.guild.get_role(self.roleid) is None:
+            self.deviantlogger.error("Detected invalid roleid in deleteallfolder ROLEID: " + str(self.roleid))
+            if ctx.author.guild_permissions.administrator:
+                skiprolecheck
+            else:
+                await ctx.send("Uh oh, there is an issue with the RoleID I am supposed to be looking for."
+                               " If you are using selfhosting, set rolesetup-enabled in config.json to true or contact"
+                               " DeviantCord Support if you are using our public bot")
+                return;
+        if not skiprolecheck:
+            if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
+                return;
+        if self.jsonlock:
+            await ctx.send(
+                "There is currently a task going on using ArtData, so this data may change soon. You might want to run the command again soon.!")
+            return
+        if permitted:
+            self.jsonlock = True
+            if allartistExists(artist.lower()):
+                # NOTE: DO NOT lowercase artist for delAllFolders this will result in a bug that freezes the
+                # delALlFolder method.
+                delAllFolder(artist)
+                print("Past")
+                await ctx.send(
+                    "AllFolder listener deleted successfully! I will no longer post updates for this allfolder. ")
+                self.jsonlock = False
+                return
+            else:
+                self.jsonlock = False
+                await ctx.send(
+                    "Error: This artist does not have an allfolder listener. Is this a mistake? I can't tell I'm just a bot!")
+
 
     @commands.command()
     async def addfolder(self, ctx, artistname, foldername, channelid, inverted):
@@ -529,7 +837,7 @@ class daCog(commands.Cog):
                         jsonFile.close()
                         self.deviantlogger.info("Addfolder: Now running getGalleryFolderFT")
                         dp.getGalleryFolderFT(artistname, True,
-                                              artdata["art-data"][artistname.lower()][foldername]["artist-folder-id"],
+                                              artdata["art-data"][artistname.lower()]["folders"][foldername]["artist-folder-id"],
                                               self.token, foldername)
                         self.jsonlock = False
                         await channel.send(
@@ -604,6 +912,9 @@ class daCog(commands.Cog):
     @commands.command()
     async def updatehybrid(self, ctx, artistname, foldername, inverse):
         skiprolecheck = False
+        print("Artist: " + artistname)
+        print("Folder: " + artistname)
+        print("Inverse: " + str(inverse))
         if ctx.guild is None:
             return
         elif ctx.guild.id == self.guildid:
@@ -651,6 +962,7 @@ class daCog(commands.Cog):
             self.deviantlogger.info("UpdateHybrid: Entered JSON checks")
             if artistExists(artistname):
                 if folderExists(artistname, foldername):
+                    print(str(inverse))
                     updatehybridproperty(artistname, foldername, inverse)
                     self.deviantlogger.info("Update hybrid finished for " + artistname + " on" + foldername)
                     self.jsonlock = False
@@ -776,42 +1088,152 @@ class daCog(commands.Cog):
         if permitted:
             self.jsonlock = True
             dirpath = os.getcwd()
-            self.deviantlogger.info("manualSync: current directory is : " + dirpath)
+            self.deviantlogger.debug("ManualSync method ran: current directory is : " + dirpath)
             with open("artdata.json", "r") as jsonFile:
-                self.deviantlogger.info("manualSync: Loading JSON file ArtData")
+                self.deviantlogger.info("ManualSync: Loading JSON file ArtData")
                 artdata = json.load(jsonFile)
                 for element in artdata["artist_store"]["used-artists"]:
                     self.deviantlogger.debug("Now starting sync for artist " + element)
-                    for foldername in artdata["art-data"][element]["folder-list"]:
-                        self.deviantlogger.debug("Starting Sync for folder " + foldername + " from artist " + element)
+                    for foldername in artdata["art-data"][element]["folders"]["folder-list"]:
+                        self.deviantlogger.debug(
+                            "Starting Sync for folder " + foldername + " from artist " + element)
                         urls = dp.getGalleryFolder(element, True,
-                                                   artdata['art-data'][element][foldername]["artist-folder-id"],
-                                                   self.token, foldername,
-                                                   artdata["art-data"][element][foldername]["inverted-folder"])
+                                                   artdata['art-data'][element]["folders"][foldername][
+                                                       "artist-folder-id"],
+                                                   self.token,
+                                                   foldername,
+                                                   artdata['art-data'][element]["folders"][foldername][
+                                                       "inverted-folder"])
+                        self.deviantlogger.info("ManualSync: getGalleryFolder finished for " + foldername +
+                                                " in artist " + element)
                         self.jsonlock = False
                         channel = self.bot.get_channel(
-                            int(artdata["art-data"][element][foldername]["discord-channel-id"]))
-                        if artdata["art-data"][element][foldername]["inverted-folder"]:
+                            int(artdata["art-data"][element]["folders"][foldername]["discord-channel-id"]))
+                        if artdata["art-data"][element]["folders"][foldername]["inverted-folder"]:
                             self.deviantlogger.debug("Folder is inverse")
                             storage = len(urls)
-                            currentlength = len(urls)
-                            while currentlength >= 1:
+                            currentlength = len(urls["da-urls"])
+                            while not currentlength == 0:
+                                self.deviantlogger.info("ManualSync: Inverse urls is not empty!")
+                                trest = urls["da-urls"][currentlength - 1]
+                                self.deviantlogger.info(
+                                    "ManualSync: Current Corrected index: " + str(currentlength - 1))
+                                self.deviantlogger.info("ManualSync: Creating notification embed")
+                                notification = discord.Embed(title="New Deviation",
+                                                             url=urls["da-urls"][currentlength - 1])
+                                self.deviantlogger.info("SyncGallieries: Setting Artist profile Picture in embed")
+                                profilep = urls["profile-pic-url"]
+                                self.deviantlogger.debug("ManualSync: Using profilepic url: " +
+                                                         urls["profile-pic-url"])
+                                self.deviantlogger.info(
+                                    "SyncGallieries: Setting Artist in embed")
+                                notification.add_field(name="by " + element, value="Link above (blue text)")
+                                self.deviantlogger.info("ManualSync: Setting thumbnail")
+                                self.deviantlogger.info(
+                                    "SyncGallieries: Setting Artist profile Picture in embed")
+                                notification.set_thumbnail(url=profilep)
+                                self.deviantlogger.info("ManualSync: Finished Setting thumbnail")
+                                self.deviantlogger.info("ManualSync: Setting Image in embed")
+                                notification.set_image(url=urls["photo-url"][currentlength - 1])
+                                self.deviantlogger.info("ManualSync: Finished Setting thumbnail!")
+                                self.deviantlogger.info("ManualSync: Setting Footer")
+                                notification.set_footer(
+                                    text="NOTE: DeviantArt serves its content through the Wix Media Platform.\n" +
+                                         "This is why the image link is wixmp.com and looks weird.")
+                                self.deviantlogger.info("ManualSync: Sending Notification Embed")
+                                await channel.send(embed=notification)
                                 self.deviantlogger.debug("New Deviation URL: ")
-                                self.deviantlogger.debug(str(urls[currentlength - 1]))
-                                self.deviantlogger.debug("SyncGalleries: Now posting URL")
-                                await channel.send(
-                                    "New deviation from " + element + " you can view it here \n" + urls[
-                                        currentlength - 1])
-                                currentlength = currentlength - 1
-                            self.jsonlock = False
-
-                        else:
-                            self.jsonlock = False
-                            for url in urls:
-                                self.deviantlogger.debug("New Deviation URL: ")
-                                self.deviantlogger.debug(url)
                                 self.deviantlogger.debug("ManualSync: Now posting URL")
-                                await channel.send("New deviation from " + element + " you can view it here \n" + url)
+                                currentlength = currentlength - 1
+                        else:
+                            self.deviantlogger.info("ManualSync: URL Array Length " +
+                                                    str(len(urls["da-urls"])))
+                            currentlength = len(urls["da-urls"])
+                            self.deviantlogger.debug("ManualSync: Profile Picture URL " + str(urls["photo-url"]))
+                            print(len(urls["da-urls"]))
+                            print(len(urls["photo-url"]))
+                            while not currentlength == 0:
+                                self.deviantlogger.info("ManualSync: Normal urls is not empty!")
+                                trest = urls["da-urls"][currentlength - 1]
+                                self.deviantlogger.info(
+                                    "ManualSync: Current Corrected index: " + str(currentlength - 1))
+                                self.deviantlogger.info("ManualSync: Creating notification embed")
+                                notification = discord.Embed(title="New Deviation",
+                                                             url=urls["da-urls"][currentlength - 1])
+                                self.deviantlogger.info(
+                                    "ManualSync: Setting Artist profile Picture in embed")
+                                profilep = urls["profile-pic-url"]
+                                self.deviantlogger.debug("ManualSync: Using profilepic url: " +
+                                                         urls["profile-pic-url"])
+                                self.deviantlogger.info(
+                                    "SyncGallieries: Setting Artist in embed")
+                                notification.add_field(name="by " + element, value="Link above (blue text)")
+                                self.deviantlogger.info("ManualSync: Setting thumbnail")
+                                self.deviantlogger.info(
+                                    "SyncGallieries: Setting Artist profile Picture in embed")
+                                notification.set_thumbnail(url=profilep)
+                                self.deviantlogger.info("ManualSync: Finished Setting thumbnail")
+                                self.deviantlogger.info("ManualSync: Setting Image in embed")
+                                notification.set_image(url=urls["photo-url"][currentlength - 1])
+                                self.deviantlogger.info("ManualSync: Finished Setting thumbnail!")
+                                self.deviantlogger.info("ManualSync: Setting Footer")
+                                notification.set_footer(
+                                    text="NOTE: DeviantArt serves its content through the Wix Media Platform.\n" +
+                                         "This is why the image link is wixmp.com and looks weird.")
+                                await channel.send(embed=notification)
+                                self.deviantlogger.debug("New Deviation URL: ")
+                                self.deviantlogger.debug("ManualSync: Now posting URL")
+                                currentlength = currentlength - 1
+                self.deviantlogger.info("ManualSync: Now starting All Folder Checks")
+                for element in artdata["artist_store"]["all-folder-artists"]:
+                    self.deviantlogger.info("ManualSync: Grabbing Channel ID of AllFolderArtist " + element)
+                    channel = self.bot.get_channel(
+                        int(artdata["art-data"][element]["all-folder"]["discord-channel-id"]))
+                    self.deviantlogger.info("ManualSync: Grabbed Channel id of channel " + channel.name)
+                    self.deviantlogger.info("ManualSync: " +
+                                            "Grabbing AllFolder from DA for AllFolderArtist " + element)
+                    urls = dp.getallFolder(element, True, self.token,
+                                           artdata["art-data"][element]["all-folder"]["inverted"])
+                    self.deviantlogger.info("ManualSync: Finished grabbing All Folder for artist " + element)
+                    self.deviantlogger.info("ManualSync: num_items is " + urls["index"])
+                    num_items = urls["index"]
+                    if urls["trigger"]:
+                        self.deviantlogger.info("ManualSync: Trigger is True inside dictionary" +
+                                                " returned by getAllFolder")
+                        while num_items >= 0:
+                            self.deviantlogger.info("ManualSync: All Folder urls is not empty!")
+                            self.deviantlogger.info("ManualSync: Current Num Item: " + num_items)
+                            self.deviantlogger.info("ManualSync: Creating notification embed")
+                            notification = discord.Embed(title="New Deviation",
+                                                         url=urls["da-urls"][num_items])
+                            self.deviantlogger.info("SyncGallieries: Setting Artist profile Picture in embed")
+                            profilep = urls["profile-pic-url"]
+                            self.deviantlogger.debug("ManualSync: Using profilepic url: " +
+                                                     urls["profile-pic-url"])
+                            self.deviantlogger.info(
+                                "SyncGallieries: Setting Artist in embed")
+                            notification.add_field(name="by " + element, value="Link above (blue text)")
+                            self.deviantlogger.info("ManualSync: Setting thumbnail")
+                            self.deviantlogger.info(
+                                "SyncGallieries: Setting Artist profile Picture in embed")
+                            notification.set_thumbnail(url=profilep)
+                            self.deviantlogger.info("ManualSync: Finished Setting thumbnail")
+                            self.deviantlogger.info("ManualSync: Setting Image in embed")
+                            notification.set_image(url=urls["photo-urls"][num_items])
+                            self.deviantlogger.info("ManualSync: Finished Setting thumbnail!")
+                            self.deviantlogger.info("ManualSync: Setting Footer")
+                            notification.set_footer(
+                                text="NOTE: DeviantArt serves its content through the Wix Media Platform.\n" +
+                                     "This is why the image link is wixmp.com and looks weird.")
+                            self.deviantlogger.info("ManualSync: Sending Notification Embed")
+                            await channel.send(embed=notification)
+                            self.deviantlogger.debug("New Deviation URL: ")
+                            self.deviantlogger.debug("ManualSync: Now posting URL")
+                            if num_items == 0:
+                                break
+                            elif num_items > 0:
+                                num_items = num_items - 1
+                self.jsonlock = False
 
     @commands.command()
     async def addartist(self, ctx, artistname, foldername, channelid, inverted):
@@ -912,7 +1334,7 @@ class daCog(commands.Cog):
                         artdata = json.load(jsonFile)
                         jsonFile.close()
                         dp.getGalleryFolderFT(artistname, True,
-                                              artdata["art-data"][artistname.lower()][foldername]["artist-folder-id"],
+                                              artdata["art-data"][artistname.lower()]["folders"][foldername]["artist-folder-id"],
                                               self.token, foldername)
                         self.jsonlock = False
                         self.deviantlogger.info("Finished populating deviations for " + artistname + "in " + foldername)

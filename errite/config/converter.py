@@ -54,7 +54,18 @@ def convert():
                                 logger.info(artist + "'s " + folder + "is inverted putting in hybrid as false")
                                 artdata["art-data"][artist][folder]["hybrid"] = True
                                 triggered = True
-
+            if artdata["version"] == "bt-1.2.0":
+                triggered = True
+                logger.info("Converter found version bt-1.2.0")
+                artdata["version"] = "bt-1.4.0"
+                if len(artdata["artist_store"]) > 0:
+                    for artist in artdata["artist_store"]["used-artists"]:
+                        for folder in artdata["art-data"][artist]["folder-list"]:
+                            artdata["art-data"][artist]["folders"][folder] = artdata["art-data"][artist][folder]
+                            del artdata["art-data"][artist][folder]
+                        artdata["art-data"][artist]["folders"]["folder-list"] = artdata["art-data"][artist]["folder-list"]
+                        del artdata["art-data"][artist]["folder-list"]
+                artdata["artist_store"]["all-folder-artists"] = []
             if triggered:
                 jsonFile = open("artdata.json", "w+")
                 jsonFile.write(json.dumps(artdata, indent=4, sort_keys=True))

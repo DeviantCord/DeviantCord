@@ -2,7 +2,7 @@
 Setting Up Listeners
 ************************************
 
-There are two commands in DeviantCord that adds listeners that check gallery folders for new deviations.
+There are three commands in DeviantCord that adds listeners that check gallery folders for new deviations.
 However this page aims to clear misconceptions with configuring listeners.
 The addartist command is the first command that should be ran for a new artist,
 
@@ -14,6 +14,7 @@ Things to Note:
 * Folder name should be in quotes
 * The addartist command is used to add a new artist that has no other listeners
 * The addfolder command adds another listener for an already existing artist's folder.
+
 
 Correct Arguments
 -----------------
@@ -42,6 +43,17 @@ $addartist "zander-the-artist" "Hope In Friends Comic" *<channel_id>* false
 
 *Inverted in this case would be false, but it depends on what artist and what folder*
 
+AllFolders
+----------
+On DeviantArt there is an all view that allows users to view all deviations from an artist. Starting with DeviantCord bt-1.4.0
+allfolder commands are introduced allowing for DeviantCord to send notifications whenever an artist posts a deviation
+no matter what folder it is put in.
+
+$addallfolder *<artist_username>*  *<channel_id>* *<inverted>*
+
+Using this command will work rather or not the artist already exists in artdata, and if the artist is not in artdata already
+there is no need to use an addartist command.
+
 Removing Folders
 ----------------
 Removing a listener uses the same logic as the section above, if you haven't read the section it is suggested that you
@@ -60,6 +72,13 @@ unless you readd it.
 Additionally if you are having trouble remembering what folders are currently being listened for new deviations you can
 use the listfolders command ::
     $listfolders
+
+Starting with bt-1.4.0 allfolders are introduced. To remove allfolders, you need to use the deleteallfolder command as
+follows here.::
+    $deleteallfolder <artist_username>
+
+**NOTE: Using the deleteallfolder command does not remove all folders from an artist**
+
 
 
 Inverted Galleries
