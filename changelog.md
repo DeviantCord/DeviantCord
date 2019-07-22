@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Beta]
 
-## [bt-1.4.1] - 2019-07-22
+## [bt-1.4.2] - 2019-07-22
 ##Fixes
 - Error with converter for artdata
 
