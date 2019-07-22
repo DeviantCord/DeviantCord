@@ -27,7 +27,7 @@ from discord.ext import commands
 from discord.ext.commands import has_permissions, guild_only, CommandNotFound
 import errite.da.daParser as dp
 from errite.da.jsonTools import createArtistData, artistExists, folderExists, createFolderData, \
-    updateDiscordChannel, updateRole, updateinverseproperty, delfolder, updatehybridproperty,  \
+    updateDiscordChannel, updateRole, updateinverseproperty, delfolder, updatehybridproperty, \
     hasAllFolder, createArtistDataAll, allartistExists, delAllFolder
 from errite.config.configManager import createConfig, createSensitiveConfig
 from errite.tools.mis import fileExists
@@ -185,6 +185,7 @@ class daCog(commands.Cog):
             #        with urllib.request.urlopen(tokenCheckURL) as result:
             #           print("YAY")
             self.bot.loop.create_task(self.syncGalleries())
+
     async def softTokenRenewal(self):
         """
         Gets a new token from DeviantArt with no params, grabs the clientid and clientsecret from the class file.
@@ -270,10 +271,12 @@ class daCog(commands.Cog):
                                 self.deviantlogger.debug(
                                     "Starting Sync for folder " + foldername + " from artist " + element)
                                 urls = dp.getGalleryFolder(element, True,
-                                                           artdata['art-data'][element]["folders"][foldername]["artist-folder-id"],
+                                                           artdata['art-data'][element]["folders"][foldername][
+                                                               "artist-folder-id"],
                                                            self.token,
                                                            foldername,
-                                                           artdata['art-data'][element]["folders"][foldername]["inverted-folder"])
+                                                           artdata['art-data'][element]["folders"][foldername][
+                                                               "inverted-folder"])
                                 self.deviantlogger.info("SyncGalleries: getGalleryFolder finished for " + foldername +
                                                         " in artist " + element)
                                 self.jsonlock = False
@@ -286,11 +289,13 @@ class daCog(commands.Cog):
                                     while not currentlength == 0:
                                         self.deviantlogger.info("SyncGalleries: Inverse urls is not empty!")
                                         trest = urls["da-urls"][currentlength - 1]
-                                        self.deviantlogger.info("SyncGalleries: Current Corrected index: " + str(currentlength - 1))
+                                        self.deviantlogger.info(
+                                            "SyncGalleries: Current Corrected index: " + str(currentlength - 1))
                                         self.deviantlogger.info("SyncGalleries: Creating notification embed")
                                         notification = discord.Embed(title="New Deviation",
-                                                                     url=urls["da-urls"][currentlength-1])
-                                        self.deviantlogger.info("SyncGallieries: Setting Artist profile Picture in embed")
+                                                                     url=urls["da-urls"][currentlength - 1])
+                                        self.deviantlogger.info(
+                                            "SyncGallieries: Setting Artist profile Picture in embed")
                                         profilep = urls["profile-pic-url"]
                                         self.deviantlogger.debug("SyncGalleries: Using profilepic url: " +
                                                                  urls["profile-pic-url"])
@@ -318,7 +323,8 @@ class daCog(commands.Cog):
                                     self.deviantlogger.info("syncGalleries: URL Array Length " +
                                                             str(len(urls["da-urls"])))
                                     currentlength = len(urls["da-urls"])
-                                    self.deviantlogger.debug("SyncGalleries: Profile Picture URL " + str(urls["photo-url"]))
+                                    self.deviantlogger.debug(
+                                        "SyncGalleries: Profile Picture URL " + str(urls["photo-url"]))
                                     print(len(urls["da-urls"]))
                                     print(len(urls["photo-url"]))
                                     while not currentlength == 0:
@@ -368,7 +374,7 @@ class daCog(commands.Cog):
                             num_items = urls["index"]
                             if urls["trigger"]:
                                 self.deviantlogger.info("SyncGalleries: Trigger is True inside dictionary" +
-                                " returned by getAllFolder")
+                                                        " returned by getAllFolder")
                                 while num_items >= 0:
                                     self.deviantlogger.info("SyncGalleries: All Folder urls is not empty!")
                                     self.deviantlogger.info("SyncGalleries: Current Num Item: " + num_items)
@@ -437,6 +443,8 @@ class daCog(commands.Cog):
                self.prefix + "addfolder** *<artist_username>* *<folder>* *<channel_id>* *<inverse>* - Adds another artists gallery folder for the bot to notify the specified channel of new deviations. Use this when your adding another folder to an artist already added \n**" + \
                self.prefix \
                + "addartist** *<artist_username>* *<folder>* *<channel_id>* *<inverse>*- Used to add an artist and the first folder into the bots datafile. Use this command when you are adding an artist for the first time!\n**" + \
+               self.prefix + "addallfolder** *<artist_username> <channel_id> <inverse>* - Used to add an allfolder listener that listens for any deviations from the artist.\n **" + \
+               self.prefix + "deleteallfolder** *<artist_username*> - Deletes allfolder listener and removes it from artdata\n **" + \
                self.prefix + "deletefolder** *<artist_username>* *<folder>* - Deletes the listener for the folder and erases it from artdata\n **" + \
                self.prefix + "manualSync** - Will check all configured folders for new deviations instead of waiting for the timer to trigger and start the check *DO NOT SPAM THIS*\n" + "**" + \
                self.prefix + "listfolders** - Lists all the current folder listeners that the bot is listening to. \n **" + \
@@ -447,7 +455,6 @@ class daCog(commands.Cog):
                "**" + self.prefix + "erritetoggle** - Toggles the Errite Error Notifier that lets DeviantCord Support know of issues with the bot for your Discord server.\n**ONLY FOR the Official DeviantCord Public Bot NOT SELF HOSTED**\n" + \
                "**" + self.prefix + "setprefix** *<prefix>* - Updates the prefix for all commands and reloads\n" + \
                "**" + self.prefix + "reload** - Reloads DeviantCord"
-
         await ctx.send(text)
 
     @commands.command()
@@ -517,7 +524,8 @@ class daCog(commands.Cog):
                 self.jsonlock = False
                 return
             if (allartistExists(artistname) == True):
-                self.deviantlogger.info("Addallfolder: User tried adding Artist " + artistname + " but they're already in artdata")
+                self.deviantlogger.info(
+                    "Addallfolder: User tried adding Artist " + artistname + " but they're already in artdata")
                 await ctx.send("There is already an allfolder for this artist!")
             elif (allartistExists(artistname) == False):
                 deviations = dp.daHasDeviations(artistname, self.token)
@@ -625,7 +633,6 @@ class daCog(commands.Cog):
                     await ctx.send(
                         "Bad News... there aren't any folders. Maybe they went on vacation? I can't tell because I'm a bot, not a travel agent.")
 
-
     @commands.command()
     async def deletefolder(self, ctx, artist, folder):
         skiprolecheck = False
@@ -679,7 +686,6 @@ class daCog(commands.Cog):
                 await ctx.send(
                     "Error: This artist does not have a listener. Is this a mistake? I can't tell I'm just a bot!")
 
-
     @commands.command()
     async def deleteallfolder(self, ctx, artist):
         print("Delete All Folder invoked")
@@ -730,7 +736,6 @@ class daCog(commands.Cog):
                 self.jsonlock = False
                 await ctx.send(
                     "Error: This artist does not have an allfolder listener. Is this a mistake? I can't tell I'm just a bot!")
-
 
     @commands.command()
     async def addfolder(self, ctx, artistname, foldername, channelid, inverted):
@@ -837,7 +842,8 @@ class daCog(commands.Cog):
                         jsonFile.close()
                         self.deviantlogger.info("Addfolder: Now running getGalleryFolderFT")
                         dp.getGalleryFolderFT(artistname, True,
-                                              artdata["art-data"][artistname.lower()]["folders"][foldername]["artist-folder-id"],
+                                              artdata["art-data"][artistname.lower()]["folders"][foldername][
+                                                  "artist-folder-id"],
                                               self.token, foldername)
                         self.jsonlock = False
                         await channel.send(
@@ -1334,7 +1340,8 @@ class daCog(commands.Cog):
                         artdata = json.load(jsonFile)
                         jsonFile.close()
                         dp.getGalleryFolderFT(artistname, True,
-                                              artdata["art-data"][artistname.lower()]["folders"][foldername]["artist-folder-id"],
+                                              artdata["art-data"][artistname.lower()]["folders"][foldername][
+                                                  "artist-folder-id"],
                                               self.token, foldername)
                         self.jsonlock = False
                         self.deviantlogger.info("Finished populating deviations for " + artistname + "in " + foldername)
@@ -1502,6 +1509,122 @@ class daCog(commands.Cog):
                 if error.code == 429:
                     self.deviantlogger.error("addfolder command returned a HTTP 429, DA API Overloaded ")
                     await ctx.send("Error: DA API is currently overloaded...please wait for an hour. ")
+                    return 429;
+            if isinstance(error, commands.errors.NoPrivateMessage):
+                return
+            else:
+                self.deviantlogger.error(error)
+                self.deviantlogger.exception(error)
+
+    @addallfolder.error
+    async def addallfolder_errorhandler(self, ctx, error):
+        self.jsonlock = False;
+        try:
+            if ctx.guild.id is None:
+                return;
+        except AttributeError:
+            return;
+        if ctx.guild.id == self.guildid:
+            permitted = True
+        elif not ctx.guild.id == self.guildid:
+            return
+        elif not self.publicmode:
+            permitted = True
+        else:
+            return;
+        if permitted:
+            if isinstance(error, commands.MissingRequiredArgument):
+                if error.param.name == 'inverted':
+                    await ctx.send(
+                        "Error: No inverted argument found, use " + self.prefix + "help for more information")
+                if error.param.name == 'artistname':
+                    await ctx.send(
+                        "Error: No artistname argument found, use " + self.prefix + "help for more information")
+                if error.param.name == 'foldername':
+                    await ctx.send(
+                        "Error: No foldername argument found, use " + self.prefix + "help for more information")
+                if error.param.name == 'channelid':
+                    await ctx.send(
+                        "Error: No channelid argument found, use " + self.prefix + "help for more information")
+            if isinstance(error, urllib.error.HTTPError):
+                if error.code == 401:
+                    await ctx.send(
+                        "Error: Automatic Token renewal didn't taken place, tokens will renew in 10 minutes, if issues persist"
+                        "past 20 minutes please contact DeviantCord support.")
+                    self.deviantlogger.error("AddArtist command returned a HTTP 401, ")
+                    self.deviantlogger.info("Invoking softTokenRenewal")
+                    await self.softTokenRenewal()
+                if error.code == 503:
+                    self.deviantlogger.error(
+                        "AddArtist command returned a HTTP 503, DA Servers are down for maintenance ")
+                    await ctx.send(
+                        "Error: DA's servers are down, check DeviantArt's Twitter and DeviantCord Support for more information");
+                if error.code == 500:
+                    self.deviantlogger.error("AddArtist command returned a HTTP 500, Internal Error ")
+                    await ctx.send("DA's servers returned a Error 500 Internal Error. Try again in a few minutes");
+                if error.code == 429:
+                    self.deviantlogger.error("AddArtist command returned a HTTP 429, DA API Overloaded ")
+                    await ctx.send("Error: DA API is currently overloaded...please wait for an hour. DeviantCord"
+                                   "will continue to check for deviations at a delayed pace. Though commands will be "
+                                   "delayed")
+                    return 429;
+            if isinstance(error, commands.errors.NoPrivateMessage):
+                return
+            else:
+                self.deviantlogger.error(error)
+                self.deviantlogger.exception(error)
+
+    @deleteallfolder.error
+    async def daf_errorhandler(self, ctx, error):
+        self.jsonlock = False;
+        try:
+            if ctx.guild.id is None:
+                return;
+        except AttributeError:
+            return;
+        if ctx.guild.id == self.guildid:
+            permitted = True
+        elif not ctx.guild.id == self.guildid:
+            return
+        elif not self.publicmode:
+            permitted = True
+        else:
+            return;
+        if permitted:
+            if isinstance(error, commands.MissingRequiredArgument):
+                if error.param.name == 'inverted':
+                    await ctx.send(
+                        "Error: No inverted argument found, use " + self.prefix + "help for more information")
+                if error.param.name == 'artist':
+                    await ctx.send(
+                        "Error: No artistname argument found, use " + self.prefix + "help for more information")
+                if error.param.name == 'foldername':
+                    await ctx.send(
+                        "Error: No foldername argument found, use " + self.prefix + "help for more information")
+                if error.param.name == 'channelid':
+                    await ctx.send(
+                        "Error: No channelid argument found, use " + self.prefix + "help for more information")
+            if isinstance(error, urllib.error.HTTPError):
+                if error.code == 401:
+                    await ctx.send(
+                        "Error: Automatic Token renewal didn't taken place, tokens will renew in 10 minutes, if issues persist"
+                        "past 20 minutes please contact DeviantCord support.")
+                    self.deviantlogger.error("AddArtist command returned a HTTP 401, ")
+                    self.deviantlogger.info("Invoking softTokenRenewal")
+                    await self.softTokenRenewal()
+                if error.code == 503:
+                    self.deviantlogger.error(
+                        "AddArtist command returned a HTTP 503, DA Servers are down for maintenance ")
+                    await ctx.send(
+                        "Error: DA's servers are down, check DeviantArt's Twitter and DeviantCord Support for more information");
+                if error.code == 500:
+                    self.deviantlogger.error("AddArtist command returned a HTTP 500, Internal Error ")
+                    await ctx.send("DA's servers returned a Error 500 Internal Error. Try again in a few minutes");
+                if error.code == 429:
+                    self.deviantlogger.error("AddArtist command returned a HTTP 429, DA API Overloaded ")
+                    await ctx.send("Error: DA API is currently overloaded...please wait for an hour. DeviantCord"
+                                   "will continue to check for deviations at a delayed pace. Though commands will be "
+                                   "delayed")
                     return 429;
             if isinstance(error, commands.errors.NoPrivateMessage):
                 return

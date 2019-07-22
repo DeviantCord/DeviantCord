@@ -7,53 +7,9 @@
     <list default="true" id="2e57e923-5e39-45cc-93b3-8ed3fbf9a837" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bot.py" beforeDir="false" afterPath="$PROJECT_DIR$/Bot.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/artdata.json" beforeDir="false" afterPath="$PROJECT_DIR$/artdata.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/artdataempty.json" beforeDir="false" afterPath="$PROJECT_DIR$/artdataempty.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/changelog.md" beforeDir="false" afterPath="$PROJECT_DIR$/changelog.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cogs/daCommands.py" beforeDir="false" afterPath="$PROJECT_DIR$/cogs/daCommands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/doctrees/addinglisteners.doctree" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/doctrees/addinglisteners.doctree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/doctrees/environment.pickle" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/doctrees/environment.pickle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/doctrees/errite.cogs.doctree" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/doctrees/errite.cogs.doctree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/doctrees/errite.config.doctree" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/doctrees/errite.config.doctree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/doctrees/errite.da.doctree" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/doctrees/errite.da.doctree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/.buildinfo" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/.buildinfo" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/_sources/addinglisteners.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/_sources/addinglisteners.rst.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/addinglisteners.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/addinglisteners.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/additionalinfo.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/additionalinfo.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/choosehost.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/choosehost.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/community-events.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/community-events.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/configure.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/configure.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/errite.cogs.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/errite.cogs.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/errite.config.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/errite.config.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/errite.da.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/errite.da.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/errite.erritediscord.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/errite.erritediscord.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/errite.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/errite.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/errite.tools.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/errite.tools.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/error-reporting.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/error-reporting.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/false-positives.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/false-positives.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/genindex.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/genindex.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/installpython.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/installpython.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/modules.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/modules.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/movingfileslinux.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/movingfileslinux.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/objects.inv" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/objects.inv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/permissions.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/permissions.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/py-modindex.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/py-modindex.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/requesthosting.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/requesthosting.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/runningbot.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/runningbot.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/search.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/search.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/searchindex.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/searchindex.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/security-changelog.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/security-changelog.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/security-questions.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/security-questions.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/ssh.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/ssh.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/whathost.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/build/html/whathost.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/source/addinglisteners.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/addinglisteners.rst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/source/conf.py" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/conf.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/errite/cogs/daCommands.py" beforeDir="false" afterPath="$PROJECT_DIR$/errite/cogs/daCommands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/errite/config/configManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/errite/config/configManager.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/errite/config/converter.py" beforeDir="false" afterPath="$PROJECT_DIR$/errite/config/converter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/errite/da/daParser.py" beforeDir="false" afterPath="$PROJECT_DIR$/errite/da/daParser.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/errite/da/jsonTools.py" beforeDir="false" afterPath="$PROJECT_DIR$/errite/da/jsonTools.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -78,34 +34,6 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/docs/source/index.rst">
-          <provider selected="true" editor-type-id="restructured-text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/docs/source/addinglisteners.rst">
-          <provider selected="true" editor-type-id="restructured-text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client.json">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
-              <caret line="4" column="1" selection-start-line="4" selection-start-column="1" selection-end-line="4" selection-end-column="1" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/config.json">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="135">
-              <caret line="9" column="12" selection-start-line="9" selection-start-column="12" selection-end-line="9" selection-end-column="12" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/artdata.json">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="30">
@@ -123,14 +51,59 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/docs/source/conf.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="319">
+            <state relative-caret-position="450">
               <caret line="30" column="17" selection-start-line="30" selection-start-column="17" selection-end-line="30" selection-end-column="17" />
               <folding>
                 <element signature="e#534#543#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cogs/daCommands.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="516">
+              <caret line="1746" column="18" selection-start-line="1746" selection-start-column="18" selection-end-line="1746" selection-end-column="18" />
+              <folding>
+                <element signature="e#625#636#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/errite/cogs/daCommands.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
+              <caret lean-forward="true" />
+              <folding>
+                <element signature="e#625#636#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Bot.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="225">
+              <caret line="36" column="36" selection-start-line="36" selection-start-column="36" selection-end-line="36" selection-end-column="36" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/changelog.md">
+          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+            <state split_layout="SPLIT">
+              <first_editor relative-caret-position="180">
+                <caret line="12" column="26" selection-start-line="12" selection-start-column="26" selection-end-line="12" selection-end-column="26" />
+              </first_editor>
+              <second_editor />
             </state>
           </provider>
         </entry>
@@ -246,15 +219,11 @@
         <option value="$PROJECT_DIR$/cogs/fakecog.py" />
         <option value="$PROJECT_DIR$/config.json" />
         <option value="$PROJECT_DIR$/cogs/supportCommands.py" />
-        <option value="$PROJECT_DIR$/Bot.py" />
-        <option value="$PROJECT_DIR$/cogs/daCommands.py" />
         <option value="$PROJECT_DIR$/cogs/erriteCommands.py" />
         <option value="$PROJECT_DIR$/docs/source/whathost.rst" />
         <option value="$PROJECT_DIR$/docs/source/error-reporting.rst" />
         <option value="$PROJECT_DIR$/docs/source/additionalinfo.rst" />
-        <option value="$PROJECT_DIR$/errite/cogs/daCommands.py" />
         <option value="$PROJECT_DIR$/errite/da/jsonTools.py" />
-        <option value="$PROJECT_DIR$/changelog.md" />
         <option value="$PROJECT_DIR$/commandlist.txt" />
         <option value="$PROJECT_DIR$/docs/source/security-questions..rst" />
         <option value="$PROJECT_DIR$/docs/source/false-positives.rst" />
@@ -264,6 +233,10 @@
         <option value="$PROJECT_DIR$/docs/source/security-questions.rst" />
         <option value="$PROJECT_DIR$/docs/source/addinglisteners.rst" />
         <option value="$PROJECT_DIR$/docs/source/conf.py" />
+        <option value="$PROJECT_DIR$/changelog.md" />
+        <option value="$PROJECT_DIR$/cogs/daCommands.py" />
+        <option value="$PROJECT_DIR$/errite/cogs/daCommands.py" />
+        <option value="$PROJECT_DIR$/Bot.py" />
       </list>
     </option>
   </component>
@@ -277,7 +250,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -340,6 +312,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -555,11 +528,16 @@
       <workItem from="1563597899607" duration="371000" />
       <workItem from="1563796041503" duration="862000" />
       <workItem from="1563796991905" duration="253000" />
+      <workItem from="1563798511841" duration="83000" />
+      <workItem from="1563800178585" duration="28000" />
+      <workItem from="1563800231006" duration="92000" />
+      <workItem from="1563801680075" duration="244000" />
+      <workItem from="1563802389464" duration="64000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="200522000" />
+    <option name="totallyTimeSpent" value="201033000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -573,7 +551,7 @@
   <component name="ToolWindowManager">
     <frame x="67" y="25" width="1853" height="1055" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4957806" visible="true" weight="0.31765357" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4957806" visible="true" weight="0.3370227" />
       <window_info id="Structure" order="1" sideWeight="0.5042194" side_tool="true" weight="0.24966975" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -584,7 +562,7 @@
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="Version Control" order="6" />
       <window_info anchor="bottom" id="TODO" order="7" weight="0.32956153" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="8" visible="true" weight="0.35421166" />
+      <window_info anchor="bottom" id="Terminal" order="8" visible="true" weight="0.35421166" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
       <window_info anchor="bottom" id="Python Console" order="10" weight="0.32956153" />
       <window_info anchor="bottom" id="Database Changes" order="11" />
@@ -666,16 +644,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Bot.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-4395">
-          <caret line="37" column="4" selection-start-line="37" selection-start-column="4" selection-end-line="37" selection-end-column="4" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/docs/source/runningbot.rst">
       <provider selected="true" editor-type-id="restructured-text-editor" />
     </entry>
@@ -702,26 +670,6 @@
     <entry file="file://$PROJECT_DIR$/docs/source/additionalinfo.rst">
       <provider selected="true" editor-type-id="restructured-text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/errite/cogs/daCommands.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="13950">
-          <caret line="946" selection-start-line="946" selection-end-line="946" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/changelog.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="126">
-            <caret line="7" column="9" selection-start-line="7" selection-start-column="9" selection-end-line="7" selection-end-column="9" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/win-venv/Lib/site-packages/discord/asset.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="372">
@@ -739,13 +687,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cogs/daCommands.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6555">
-          <caret line="453" column="20" selection-start-line="453" selection-start-column="14" selection-end-line="453" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/docs/source/security-changelog.rst">
       <provider selected="true" editor-type-id="restructured-text-editor" />
     </entry>
@@ -757,15 +698,6 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/docs/client.json">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/docs/config.json">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/docs/source/false-positives.rst">
-      <provider selected="true" editor-type-id="restructured-text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/docs/source/requesthosting.rst">
-      <provider selected="true" editor-type-id="restructured-text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/docs/source/index.rst">
       <provider selected="true" editor-type-id="restructured-text-editor" />
@@ -803,11 +735,57 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/docs/source/conf.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="319">
+        <state relative-caret-position="450">
           <caret line="30" column="17" selection-start-line="30" selection-start-column="17" selection-end-line="30" selection-end-column="17" />
           <folding>
             <element signature="e#534#543#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/changelog.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="180">
+            <caret line="12" column="26" selection-start-line="12" selection-start-column="26" selection-end-line="12" selection-end-column="26" />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/config.json">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/source/false-positives.rst">
+      <provider selected="true" editor-type-id="restructured-text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/source/requesthosting.rst">
+      <provider selected="true" editor-type-id="restructured-text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cogs/daCommands.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="516">
+          <caret line="1746" column="18" selection-start-line="1746" selection-start-column="18" selection-end-line="1746" selection-end-column="18" />
+          <folding>
+            <element signature="e#625#636#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/errite/cogs/daCommands.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret lean-forward="true" />
+          <folding>
+            <element signature="e#625#636#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Bot.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="36" column="36" selection-start-line="36" selection-start-column="36" selection-end-line="36" selection-end-column="36" />
         </state>
       </provider>
     </entry>

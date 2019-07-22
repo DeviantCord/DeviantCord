@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Beta]
 
-## [bt-1.4.0] - 2019-07-10
+## [bt-1.4.1] - 2019-07-22
+##Changes
+- Updated help command to reflect new commands in bt-1.4.0
+- Linked error handler for addallfolder and deleteallfolder
+
+## [bt-1.4.0] - 2019-07-22
 
 ## Added 
 - AllFolder Listeners via the addallfolder command
