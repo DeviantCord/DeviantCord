@@ -373,7 +373,7 @@ class daCog(commands.Cog):
                                                         " returned by getAllFolder")
                                 while num_items >= 0:
                                     self.deviantlogger.info("SyncGalleries: All Folder urls is not empty!")
-                                    self.deviantlogger.info("SyncGalleries: Current Num Item: " + num_items)
+                                    self.deviantlogger.info("SyncGalleries: Current Num Item: " + str(num_items))
                                     self.deviantlogger.info("SyncGalleries: Creating notification embed")
                                     notification = discord.Embed(title="New Deviation",
                                                                  url=urls["da-urls"][num_items])
@@ -390,6 +390,7 @@ class daCog(commands.Cog):
                                     notification.set_thumbnail(url=profilep)
                                     self.deviantlogger.info("SyncGalleries: Finished Setting thumbnail")
                                     self.deviantlogger.info("SyncGalleries: Setting Image in embed")
+                                    print(str(urls["photo-urls"][num_items]))
                                     notification.set_image(url=urls["photo-urls"][num_items])
                                     self.deviantlogger.info("SyncGalleries: Finished Setting thumbnail!")
                                     self.deviantlogger.info("SyncGalleries: Setting Footer")
@@ -1204,7 +1205,7 @@ class daCog(commands.Cog):
                                                 " returned by getAllFolder")
                         while num_items >= 0:
                             self.deviantlogger.info("ManualSync: All Folder urls is not empty!")
-                            self.deviantlogger.info("ManualSync: Current Num Item: " + num_items)
+                            self.deviantlogger.info("ManualSync: Current Num Item: " + str(num_items))
                             self.deviantlogger.info("ManualSync: Creating notification embed")
                             notification = discord.Embed(title="New Deviation",
                                                          url=urls["da-urls"][num_items])

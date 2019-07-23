@@ -642,7 +642,6 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
 
                 if tmp == False:
                     logger.info("getGallery: False entered")
-                    print("Entered valley")
                     for uuid in data['results']:
                         # print("UUID: " + uuid["deviationid"])
                         if (findDuplicateElementArray(artdata["art-data"][artist.lower()]["folders"][foldername]["processed-uuids"], uuid["deviationid"]) == False):
@@ -656,7 +655,6 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
                             artdata["art-data"][artist.lower()]["folders"][foldername]["offset-value"] = data["next_offset"]
                         # print (uuid.get("deviationid"))
                     if len(hybridurls) == 0:
-                        print("Here?")
                         jsonFile = open("artdata.json", "w+")
                         jsonFile.write(json.dumps(artdata, indent=4, sort_keys=True))
                         jsonFile.close()

@@ -16,7 +16,7 @@ class adminCog(commands.Cog):
     def __init__(self, bot):
         self.logname = "admincog"
         # This is the channelid in the DeviantCord Discord server that will be intercepted by the other bots.
-        self.errite_channel_id = 591457790749310976
+        self.errite_channel_id = "replace this with channelid"
         self.adminlogger = logging.getLogger("admincog")
         self.adminlogger.setLevel(logging.DEBUG)
         self.adminhandler = TimedRotatingFileHandler(self.logname, when='h', interval=12, backupCount=2000,
