@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/Bot.py" description="for extension in [f.replace('.py', '') for f in li..." line="88" />
-  </component>
   <component name="ChangeListManager">
     <list default="true" id="2e57e923-5e39-45cc-93b3-8ed3fbf9a837" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Bot.py" beforeDir="false" afterPath="$PROJECT_DIR$/Bot.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/changelog.md" beforeDir="false" afterPath="$PROJECT_DIR$/changelog.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/cogs/daCommands.py" beforeDir="false" afterPath="$PROJECT_DIR$/cogs/daCommands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cogs/erriteCommands.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/errite/cogs/daCommands.py" beforeDir="false" afterPath="$PROJECT_DIR$/errite/cogs/daCommands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/html/_images/SettingUp.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/errite/da/daParser.py" beforeDir="false" afterPath="$PROJECT_DIR$/errite/da/daParser.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -33,96 +30,6 @@
     <expand />
     <select />
   </component>
-  <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/artdataempty.json">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="6" selection-end-line="7" selection-end-column="1" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/docs/source/conf.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="435">
-              <caret line="30" column="17" selection-start-line="30" selection-start-column="17" selection-end-line="30" selection-end-column="17" />
-              <folding>
-                <element signature="e#534#543#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/cogs/daCommands.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <folding>
-                <element signature="e#625#636#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/errite/da/daParser.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="9780">
-              <caret line="656" column="44" selection-end-line="731" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/errite/cogs/daCommands.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="516">
-              <caret line="731" selection-start-line="731" selection-end-line="731" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Bot.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="315">
-              <caret line="36" column="36" selection-start-line="36" selection-start-column="36" selection-end-line="36" selection-end-column="36" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/changelog.md">
-          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-            <state split_layout="SPLIT">
-              <first_editor relative-caret-position="180">
-                <caret line="21" lean-forward="true" selection-start-line="8" selection-end-line="21" />
-              </first_editor>
-              <second_editor />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/docs/config.json">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/docs/source/false-positives.rst">
-          <provider selected="true" editor-type-id="restructured-text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/docs/source/requesthosting.rst">
-          <provider selected="true" editor-type-id="restructured-text-editor" />
-        </entry>
-      </file>
-    </leaf>
-  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -131,188 +38,10 @@
       </list>
     </option>
   </component>
-  <component name="FindInProjectRecents">
-    <findStrings>
-      <find>artist</find>
-      <find>prefix</find>
-      <find>client</find>
-      <find>commands.BOt</find>
-      <find>bot</find>
-      <find>remove_command</find>
-      <find>remove</find>
-      <find>configData</find>
-      <find>self.prefix[</find>
-      <find>help</find>
-      <find>artist.lower()-folder-id</find>
-      <find>get_chann</find>
-      <find>update</find>
-      <find>error not trigge</find>
-      <find>[artist]</find>
-      <find>[artistname]</find>
-      <find>setuprol</find>
-      <find>setuprole</find>
-      <find>does not exist</find>
-      <find>manualSync</find>
-      <find>addartist</find>
-      <find>Does not exist</find>
-      <find>not</find>
-      <find>botlogger.error(&quot;Reload:</find>
-      <find>fixed_guildid</find>
-      <find>print</find>
-      <find>deleteallfolder</find>
-      <find>addall</find>
-      <find>Inside</find>
-      <find>valley</find>
-    </findStrings>
-    <replaceStrings>
-      <replace>argument</replace>
-      <replace>errite</replace>
-      <replace>errite.da</replace>
-      <replace>prefix</replace>
-      <replace>artist.lower()</replace>
-      <replace>[artist.lower()]</replace>
-      <replace>artist-folder-id</replace>
-      <replace>[artistname.lower()]</replace>
-      <replace>self.deviantlogger.info</replace>
-      <replace>botlogger.error(&quot;setprefix:</replace>
-      <replace>provided_guildid</replace>
-    </replaceStrings>
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="IdeDocumentHistory">
-    <option name="CHANGED_PATHS">
-      <list>
-        <option value="$PROJECT_DIR$/docs/config/conf.py" />
-        <option value="$PROJECT_DIR$/docs/deviantart/conf.py" />
-        <option value="$PROJECT_DIR$/com/errite/errite.py" />
-        <option value="$PROJECT_DIR$/com/errite/cogs/daCommands.py" />
-        <option value="$PROJECT_DIR$/com/errite/fore/testofre.py" />
-        <option value="$PROJECT_DIR$/com/__init__.py" />
-        <option value="$PROJECT_DIR$/com/errite/cogs/__init__.py" />
-        <option value="$PROJECT_DIR$/com/errite/__init__.py" />
-        <option value="$PROJECT_DIR$/apicommand.txt" />
-        <option value="$PROJECT_DIR$/docs/source/errite.cogs.rst" />
-        <option value="$PROJECT_DIR$/errite/cogs/__init__.py" />
-        <option value="$PROJECT_DIR$/docs/source/installation.rst" />
-        <option value="$PROJECT_DIR$/docs/source/configure.rst" />
-        <option value="$PROJECT_DIR$/docs/source/movingfileslinux.rst" />
-        <option value="$PROJECT_DIR$/docs/source/choosehost.rst" />
-        <option value="$PROJECT_DIR$/docs/source/installpython.rst" />
-        <option value="$PROJECT_DIR$/docs/source/runningbot.rst" />
-        <option value="$PROJECT_DIR$/errite/artdata.json" />
-        <option value="$PROJECT_DIR$/errite/config.json" />
-        <option value="$PROJECT_DIR$/errite/Bot.py" />
-        <option value="$PROJECT_DIR$/tests/timetest.py" />
-        <option value="$PROJECT_DIR$/client.json" />
-        <option value="$PROJECT_DIR$/docs/source/permissions.rst" />
-        <option value="$PROJECT_DIR$/artdataempty.json" />
-        <option value="$PROJECT_DIR$/docs/source/requesthosting.rst" />
-        <option value="$PROJECT_DIR$/artdata.json" />
-        <option value="$PROJECT_DIR$/cogs/backendCommands.py" />
-        <option value="$PROJECT_DIR$/errite/config/converter.py" />
-        <option value="$PROJECT_DIR$/errite/config/configManager.py" />
-        <option value="$PROJECT_DIR$/cogs/fakecog.py" />
-        <option value="$PROJECT_DIR$/config.json" />
-        <option value="$PROJECT_DIR$/cogs/supportCommands.py" />
-        <option value="$PROJECT_DIR$/cogs/erriteCommands.py" />
-        <option value="$PROJECT_DIR$/docs/source/whathost.rst" />
-        <option value="$PROJECT_DIR$/docs/source/error-reporting.rst" />
-        <option value="$PROJECT_DIR$/docs/source/additionalinfo.rst" />
-        <option value="$PROJECT_DIR$/errite/da/jsonTools.py" />
-        <option value="$PROJECT_DIR$/commandlist.txt" />
-        <option value="$PROJECT_DIR$/docs/source/security-questions..rst" />
-        <option value="$PROJECT_DIR$/docs/source/false-positives.rst" />
-        <option value="$PROJECT_DIR$/docs/source/index.rst" />
-        <option value="$PROJECT_DIR$/docs/source/security-changelog.rst" />
-        <option value="$PROJECT_DIR$/docs/source/community-events.rst" />
-        <option value="$PROJECT_DIR$/docs/source/security-questions.rst" />
-        <option value="$PROJECT_DIR$/docs/source/addinglisteners.rst" />
-        <option value="$PROJECT_DIR$/docs/source/conf.py" />
-        <option value="$PROJECT_DIR$/cogs/daCommands.py" />
-        <option value="$PROJECT_DIR$/errite/da/daParser.py" />
-        <option value="$PROJECT_DIR$/errite/cogs/daCommands.py" />
-        <option value="$PROJECT_DIR$/Bot.py" />
-        <option value="$PROJECT_DIR$/changelog.md" />
-      </list>
-    </option>
-  </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-10" />
-    <option name="width" value="980" />
-    <option name="height" value="1040" />
-  </component>
-  <component name="ProjectView">
-    <navigator proportions="" version="1">
-      <foldersAlwaysOnTop value="true" />
-    </navigator>
-    <panes>
-      <pane id="Scope" />
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="DeviantCord" type="b2602c69:ProjectViewProjectNode" />
-              <item name="DeviantCord" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="DeviantCord" type="b2602c69:ProjectViewProjectNode" />
-              <item name="DeviantCord" type="462c0819:PsiDirectoryNode" />
-              <item name="cogs" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="DeviantCord" type="b2602c69:ProjectViewProjectNode" />
-              <item name="DeviantCord" type="462c0819:PsiDirectoryNode" />
-              <item name="docs" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="DeviantCord" type="b2602c69:ProjectViewProjectNode" />
-              <item name="DeviantCord" type="462c0819:PsiDirectoryNode" />
-              <item name="docs" type="462c0819:PsiDirectoryNode" />
-              <item name="source" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="DeviantCord" type="b2602c69:ProjectViewProjectNode" />
-              <item name="DeviantCord" type="462c0819:PsiDirectoryNode" />
-              <item name="errite" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="DeviantCord" type="b2602c69:ProjectViewProjectNode" />
-              <item name="DeviantCord" type="462c0819:PsiDirectoryNode" />
-              <item name="errite" type="462c0819:PsiDirectoryNode" />
-              <item name="cogs" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="DeviantCord" type="b2602c69:ProjectViewProjectNode" />
-              <item name="DeviantCord" type="462c0819:PsiDirectoryNode" />
-              <item name="errite" type="462c0819:PsiDirectoryNode" />
-              <item name="config" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="DeviantCord" type="b2602c69:ProjectViewProjectNode" />
-              <item name="DeviantCord" type="462c0819:PsiDirectoryNode" />
-              <item name="errite" type="462c0819:PsiDirectoryNode" />
-              <item name="da" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="DeviantCord" type="b2602c69:ProjectViewProjectNode" />
-              <item name="DeviantCord" type="462c0819:PsiDirectoryNode" />
-              <item name="errite" type="462c0819:PsiDirectoryNode" />
-              <item name="erritediscord" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="DeviantCord" type="b2602c69:ProjectViewProjectNode" />
-              <item name="DeviantCord" type="462c0819:PsiDirectoryNode" />
-              <item name="errite" type="462c0819:PsiDirectoryNode" />
-              <item name="tools" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-    </panes>
-  </component>
+  <component name="ProjectId" id="1OkZ3BbHpd70QUB1I8jGbbUsElf" />
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -320,6 +49,7 @@
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
@@ -535,11 +265,9 @@
       <workItem from="1563804731498" duration="251000" />
       <workItem from="1563854042398" duration="58000" />
       <workItem from="1563854477815" duration="238000" />
+      <workItem from="1564523357212" duration="2663000" />
     </task>
     <servers />
-  </component>
-  <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="201592000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -550,34 +278,19 @@
       <is-autoscroll-to-source value="true" />
     </todo-panel>
   </component>
-  <component name="ToolWindowManager">
-    <frame x="67" y="25" width="1853" height="1055" extended-state="6" />
-    <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4957806" visible="true" weight="0.3530714" />
-      <window_info id="Structure" order="1" sideWeight="0.5042194" side_tool="true" weight="0.24966975" />
-      <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32956153" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.32937366" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="Version Control" order="6" />
-      <window_info anchor="bottom" id="TODO" order="7" weight="0.32956153" />
-      <window_info anchor="bottom" id="Terminal" order="8" visible="true" weight="0.35421166" />
-      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
-      <window_info anchor="bottom" id="Python Console" order="10" weight="0.32956153" />
-      <window_info anchor="bottom" id="Database Changes" order="11" />
-      <window_info anchor="bottom" id="Docker" order="12" show_stripe_button="false" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="Database" order="3" visible="true" weight="0.019922523" />
-      <window_info anchor="right" id="SciView" order="4" />
-    </layout>
-  </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -591,198 +304,8 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/DeviantCord$Bot__2_.coverage" NAME="Bot (2) Coverage Results" MODIFIED="1563797151787" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/DeviantCord$timetest.coverage" NAME="timetest Coverage Results" MODIFIED="1557356769286" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/DeviantCord$Bot__1_.coverage" NAME="Bot (1) Coverage Results" MODIFIED="1557359128328" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/errite" />
-  </component>
-  <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/errite/config/login.json" />
-    <entry file="file://$PROJECT_DIR$/docs/source/configure.rst">
-      <provider selected="true" editor-type-id="restructured-text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/docs/source/choosehost.rst">
-      <provider selected="true" editor-type-id="restructured-text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/docs/source/permissions.rst">
-      <provider selected="true" editor-type-id="restructured-text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/deviantcog-2019-06-18204503" />
-    <entry file="file://$PROJECT_DIR$/errite/tools/mis.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/discord-10" />
-    <entry file="file://$PROJECT_DIR$/deviantcog-2019-06-18234010" />
-    <entry file="file://$PROJECT_DIR$/deviantcog-2019-06-18233218" />
-    <entry file="file://$PROJECT_DIR$/discord-11" />
-    <entry file="file://$PROJECT_DIR$/artdata (copy).json" />
-    <entry file="file://$PROJECT_DIR$/deviantcog-2019-06-18204041" />
-    <entry file="file://$PROJECT_DIR$/discord-16" />
-    <entry file="file://$PROJECT_DIR$/deviantcog-2019-06-19165803" />
-    <entry file="file://$PROJECT_DIR$/deviantcog-2019-06-19170636" />
-    <entry file="file://$PROJECT_DIR$/errite/config/converter.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="24" column="44" selection-start-line="24" selection-start-column="44" selection-end-line="24" selection-end-column="44" />
-          <folding>
-            <element signature="e#0#14#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/discord-37" />
-    <entry file="file://$PROJECT_DIR$/discord-25" />
-    <entry file="file://$PROJECT_DIR$/cogs/fakecog.py" />
-    <entry file="file://$PROJECT_DIR$/deviantcog-2019-06-19174423" />
-    <entry file="file://$PROJECT_DIR$/admincog.2019-06-21_19" />
-    <entry file="file://$PROJECT_DIR$/admincog" />
-    <entry file="file://$PROJECT_DIR$/cogs/erriteCommands.py" />
-    <entry file="file://$PROJECT_DIR$/errite/config/configManager.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="570">
-          <caret line="39" column="8" selection-start-line="39" selection-start-column="8" selection-end-line="39" selection-end-column="8" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/docs/source/runningbot.rst">
-      <provider selected="true" editor-type-id="restructured-text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/docs/source/installpython.rst">
-      <provider selected="true" editor-type-id="restructured-text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/docs/source/error-reporting.rst">
-      <provider selected="true" editor-type-id="restructured-text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/docs/source/whathost.rst">
-      <provider selected="true" editor-type-id="restructured-text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/commandlist.txt" />
-    <entry file="file://$PROJECT_DIR$/errite/da/jsonTools.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
-          <caret line="28" selection-start-line="28" selection-end-line="28" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/docs/source/additionalinfo.rst">
-      <provider selected="true" editor-type-id="restructured-text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/win-venv/Lib/site-packages/discord/asset.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="372">
-          <caret line="30" lean-forward="true" selection-start-line="30" selection-end-line="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/docs/source/security-changelog.rst">
-      <provider selected="true" editor-type-id="restructured-text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/docs/source/security-questions.rst">
-      <provider selected="true" editor-type-id="restructured-text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/docs/source/community-events.rst">
-      <provider selected="true" editor-type-id="restructured-text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/docs/client.json">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/docs/source/index.rst">
-      <provider selected="true" editor-type-id="restructured-text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/docs/source/addinglisteners.rst">
-      <provider selected="true" editor-type-id="restructured-text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="1" selection-start-line="4" selection-start-column="1" selection-end-line="4" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/config.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" column="12" selection-start-line="9" selection-start-column="12" selection-end-line="9" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/artdata.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="1" selection-start-line="2" selection-start-column="1" selection-end-line="2" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/artdataempty.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="6" selection-end-line="7" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/docs/source/conf.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="435">
-          <caret line="30" column="17" selection-start-line="30" selection-start-column="17" selection-end-line="30" selection-end-column="17" />
-          <folding>
-            <element signature="e#534#543#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cogs/daCommands.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <folding>
-            <element signature="e#625#636#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/errite/da/daParser.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9780">
-          <caret line="656" column="44" selection-end-line="731" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/docs/config.json">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/docs/source/false-positives.rst">
-      <provider selected="true" editor-type-id="restructured-text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/docs/source/requesthosting.rst">
-      <provider selected="true" editor-type-id="restructured-text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/errite/cogs/daCommands.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="516">
-          <caret line="731" selection-start-line="731" selection-end-line="731" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Bot.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="36" column="36" selection-start-line="36" selection-start-column="36" selection-end-line="36" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/changelog.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="180">
-            <caret line="21" lean-forward="true" selection-start-line="8" selection-end-line="21" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
+    <SUITE FILE_PATH="coverage/DeviantCord$timetest.coverage" NAME="timetest Coverage Results" MODIFIED="1557356769286" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/DeviantCord$Bot__2_.coverage" NAME="Bot (2) Coverage Results" MODIFIED="1564525966734" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

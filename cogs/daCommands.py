@@ -390,7 +390,6 @@ class daCog(commands.Cog):
                                     notification.set_thumbnail(url=profilep)
                                     self.deviantlogger.info("SyncGalleries: Finished Setting thumbnail")
                                     self.deviantlogger.info("SyncGalleries: Setting Image in embed")
-                                    print(str(urls["photo-urls"][num_items]))
                                     notification.set_image(url=urls["photo-urls"][num_items])
                                     self.deviantlogger.info("SyncGalleries: Finished Setting thumbnail!")
                                     self.deviantlogger.info("SyncGalleries: Setting Footer")

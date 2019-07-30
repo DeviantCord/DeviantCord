@@ -661,15 +661,27 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
                         for url in newurls:
                             if url.find("wixmp.com") > -1:
                                 deviant_info["photo-url"].append(url)
+                            elif url.find("deviantart.net") > -1:
+                                if url.find("https://img") > -1:
+                                    deviant_info["photo-url"].append(url)
                             elif url.find("deviantart.com") > -1:
-                                deviant_info["da-urls"].append(uuid["url"])
+                                if url.find("https://img") > -1:
+                                    deviant_info["photo-url"].append(url)
+                                else:
+                                    deviant_info["da-urls"].append(uuid["url"])
                         return deviant_info
 
                     for url in newurls:
                         if url.find("wixmp.com") > -1:
                             deviant_info["photo-url"].append(url)
+                        elif url.find("deviantart.net") > -1:
+                            if url.find("https://img") > -1:
+                                deviant_info["photo-url"].append(url)
                         elif url.find("deviantart.com") > -1:
-                            deviant_info["da-urls"].append(uuid["url"])
+                            if url.find("https://img") > -1:
+                                deviant_info["photo-url"].append(url)
+                            else:
+                                deviant_info["da-urls"].append(uuid["url"])
                     currentlength = len(hybridurls)
                     while currentlength >= 1:
                         print("Entered hybrid")
