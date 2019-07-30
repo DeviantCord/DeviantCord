@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Beta]
 
+## [bt-1.4.4] - 2019-07-30
+##Fixes
+- Issues with the content src url changing in DA's API. DeviantCord now accounts for it. 
+
 ## [bt-1.4.3] - 2019-07-23
 ##Fixes
 - NoneType exception with SyncGalleries for allfolders

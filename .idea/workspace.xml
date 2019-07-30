@@ -2,13 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2e57e923-5e39-45cc-93b3-8ed3fbf9a837" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Bot.py" beforeDir="false" afterPath="$PROJECT_DIR$/Bot.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cogs/daCommands.py" beforeDir="false" afterPath="$PROJECT_DIR$/cogs/daCommands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/build/html/_images/SettingUp.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/errite/da/daParser.py" beforeDir="false" afterPath="$PROJECT_DIR$/errite/da/daParser.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/changelog.md" beforeDir="false" afterPath="$PROJECT_DIR$/changelog.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build docs.zip" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -266,6 +261,7 @@
       <workItem from="1563854042398" duration="58000" />
       <workItem from="1563854477815" duration="238000" />
       <workItem from="1564523357212" duration="2663000" />
+      <workItem from="1564526109062" duration="76000" />
     </task>
     <servers />
   </component>
@@ -286,7 +282,9 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
