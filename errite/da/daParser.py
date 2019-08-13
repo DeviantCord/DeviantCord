@@ -536,7 +536,7 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
         jsonFile.close()
         if inverted == True:
             invertOffset = 0
-            while invertOffset <= 20:
+            while invertOffset < 20:
                 data = getGalleryFolderArrayResponse(artist.lower(), bool, folder, accesstoken, invertOffset)
                 # print(data);
                 tmp = data["has_more"]
@@ -547,8 +547,9 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
                         if (findDuplicateElementArray(artdata["art-data"][artist.lower()]["folders"][foldername]["processed-uuids"], uuid["deviationid"]) == False):
                             logger.info("True Inverse: , UUID " + uuid["deviationid"] + "passed")
                             deviant_info["profile-pic-url"] = str(uuid["author"]["usericon"])
-                            print(deviant_info["profile-pic-url"])
+                            logger.debug("InverseT: Appending to array DA URL: " + str(uuid["url"]))
                             deviant_info["da-urls"].append(uuid["url"])
+                            logger.debug("InverseF: Appending to Array PHOTO URL: " + str(uuid["content"]["src"]))
                             deviant_info["photo-url"].append(uuid["content"]["src"])
                             artdata["art-data"][artist.lower()]["folders"][foldername]["processed-uuids"].append(uuid["deviationid"])
 
@@ -564,7 +565,9 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
                         if (findDuplicateElementArray(artdata["art-data"][artist.lower()]["folders"][foldername]["processed-uuids"], uuid["deviationid"]) == False):
                             logger.info("False Inverse: , UUID " + uuid["deviationid"] + "passed")
                             deviant_info["profile-pic-url"] = uuid["author"]["usericon"]
+                            logger.debug("InverseF: Appending to array DA URL: " + str(uuid["url"]))
                             deviant_info["da-urls"].append(uuid["url"])
+                            logger.debug("InverseF: Appending to Array PHOTO URL: " + str(uuid["content"]["src"]))
                             deviant_info["photo-url"].append(uuid["content"]["src"])
                             artdata["art-data"][artist.lower()]["folders"][foldername]["processed-uuids"].append(uuid["deviationid"])
                         if data["next_offset"] is not None:
@@ -583,7 +586,7 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
             print("Begin Hybrid")
             if artdata["art-data"][artist.lower()]["folders"][foldername]["hybrid"]:
                 invertOffset = 0
-                while invertOffset <= 20:
+                while invertOffset < 20:
                     data = getGalleryFolderArrayResponse(artist.lower(), bool, folder, accesstoken, invertOffset)
                     # print(data);
                     tmp = data["has_more"]
@@ -594,7 +597,11 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
                             if (findDuplicateElementArray(artdata["art-data"][artist.lower()]["folders"][foldername]["processed-uuids"], uuid["deviationid"]) == False):
                                 logger.info("True Hybrid: , UUID " + uuid["deviationid"] + "passed")
                                 deviant_info["profile-pic-url"] = uuid["author"]["usericon"]
+                                logger.debug("HybridT: Appending to Array PHOTO URL: " + str(uuid["content"]["src"]))
+                                hybridurls.append(uuid["content"]["src"])
+                                logger.debug("HybridT: Appending to array DA URL: " + str(uuid["url"]))
                                 hybridurls.append(uuid["url"])
+                                print(uuid["url"])
                                 artdata["art-data"][artist.lower()]["folders"][foldername]["processed-uuids"].append(
                                     uuid["deviationid"])
 
@@ -609,8 +616,12 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
                             logger.debug("UUID: " + str(uuid["deviationid"]))
                             if (findDuplicateElementArray(artdata["art-data"][artist.lower()]["folders"][foldername]["processed-uuids"], uuid["deviationid"]) == False):
                                 logger.info("False Hybrid : , UUID " + uuid["deviationid"] + "passed")
+                                logger.debug("HybridF: Appending to array DA URL: " + str(uuid["url"]))
                                 hybridurls.append(uuid["url"])
+                                logger.debug("HybridF: Appending to Array PHOTO URL: " + str(uuid["content"]["src"]))
+                                hybridurls.append(uuid["content"]["src"])
                                 deviant_info["profile-pic-url"] = uuid["author"]["usericon"]
+
                                 artdata["art-data"][artist.lower()]["folders"][foldername]["processed-uuids"].append(
                                     uuid["deviationid"])
                             if data["next_offset"] is not None:
@@ -655,10 +666,12 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
                             artdata["art-data"][artist.lower()]["folders"][foldername]["offset-value"] = data["next_offset"]
                         # print (uuid.get("deviationid"))
                     if len(hybridurls) == 0:
+                        logger.debug("Entered 1")
                         jsonFile = open("artdata.json", "w+")
                         jsonFile.write(json.dumps(artdata, indent=4, sort_keys=True))
                         jsonFile.close()
                         for url in newurls:
+                            logger.debug("Checking URL " + url)
                             if url.find("wixmp.com") > -1:
                                 deviant_info["photo-url"].append(url)
                             elif url.find("deviantart.net") > -1:
@@ -668,10 +681,12 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
                                 if url.find("https://img") > -1:
                                     deviant_info["photo-url"].append(url)
                                 else:
-                                    deviant_info["da-urls"].append(uuid["url"])
+                                    deviant_info["da-urls"].append(url)
                         return deviant_info
 
+                    logger.debug("Beginning 2")
                     for url in newurls:
+                        logger.debug("URL in new URL " + str(url))
                         if url.find("wixmp.com") > -1:
                             deviant_info["photo-url"].append(url)
                         elif url.find("deviantart.net") > -1:
@@ -681,14 +696,23 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
                             if url.find("https://img") > -1:
                                 deviant_info["photo-url"].append(url)
                             else:
-                                deviant_info["da-urls"].append(uuid["url"])
+                                deviant_info["da-urls"].append(url)
                     currentlength = len(hybridurls)
+                    logger.debug("Hybrid Urls Length: " + str(currentlength))
                     while currentlength >= 1:
+                        logger.debug("Now starting check on URL " + str(hybridurls[currentlength - 1]))
                         print("Entered hybrid")
                         if hybridurls[currentlength - 1].find("wixmp.com") > -1:
-                            deviant_info["photo-url"].append(url)
+                            print("Occured here?")
+                            deviant_info["photo-url"].append(hybridurls[currentlength -1])
+                        elif hybridurls[currentlength - 1].find("deviantart.net") > -1:
+                            if hybridurls[currentlength - 1].find("https://img") > -1:
+                                deviant_info["photo-url"].append(hybridurls[currentlength - 1])
                         elif hybridurls[currentlength - 1].find("deviantart.com") > -1:
-                            deviant_info["da-urls"].append(uuid["url"])
+                            if hybridurls[currentlength - 1].find("https://img") > -1:
+                                deviant_info["photo-url"].append(hybridurls[currentlength - 1])
+                            else:
+                                deviant_info["da-urls"].append(hybridurls[currentlength -1])
                         currentlength = currentlength - 1
                     jsonFile = open("artdata.json", "w+")
                     jsonFile.write(json.dumps(artdata, indent=4, sort_keys=True))

@@ -6,6 +6,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Beta]
+## [bt-1.4.5] - 2019-08-09
+## Fixes
+- Fixed issues with hybrid folders not properly recognizing URLs for formatting into Embeds.
+- Hybrid checks now check the top 20 deviations in a folder instead of the top 30.  
+- Inverse checks now check the bottom 20 deviations instead of the top 30.
+- Fixed a programming error for Hybrid Galleries not appending Photo URLS into the array.
+- Fixed an issue with the bot not sending invalid arguement messages.
+
+## Changes
+- manualSync Command will now send a message. 
+- URLS in getGallery in daparser will now be printed in the debug log. 
 
 ## [bt-1.4.4] - 2019-07-30
 ##Fixes

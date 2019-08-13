@@ -316,11 +316,11 @@ class daCog(commands.Cog):
                                         self.deviantlogger.debug("SyncGalleries: Now posting URL")
                                         currentlength = currentlength - 1
                                 else:
-                                    self.deviantlogger.info("syncGalleries: URL Array Length " +
+                                    self.deviantlogger.info("syncGalleries: DA URL's Array Length (NOT Photo URLS) " +
                                                             str(len(urls["da-urls"])))
                                     currentlength = len(urls["da-urls"])
                                     self.deviantlogger.debug(
-                                        "SyncGalleries: Profile Picture URL " + str(urls["photo-url"]))
+                                        "SyncGalleries: Deviation Image URL " + str(urls["photo-url"]))
                                     print(len(urls["da-urls"]))
                                     print(len(urls["photo-url"]))
                                     while not currentlength == 0:
@@ -1090,6 +1090,7 @@ class daCog(commands.Cog):
         if permitted:
             self.jsonlock = True
             dirpath = os.getcwd()
+            await ctx.send("ManualSync started")
             self.deviantlogger.debug("ManualSync method ran: current directory is : " + dirpath)
             with open("artdata.json", "r") as jsonFile:
                 self.deviantlogger.info("ManualSync: Loading JSON file ArtData")
@@ -1316,7 +1317,7 @@ class daCog(commands.Cog):
                     self.jsonlock = False
                     self.deviantlogger.debug("addartist: findFolderUUID request failed, artist does not exist. ")
                     await ctx.send(
-                        "Error: Artist " + artistname + " does not exist. If your input did not seem to transfer" /
+                        "Error: Artist " + artistname + " does not exist. If your input did not seem to transfer" +\
                         " completely surround the artist argument in quotations ")
                     return;
                 elif requestedfolderid == "None":
