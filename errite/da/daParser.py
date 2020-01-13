@@ -1,18 +1,21 @@
 """
 
-    Copyright 2019 Errite Games LLC / ErriteEpticRikez
+    DeviantCord 2 Discord Bot
+    Copyright (C) 2020  Errite Games LLC/ ErriteEpticRikez
 
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-       http://www.apache.org/licenses/LICENSE-2.0
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
 
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 
 """
 from errite.tools.mis import convertBoolString
@@ -171,6 +174,100 @@ def getGalleryFolderArrayResponse(artist, bool, folder, accesstoken, offset):
         data = json.loads(url.read().decode())
         return data;
 
+def tagSearchResponse(tag, accesstoken, mature):
+    """
+            Method ran to get the tagsearch for similiar tags from deviantart's API.
+            :param tag: The tag that should be searched for.
+            :type tag: string
+            :param accesstoken: The DA Access token to use for this query
+            :type accesstoken: string
+            :param mature: Whether the mature tags should be returned
+            :type mature: int
+            :return: array
+            :param offset: The number of items to offset the results by
+    """
+    requestURL = "https://www.deviantart.com/api/v1/oauth2/browse/tags/search?tag_name=" + tag \
+                 + "&access_token=" + accesstoken + "&mature_content=" + str(mature)
+    with urllib.request.urlopen(requestURL) as url:
+        data = json.loads(url.read().decode())
+        return data;
+
+def userInfoResponse(username, accesstoken, mature):
+    """
+            Method ran to get the tagsearch for similiar tags from deviantart's API.
+            :param tag: The tag that should be searched for.
+            :type tag: string
+            :param accesstoken: The DA Access token to use for this query
+            :type accesstoken: string
+            :param mature: Whether the mature tags should be returned
+            :type mature: int
+            :return: array
+            :param offset: The number of items to offset the results by
+    """
+    requestURL = "https://www.deviantart.com/api/v1/oauth2/user/profile/" + username + "?ext_collections=false&ext_galleries=false" \
+                 + "&access_token=" + accesstoken + "&mature_content=" + str(mature)
+    print("HERE: " + requestURL)
+    with urllib.request.urlopen(requestURL) as url:
+        data = json.loads(url.read().decode())
+        return data;
+
+def searchResponse(tag, accesstoken, mature, offset):
+    """
+            Method ran to get data for deviations with the provided tag from deviantart's API.
+            :param tag: The tag that should be searched for.
+            :type tag: string
+            :param accesstoken: The DA Access token to use for this query
+            :type accesstoken: string
+            :param mature: Whether the mature tags should be returned
+            :type mature: bool
+            :param offset: The number of items to offset the results by
+            :type offset: int
+            :return: array
+
+    """
+    requestURL = "https://www.deviantart.com/api/v1/oauth2/browse/tags/search?tag=" + tag \
+                 + "&access_token=" + accesstoken + "&mature_content=" + str(mature) + "&offset=" + str(offset)
+    with urllib.request.urlopen(requestURL) as url:
+        data = json.loads(url.read().decode())
+        return data;
+
+
+def getJournalResponse(artist, accesstoken, featuredonly, mature):
+    """
+            Method ran to get journal data from the specified artist using deviantart's API.
+            :param artist: The tag that should be searched for.
+            :type artist: string
+            :param accesstoken: The DA Access token to use for this query
+            :type accesstoken: string
+            :param mature: Whether the mature tags should be returned
+            :type mature: int
+            :return: array
+    """
+    requestURL = "https://www.deviantart.com/api/v1/oauth2/browse/user/journals?access_token=" + accesstoken + "&username=" \
+                 + artist + "&featured=" + str(featuredonly) + "&mature_content=" + str(mature)
+    print(requestURL)
+    with urllib.request.urlopen(requestURL) as url:
+        data = json.loads(url.read().decode())
+        return data;
+
+def getStatusResponse(artist, accesstoken, mature):
+    """
+                Method ran to get status data from the specified artist using deviantart's API.
+                :param artist: The tag that should be searched for.
+                :type artist: string
+                :param accesstoken: The DA Access token to use for this query
+                :type accesstoken: string
+                :param mature: Whether the mature tags should be returned
+                :type mature: int
+                :return: array
+        """
+    requestURL = "https://www.deviantart.com/api/v1/oauth2/user/statuses/?username=" + artist + "&access_token=" + \
+                 accesstoken + "&mature_content=" \
+                 + str(mature)
+    with urllib.request.urlopen(requestURL) as url:
+        data = json.loads(url.read().decode())
+        return data;
+
 
 def findFolderUUID(artist, bool, folder, accesstoken):
     """
@@ -251,6 +348,66 @@ def refindFolderUUID(artist, bool, folder, accesstoken):
 
                 # print(data)
 
+
+def getJournalsFT(artist, featuredonly, accesstoken, mature):
+    with open("updatedata.json", "r") as jsonFile:
+        updatedata = json.load(jsonFile)
+        jsonFile.close()
+        providedoffset = 0
+        written_outset = 0
+        logger = logging.getLogger('errite.da.daparser')
+        print("getJournalFT: Inverse Before moving to method: ", providedoffset)
+        logger.info("getJournalFT: Inverse Before moving to method: " + str(providedoffset))
+        logger.info("getJournalFT: Getting Journal Response")
+        data = getJournalResponse(artist.lower, accesstoken, featuredonly, mature)
+        logger.info("getJournalFT:Before going into writtenoutset:  " + str(written_outset))
+        for uuid in data["results"]:
+            logger.debug("getJournalFT: Adding deviation id " + uuid["deviationid"] + " to uuid_storage")
+            updatedata["journal-data"][artist.lower()]["uuid_storage"].append(uuid["deviationid"])
+            # artdata["art-data"][artist.lower()]["all-folder"]["uuid_storage"].append(uuid[0]['deviationid'])
+            logger.info("getJournalFT: Incrementing written_outset")
+            written_outset = written_outset + 1
+            print("After offset " + str(written_outset))
+        logger.info("getJournalFT: Decrementing wrriten outset")
+        updatedata["journal-data"][artist.lower()]["currentindex"] = written_outset - 1
+        logger.info("Offset " + str(providedoffset))
+        updatedata["journal-data"][artist.lower()]["offset"] = providedoffset
+        logger.info("getJournalFT: Opening artdata.json")
+        jsonFile = open("updatedata.json", "w+")
+        logger.info("getJournalFT: Writing to artdata.json")
+        jsonFile.write(json.dumps(updatedata, indent=4, sort_keys=True))
+        logger.info("getJournalFT: Closing artdata.json")
+        jsonFile.close()
+
+def getstatusFT(artist, featuredonly, accesstoken, mature):
+    with open("updatedata.json", "r") as jsonFile:
+        updatedata = json.load(jsonFile)
+        jsonFile.close()
+        providedoffset = 0
+        written_outset = 0
+        logger = logging.getLogger('errite.da.daparser')
+        print("getJournalFT: Inverse Before moving to method: ", providedoffset)
+        logger.info("getJournalFT: Inverse Before moving to method: " + str(providedoffset))
+        logger.info("getJournalFT: Getting Journal Response")
+        data = getJournalResponse(artist.lower, accesstoken, featuredonly, mature)
+        logger.info("getJournalFT:Before going into writtenoutset:  " + str(written_outset))
+        for uuid in data["results"]:
+            logger.debug("getJournalFT: Adding deviation id " + uuid["deviationid"] + " to uuid_storage")
+            updatedata["journal-data"][artist.lower()]["uuid_storage"].append(uuid["deviationid"])
+            # artdata["art-data"][artist.lower()]["all-folder"]["uuid_storage"].append(uuid[0]['deviationid'])
+            logger.info("getJournalFT: Incrementing written_outset")
+            written_outset = written_outset + 1
+            print("After offset " + str(written_outset))
+        logger.info("getJournalFT: Decrementing wrriten outset")
+        updatedata["journal-data"][artist.lower()]["currentindex"] = written_outset - 1
+        logger.info("Offset " + str(providedoffset))
+        updatedata["journal-data"][artist.lower()]["offset"] = providedoffset
+        logger.info("getJournalFT: Opening artdata.json")
+        jsonFile = open("updatedata.json", "w+")
+        logger.info("getJournalFT: Writing to artdata.json")
+        jsonFile.write(json.dumps(updatedata, indent=4, sort_keys=True))
+        logger.info("getJournalFT: Closing artdata.json")
+        jsonFile.close()
 
 def getallFolder(artist, bool, accesstoken, inverted):
     """
@@ -484,7 +641,6 @@ def getGalleryFolderFT(artist, bool, folder, accesstoken,foldername):
                             artdata["art-data"][artist.lower()]["folders"][foldername]["offset-value"] = data["next_offset"]
                         artdata["art-data"][artist.lower()]["folders"][foldername]["processed-uuids"].append(uuid["deviationid"])
                         # artdata[artist.lower()]["processed-uuids"].append(uuid['results']['folderid'])4
-
                 if tmp == False:
                     for uuid in data['results']:
                         artdata["art-data"][artist.lower()]["folders"][foldername]["processed-uuids"].append(uuid["deviationid"])
@@ -536,7 +692,7 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
         jsonFile.close()
         if inverted == True:
             invertOffset = 0
-            while invertOffset < 20:
+            while invertOffset <= 20:
                 data = getGalleryFolderArrayResponse(artist.lower(), bool, folder, accesstoken, invertOffset)
                 # print(data);
                 tmp = data["has_more"]
@@ -547,9 +703,8 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
                         if (findDuplicateElementArray(artdata["art-data"][artist.lower()]["folders"][foldername]["processed-uuids"], uuid["deviationid"]) == False):
                             logger.info("True Inverse: , UUID " + uuid["deviationid"] + "passed")
                             deviant_info["profile-pic-url"] = str(uuid["author"]["usericon"])
-                            logger.debug("InverseT: Appending to array DA URL: " + str(uuid["url"]))
+                            print(deviant_info["profile-pic-url"])
                             deviant_info["da-urls"].append(uuid["url"])
-                            logger.debug("InverseF: Appending to Array PHOTO URL: " + str(uuid["content"]["src"]))
                             deviant_info["photo-url"].append(uuid["content"]["src"])
                             artdata["art-data"][artist.lower()]["folders"][foldername]["processed-uuids"].append(uuid["deviationid"])
 
@@ -565,9 +720,7 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
                         if (findDuplicateElementArray(artdata["art-data"][artist.lower()]["folders"][foldername]["processed-uuids"], uuid["deviationid"]) == False):
                             logger.info("False Inverse: , UUID " + uuid["deviationid"] + "passed")
                             deviant_info["profile-pic-url"] = uuid["author"]["usericon"]
-                            logger.debug("InverseF: Appending to array DA URL: " + str(uuid["url"]))
                             deviant_info["da-urls"].append(uuid["url"])
-                            logger.debug("InverseF: Appending to Array PHOTO URL: " + str(uuid["content"]["src"]))
                             deviant_info["photo-url"].append(uuid["content"]["src"])
                             artdata["art-data"][artist.lower()]["folders"][foldername]["processed-uuids"].append(uuid["deviationid"])
                         if data["next_offset"] is not None:
@@ -586,7 +739,7 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
             print("Begin Hybrid")
             if artdata["art-data"][artist.lower()]["folders"][foldername]["hybrid"]:
                 invertOffset = 0
-                while invertOffset < 20:
+                while invertOffset <= 20:
                     data = getGalleryFolderArrayResponse(artist.lower(), bool, folder, accesstoken, invertOffset)
                     # print(data);
                     tmp = data["has_more"]
@@ -597,11 +750,7 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
                             if (findDuplicateElementArray(artdata["art-data"][artist.lower()]["folders"][foldername]["processed-uuids"], uuid["deviationid"]) == False):
                                 logger.info("True Hybrid: , UUID " + uuid["deviationid"] + "passed")
                                 deviant_info["profile-pic-url"] = uuid["author"]["usericon"]
-                                logger.debug("HybridT: Appending to Array PHOTO URL: " + str(uuid["content"]["src"]))
-                                hybridurls.append(uuid["content"]["src"])
-                                logger.debug("HybridT: Appending to array DA URL: " + str(uuid["url"]))
                                 hybridurls.append(uuid["url"])
-                                print(uuid["url"])
                                 artdata["art-data"][artist.lower()]["folders"][foldername]["processed-uuids"].append(
                                     uuid["deviationid"])
 
@@ -616,12 +765,8 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
                             logger.debug("UUID: " + str(uuid["deviationid"]))
                             if (findDuplicateElementArray(artdata["art-data"][artist.lower()]["folders"][foldername]["processed-uuids"], uuid["deviationid"]) == False):
                                 logger.info("False Hybrid : , UUID " + uuid["deviationid"] + "passed")
-                                logger.debug("HybridF: Appending to array DA URL: " + str(uuid["url"]))
                                 hybridurls.append(uuid["url"])
-                                logger.debug("HybridF: Appending to Array PHOTO URL: " + str(uuid["content"]["src"]))
-                                hybridurls.append(uuid["content"]["src"])
                                 deviant_info["profile-pic-url"] = uuid["author"]["usericon"]
-
                                 artdata["art-data"][artist.lower()]["folders"][foldername]["processed-uuids"].append(
                                     uuid["deviationid"])
                             if data["next_offset"] is not None:
@@ -666,53 +811,28 @@ def getGalleryFolder(artist, bool, folder, accesstoken,foldername, inverted):
                             artdata["art-data"][artist.lower()]["folders"][foldername]["offset-value"] = data["next_offset"]
                         # print (uuid.get("deviationid"))
                     if len(hybridurls) == 0:
-                        logger.debug("Entered 1")
                         jsonFile = open("artdata.json", "w+")
                         jsonFile.write(json.dumps(artdata, indent=4, sort_keys=True))
                         jsonFile.close()
                         for url in newurls:
-                            logger.debug("Checking URL " + url)
                             if url.find("wixmp.com") > -1:
                                 deviant_info["photo-url"].append(url)
-                            elif url.find("deviantart.net") > -1:
-                                if url.find("https://img") > -1:
-                                    deviant_info["photo-url"].append(url)
                             elif url.find("deviantart.com") > -1:
-                                if url.find("https://img") > -1:
-                                    deviant_info["photo-url"].append(url)
-                                else:
-                                    deviant_info["da-urls"].append(url)
+                                deviant_info["da-urls"].append(uuid["url"])
                         return deviant_info
 
-                    logger.debug("Beginning 2")
                     for url in newurls:
-                        logger.debug("URL in new URL " + str(url))
                         if url.find("wixmp.com") > -1:
                             deviant_info["photo-url"].append(url)
-                        elif url.find("deviantart.net") > -1:
-                            if url.find("https://img") > -1:
-                                deviant_info["photo-url"].append(url)
                         elif url.find("deviantart.com") > -1:
-                            if url.find("https://img") > -1:
-                                deviant_info["photo-url"].append(url)
-                            else:
-                                deviant_info["da-urls"].append(url)
+                            deviant_info["da-urls"].append(uuid["url"])
                     currentlength = len(hybridurls)
-                    logger.debug("Hybrid Urls Length: " + str(currentlength))
                     while currentlength >= 1:
-                        logger.debug("Now starting check on URL " + str(hybridurls[currentlength - 1]))
                         print("Entered hybrid")
                         if hybridurls[currentlength - 1].find("wixmp.com") > -1:
-                            print("Occured here?")
-                            deviant_info["photo-url"].append(hybridurls[currentlength -1])
-                        elif hybridurls[currentlength - 1].find("deviantart.net") > -1:
-                            if hybridurls[currentlength - 1].find("https://img") > -1:
-                                deviant_info["photo-url"].append(hybridurls[currentlength - 1])
+                            deviant_info["photo-url"].append(url)
                         elif hybridurls[currentlength - 1].find("deviantart.com") > -1:
-                            if hybridurls[currentlength - 1].find("https://img") > -1:
-                                deviant_info["photo-url"].append(hybridurls[currentlength - 1])
-                            else:
-                                deviant_info["da-urls"].append(hybridurls[currentlength -1])
+                            deviant_info["da-urls"].append(uuid["url"])
                         currentlength = currentlength - 1
                     jsonFile = open("artdata.json", "w+")
                     jsonFile.write(json.dumps(artdata, indent=4, sort_keys=True))

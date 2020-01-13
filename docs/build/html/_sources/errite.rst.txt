@@ -9,6 +9,8 @@ Subpackages
     errite.cogs
     errite.config
     errite.da
+    errite.deviantcord
+    errite.psql
     errite.erritediscord
     errite.tools
 

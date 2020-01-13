@@ -14,12 +14,17 @@ Then put the following
 in the chat of a textchannel ::
     \@rolename
 
-When the message is sent, it will reveal the id copy everything past the & sign except fore the >
+When the message is sent, it will reveal the id copy everything past the & sign except for the >
 
 Then replace roleid in the command below and execute it
 
 To set
 the role use ::
-    $setuprole roleid
+    ~setuprole roleid
 
 ..  warning:: The prefix ($ above) may be different depending if you have a different prefix set. In that instance replace the $ with your used prefix
+
+The bot should confirm that the prefix was updated. Otherwise if it is nonresponsive, check to see if you have a role
+with Administrator. If problems still persist contact DeviantCord Support.
+
+You can find details on contacting DeviantCord support here :doc:`support`

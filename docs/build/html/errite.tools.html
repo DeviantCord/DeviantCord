@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>errite.tools package &mdash; DeviantCord bt-1.4.0 documentation</title>
+  <title>errite.tools package &mdash; DeviantCord bt-2.0.6 documentation</title>
   
 
   
@@ -24,25 +24,17 @@
 
   
 
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="DeviantCord bt-1.4.0 documentation" href="index.html"/> 
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
@@ -84,7 +76,15 @@
               
             
             
-              <p class="caption"><span class="caption-text">Self Hosting:</span></p>
+              <p class="caption"><span class="caption-text">Hosting By Us:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="botjoin.html">Getting the bot to join your server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="permissions.html">Setting Up Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="addinglisteners.html">Setting Up Listeners</a></li>
+<li class="toctree-l1"><a class="reference internal" href="error-reporting.html">Errite Error Notifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="additionalinfo.html">Additional Information</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Self Hosting:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="whathost.html">Should I Self Host?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installpython.html">Setting up DeviantCord</a></li>
@@ -93,21 +93,6 @@
 <li class="toctree-l1"><a class="reference internal" href="runningbot.html">Running the Bot</a></li>
 <li class="toctree-l1"><a class="reference internal" href="addinglisteners.html">Setting Up Listeners</a></li>
 <li class="toctree-l1"><a class="reference internal" href="choosehost.html">Choosing a host</a></li>
-</ul>
-<p class="caption"><span class="caption-text">Hosting By Us:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="requesthosting.html">Requesting Hosting for DeviantCord</a></li>
-<li class="toctree-l1"><a class="reference internal" href="permissions.html">Setting Up Permissions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="addinglisteners.html">Setting Up Listeners</a></li>
-<li class="toctree-l1"><a class="reference internal" href="error-reporting.html">Errite Error Notifier</a></li>
-<li class="toctree-l1"><a class="reference internal" href="additionalinfo.html">Additional Information</a></li>
-</ul>
-<p class="caption"><span class="caption-text">Important Information List:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="security-questions.html">DeviantCord Security FAQ</a></li>
-<li class="toctree-l1"><a class="reference internal" href="community-events.html">Commmunity Security Events</a></li>
-<li class="toctree-l1"><a class="reference internal" href="false-positives.html">DeviantCord False Positives</a></li>
-<li class="toctree-l1"><a class="reference internal" href="security-changelog.html">Security Changelog</a></li>
 </ul>
 
             
@@ -119,7 +104,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">DeviantCord</a>
@@ -127,9 +112,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -179,6 +165,11 @@
 <div class="section" id="module-errite.tools.mis">
 <span id="errite-tools-mis-module"></span><h2>errite.tools.mis module<a class="headerlink" href="#module-errite.tools.mis" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
+<dt id="errite.tools.mis.checkHybridResources">
+<code class="descclassname">errite.tools.mis.</code><code class="descname">checkHybridResources</code><span class="sig-paren">(</span><em>da_data</em>, <em>artdata</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.tools.mis.checkHybridResources" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="errite.tools.mis.convertBoolString">
 <code class="descclassname">errite.tools.mis.</code><code class="descname">convertBoolString</code><span class="sig-paren">(</span><em>bool</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.tools.mis.convertBoolString" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -189,8 +180,28 @@
 <dd></dd></dl>
 
 <dl class="function">
+<dt id="errite.tools.mis.createIDList">
+<code class="descclassname">errite.tools.mis.</code><code class="descname">createIDList</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.tools.mis.createIDList" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="errite.tools.mis.createIDURLList">
+<code class="descclassname">errite.tools.mis.</code><code class="descname">createIDURLList</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.tools.mis.createIDURLList" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="errite.tools.mis.enumerateAllID">
+<code class="descclassname">errite.tools.mis.</code><code class="descname">enumerateAllID</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.tools.mis.enumerateAllID" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="errite.tools.mis.fileExists">
 <code class="descclassname">errite.tools.mis.</code><code class="descname">fileExists</code><span class="sig-paren">(</span><em>file</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.tools.mis.fileExists" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="errite.tools.mis.gatherGalleryFolderResources">
+<code class="descclassname">errite.tools.mis.</code><code class="descname">gatherGalleryFolderResources</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.tools.mis.gatherGalleryFolderResources" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -201,9 +212,7 @@
 
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
@@ -212,11 +221,11 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, ErriteEpticRikez.
+        &copy; Copyright 2020, Errite Games LLC
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -231,35 +240,24 @@
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'bt-1.4.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
 
   
 
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>
