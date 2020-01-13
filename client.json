@@ -1,5 +1,5 @@
 {
-    "da-client-id": "id here",
-    "da-secret": "secret",
-    "discord-token": "discordtoken"
+    "da-client-id": "none",
+    "da-secret": "none",
+    "discord-token": "none"
 }

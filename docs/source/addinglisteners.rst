@@ -2,9 +2,8 @@
 Setting Up Listeners
 ************************************
 
-There are three commands in DeviantCord that adds listeners that check gallery folders for new deviations.
-However this page aims to clear misconceptions with configuring listeners.
-The addartist command is the first command that should be ran for a new artist,
+There are two commands in DeviantCord that adds listeners that check gallery folders for new deviations.
+Each command is associated with the type of folder. However this page aims to clear misconceptions with configuring listeners.
 
 Things to Note:
 *********************
@@ -12,18 +11,31 @@ Things to Note:
 * The bot needs the artists name exactly (Not Case Sensitive)
 * Artist Username should be in quotes
 * Folder name should be in quotes
-* The addartist command is used to add a new artist that has no other listeners
-* The addfolder command adds another listener for an already existing artist's folder.
+* The addallfolder. Adds the artists All Folder. Meaning the listener will post notifications regarding any deviations
+the artist posts.
+* The addfolder command adds a listener that will post notifications of new deviations in that folder only.
 
+An example of an inverted gallery can be seen `here <https://www.deviantart.com/pkm-150/gallery/58231950/Eeveelution-Squad>`_
+
+Folder Properties
+-----------------
+.. warning::
+    As of version bt-2.0.0, the inverse arguement no longer will automatically apply hybrid to true.
+
+* Inverse: Listeners that should only check for new deviations at the top of the folder
+* Hybrid: Listeners that should also check for the opposite of what inverse is set to
+
+    ex: Inverse is set to true and hybrid is set to true. Meaning the bottom deviations will also be checked
+* Mature: Whether Deviations flagged as mature in DeviantArt should be posted.
 
 Correct Arguments
 -----------------
 
-For Example with the addartist and addfolder command it is :
+For Example with the addfolder and addallfolder command it is :
 
-$addartist *<artist_username>* *<folder>* *<channel_id>* *<inverted>*
+~addfolder *<artist_username>* *<folder>* *<channel_id>* *<inverted>* *<hybrid>* *<mature>*
 
-$addfolder *<artist_username>* *<folder>* *<channel_id>* *<inverted>*
+~addallfolder *<artist_username>* *<channelid>* *<mature>*
 
 If we looked at an artists page, such as the one below
 
@@ -39,20 +51,11 @@ The artist username field should be the same as the yellow highlighted area in t
 The folder field for the Hope in Friends Comic folder should be the exactly what it is in the sidebar on the left.
 In this case the folder for the comic Hope In Friends should be "Hope In Friends Comic" not "Hope in Friends"
 
-$addartist "zander-the-artist" "Hope In Friends Comic" *<channel_id>* false
+$addartist "zander-the-artist" "Hope In Friends Comic" *<channel_id>* false false true
 
 *Inverted in this case would be false, but it depends on what artist and what folder*
-
-AllFolders
-----------
-On DeviantArt there is an all view that allows users to view all deviations from an artist. Starting with DeviantCord bt-1.4.0
-allfolder commands are introduced allowing for DeviantCord to send notifications whenever an artist posts a deviation
-no matter what folder it is put in.
-
-$addallfolder *<artist_username>*  *<channel_id>* *<inverted>*
-
-Using this command will work rather or not the artist already exists in artdata, and if the artist is not in artdata already
-there is no need to use an addartist command.
+*Hybrid could be set to true or false in this case. If the artist has been known to accidently leave Deviations out of order*
+*Mature can be set to your liking, again it depends on the what the folder typically contains*
 
 Removing Folders
 ----------------
@@ -64,36 +67,14 @@ done to prevent accidentally deleting a whole artist from the folder as multiple
 
 As a result you can only delete one listener at a time.
 The command is as follows ::
-    $deletefolder <artist_username> <folder>
+    ~deletefolder <artist_username> <folder> <channelid>
 
 This will delete the folder from the artist.json file and no more notifications will be posted to Discord for that folder
 unless you readd it.
 
 Additionally if you are having trouble remembering what folders are currently being listened for new deviations you can
 use the listfolders command ::
-    $listfolders
-
-Starting with bt-1.4.0 allfolders are introduced. To remove allfolders, you need to use the deleteallfolder command as
-follows here.::
-    $deleteallfolder <artist_username>
-
-**NOTE: Using the deleteallfolder command does not remove all folders from an artist**
-
-
-
-Inverted Galleries
-------------------
-Inverted galleries is the term we use to indicate that newest deviations are at the top instead of the bottom.
-An example of an inverted gallery can be seen `here <https://www.deviantart.com/pkm-150/gallery/58231950/Eeveelution-Squad>`_
-
-The inverted argument would be declared true or false in the addfolder command and addartist command.
-
-.. warning::
-    As of version bt-1.2.0, the inverse arguement should only be used for artists who have dependently posted an
-    inverted gallery declaring inverse as false will now check for the 20 deviations posted at the top and will
-    check for more at the bottom up until DeviantArt's API says there is no more deviations.
-
-
+    ~listfolders
 
 
 Discord Developer Mode

@@ -5,37 +5,50 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [Beta]
-## [bt-1.4.5] - 2019-08-09
+## DeviantCord 2
+### [bt-2.0.6]
+
 ## Fixes
-- Fixed issues with hybrid folders not properly recognizing URLs for formatting into Embeds.
-- Hybrid checks now check the top 20 deviations in a folder instead of the top 30.  
-- Inverse checks now check the bottom 20 deviations instead of the top 30.
-- Fixed a programming error for Hybrid Galleries not appending Photo URLS into the array.
-- Fixed an issue with the bot not sending invalid arguement messages.
+- Fixed multiple crashing bugs from DeviantCord 1
+## Removals
+- Users no longer need to wait for DeviantCord staff to approve the bot on their server!
+- Removed the addartist command, as addfolder will now add an artist regardless of whether the artist has a listener on the
+guild involved or not. 
+- Removed the manualSync command, for stability reasons. 
+- Removed the reload command, due to server specific data being stored in a database and being applied instantly. 
+- Artdata is no longer used in a JSON file. 
+- The Errite Error Reporter is no longer used. As we have moved everything over to Sentry. 
 
 ## Changes
-- manualSync Command will now send a message. 
-- URLS in getGallery in daparser will now be printed in the debug log. 
+- Join Requests for the public bot no longer have to manually approved by the DeviantCord Staff. The bot can now jump
+right in to your server by using the bot invite link on the Github, Documentation, or our Discord Server. 
+- Self Hosted bots for DeviantCord 2 no longer needs to have separate configured bots running in different screen sessions.
+DeviantCord2 runs within 1 screen session and is multiserver.
+- You are no longer limited to only 1 channel for a specific folder serverwide. You can now have the same folder
+posted to multiple channels (Not within the same command, you will need to use the command and specify each channelid
+one at a time)
+- Errite Error Reporter is no longer used on DeviantCord, we have moved all error reporting for the bot to Sentry.io.
+This was implemented for our Production Servers to spot bugs more quickly and only grabs error data from the public bot.
+- Json Data storage for Deviations are no longer used. DeviantCord uses PostGres 11+
+- Cleaned Error Handlers for commands.
+- **DeviantCord will automatically delete all listeners if the bot leaves the server for any reason.**
+- AddFolder, deletefolder and update property commands have changed. Check the help command for more information!
+- All commands have been rewritten to work with SQL, and multiserver. 
+- Some config.json values are no longer used. 
+- Debug Level for Discord no longer is used in the Discord Log file or DeviantCog
+- DeviantCog now logs in JSON format, with additional information.
+- DeviantCord now requires additional packages to run. psycopg2 sentry_sdk python-dateutil python-json-logger markdownify
+- The Default prefix has changed to ~
+- DeviantCord2 no longer uses the Apache License. We now use the AGPL v3.
+## Additions
+- Added Mature Property, to addfolder and addallfolder. You can now specify if you want Mature Deviations to be posted.
+- Added support command for users to easily get access to the DeviantCord Support server. 
+## DeviantCord 1
+### [Beta]
 
-## [bt-1.4.4] - 2019-07-30
-##Fixes
-- Issues with the content src url changing in DA's API. DeviantCord now accounts for it. 
+### [bt-]
 
-## [bt-1.4.3] - 2019-07-23
-##Fixes
-- NoneType exception with SyncGalleries for allfolders
-
-## [bt-1.4.2] - 2019-07-22
-##Fixes
-- Error with converter for artdata
-
-## [bt-1.4.1] - 2019-07-22
-##Changes
-- Updated help command to reflect new commands in bt-1.4.0
-- Linked error handler for addallfolder and deleteallfolder
-
-## [bt-1.4.0] - 2019-07-22
+## [bt-1.4.0] - 2019-07-10
 
 ## Added 
 - AllFolder Listeners via the addallfolder command

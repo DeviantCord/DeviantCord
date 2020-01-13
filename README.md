@@ -3,7 +3,7 @@
 
 [Documentation](https://deviantcord.readthedocs.io/en/latest/)
 
-[Request Bot](https://forms.gle/6PiGroDvr7UdDH7h9)
+[Bot Invite](https://discordapp.com/oauth2/authorize?client_id=576293421078282240&permissions=0&scope=bot)
 
 [DeviantCord Discord Server](https://discord.gg/ubmkcsk)
 
@@ -34,3 +34,6 @@ More questions can be seen in the documentation!
 - [@Rapptz](https://github.com/Rapptz) For developing Discord.py, a framework which made developing the Discord Bot a lot easier.
 - [The DiscordAPI Discord](https://discord.gg/discord-api) Helped when issues were encountered that we were unable to figure out in terms of Discord.py
 - [Discord.py Discord](https://discord.gg/r3s5KJJ) Official Discord server for Discord.py
+- [Psycopg2 Team](https://github.com/psycopg/psycopg2) Database Adapter used in DeviantCord
+- [Sentry.io Team](https://sentry.io)
+- [Datadog Team](https://datadoghq.com)

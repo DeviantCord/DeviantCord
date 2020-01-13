@@ -11,55 +11,49 @@ Welcome to DeviantCord's documentation!
     Some things are still missing. If you need help with something join our discord
     `here <https://discord.gg/ubmkcsk>`_.
 
-Welcome to the official documentation for DeviantCord, a Discord bot that allows the server to stay up to date with
+.. note::
+   This documentation is for DeviantCord 2, which is more geared towards handling large amount of servers.
+   If you are looking for DeviantCord 1, you can access its documentation
+   `right here <https://deviantcord.readthedocs.io/en/bt-1.3.0/>`_.
+
+Welcome to the official documentation for DeviantCord2, a Discord bot that allows the server to stay up to date with
 their favorite artists.
 
-DeviantCord allows for two ways of hosting the Bot, you can either request hosting through us, or you can host it yourself.
-If you need help on choosing see this page :doc:`whathost`
+Unlike DeviantCord 1, you do not need to wait for us to approve your request for the bot to join the server. You can
+have the bot join the server using this `link <https://discordapp.com/api/oauth2/authorize?client_id=576293421078282240&permissions=0&scope=bot>`_.
 
-Getting Started (Self Hosted)
+So jump right in!
+
+Should I use the public bot?
 =======================================
-This section is for those who wish to host DeviantCord on there own hardware.
+
+DeviantCord 2 is a major rewrite of the original DeviantCord discord bot, written specifically for multiserver use and
+utilizes many server components to the bots advantage. If you are unfamiliar with Linux and Postgres, it is recommended
+use the public bot that we offer for free.
+
+
+Getting Started (Public Bot)
+=======================================
 
 .. toctree::
-   whathost
-   installpython
-   configure
-   permissions
-   runningbot
-   addinglisteners
-   choosehost
-   :maxdepth: 2
-   :caption: Self Hosting:
-
-Getting Started (Hosted by us)
-=======================================
-This section is for those who want us to host the bot, remember that you need to request it!
-
-.. toctree::
-   requesthosting
+   botjoin
    permissions
    addinglisteners
-   error-reporting
+   support
    additionalinfo
    :maxdepth: 2
    :caption: Hosting By Us:
 
 
-Important Information For DeviantCord
-=======================================
-This section is in regards to information, and announcments regarding Security for DeviantCord, the Community.
+.. note::
+   Normally, there would be a section for self hosting here. However, due to the extensive changes in DeviantCord 2 and
+   The Self Hosting documentation is delayed. The Self Hosting documentation will be posted soon.
 
-.. toctree::
-   security-questions
-   community-events
-   false-positives
-   security-changelog
-   :maxdepth: 2
-   :caption: Important Information List:
 
 Indices and tables
 ==================
+.. note::
+   The API docs, are outdated and will be updated shortly.
 
 * :ref:`genindex`
 * :ref:`modindex`

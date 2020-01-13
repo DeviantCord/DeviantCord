@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>errite.cogs package &mdash; DeviantCord bt-1.4.0 documentation</title>
+  <title>errite.cogs package &mdash; DeviantCord bt-2.0.6 documentation</title>
   
 
   
@@ -24,25 +24,17 @@
 
   
 
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="DeviantCord bt-1.4.0 documentation" href="index.html"/> 
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
@@ -84,7 +76,15 @@
               
             
             
-              <p class="caption"><span class="caption-text">Self Hosting:</span></p>
+              <p class="caption"><span class="caption-text">Hosting By Us:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="botjoin.html">Getting the bot to join your server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="permissions.html">Setting Up Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="addinglisteners.html">Setting Up Listeners</a></li>
+<li class="toctree-l1"><a class="reference internal" href="error-reporting.html">Errite Error Notifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="additionalinfo.html">Additional Information</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Self Hosting:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="whathost.html">Should I Self Host?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installpython.html">Setting up DeviantCord</a></li>
@@ -93,21 +93,6 @@
 <li class="toctree-l1"><a class="reference internal" href="runningbot.html">Running the Bot</a></li>
 <li class="toctree-l1"><a class="reference internal" href="addinglisteners.html">Setting Up Listeners</a></li>
 <li class="toctree-l1"><a class="reference internal" href="choosehost.html">Choosing a host</a></li>
-</ul>
-<p class="caption"><span class="caption-text">Hosting By Us:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="requesthosting.html">Requesting Hosting for DeviantCord</a></li>
-<li class="toctree-l1"><a class="reference internal" href="permissions.html">Setting Up Permissions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="addinglisteners.html">Setting Up Listeners</a></li>
-<li class="toctree-l1"><a class="reference internal" href="error-reporting.html">Errite Error Notifier</a></li>
-<li class="toctree-l1"><a class="reference internal" href="additionalinfo.html">Additional Information</a></li>
-</ul>
-<p class="caption"><span class="caption-text">Important Information List:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="security-questions.html">DeviantCord Security FAQ</a></li>
-<li class="toctree-l1"><a class="reference internal" href="community-events.html">Commmunity Security Events</a></li>
-<li class="toctree-l1"><a class="reference internal" href="false-positives.html">DeviantCord False Positives</a></li>
-<li class="toctree-l1"><a class="reference internal" href="security-changelog.html">Security Changelog</a></li>
 </ul>
 
             
@@ -119,7 +104,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">DeviantCord</a>
@@ -127,9 +112,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -189,165 +175,269 @@ distributed under the License is distributed on an “AS IS” BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.</p>
-<dl class="class">
-<dt id="errite.cogs.daCommands.daCog">
-<em class="property">class </em><code class="descclassname">errite.cogs.daCommands.</code><code class="descname">daCog</code><span class="sig-paren">(</span><em>bot</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.daCog" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">discord.ext.commands.cog.Cog</span></code></p>
-<p>The Deviant Art component class for DeviantCord</p>
-<dl class="attribute">
-<dt id="errite.cogs.daCommands.daCog.addallfolder">
-<code class="descname">addallfolder</code><em class="property"> = &lt;discord.ext.commands.core.Command object&gt;</em><a class="headerlink" href="#errite.cogs.daCommands.daCog.addallfolder" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="errite.cogs.daCommands.daCog.addartist">
-<code class="descname">addartist</code><em class="property"> = &lt;discord.ext.commands.core.Command object&gt;</em><a class="headerlink" href="#errite.cogs.daCommands.daCog.addartist" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="errite.cogs.daCommands.daCog.addartist_errorhandler">
-<code class="descname">addartist_errorhandler</code><span class="sig-paren">(</span><em>ctx</em>, <em>error</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.daCog.addartist_errorhandler" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="errite.cogs.daCommands.daCog.addfolder">
-<code class="descname">addfolder</code><em class="property"> = &lt;discord.ext.commands.core.Command object&gt;</em><a class="headerlink" href="#errite.cogs.daCommands.daCog.addfolder" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="errite.cogs.daCommands.daCog.addfolder_errorhandler">
-<code class="descname">addfolder_errorhandler</code><span class="sig-paren">(</span><em>ctx</em>, <em>error</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.daCog.addfolder_errorhandler" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="errite.cogs.daCommands.daCog.deleteallfolder">
-<code class="descname">deleteallfolder</code><em class="property"> = &lt;discord.ext.commands.core.Command object&gt;</em><a class="headerlink" href="#errite.cogs.daCommands.daCog.deleteallfolder" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="errite.cogs.daCommands.daCog.deletefolder">
-<code class="descname">deletefolder</code><em class="property"> = &lt;discord.ext.commands.core.Command object&gt;</em><a class="headerlink" href="#errite.cogs.daCommands.daCog.deletefolder" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="errite.cogs.daCommands.daCog.error_handler">
-<code class="descname">error_handler</code><span class="sig-paren">(</span><em>loop</em>, <em>context</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.daCog.error_handler" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="errite.cogs.daCommands.daCog.fix_error">
-<code class="descname">fix_error</code><span class="sig-paren">(</span><em>amount</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.daCog.fix_error" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="errite.cogs.daCommands.daCog.getNewToken">
-<code class="descname">getNewToken</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.daCog.getNewToken" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets a new token from DeviantArt with no params, grabs the clientid and clientsecret from the class file.
-This function is ran every 40 minutes. DA’s tokens last 60.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="errite.cogs.daCommands.daCog.help">
-<code class="descname">help</code><em class="property"> = &lt;discord.ext.commands.core.Command object&gt;</em><a class="headerlink" href="#errite.cogs.daCommands.daCog.help" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="errite.cogs.daCommands.daCog.help_errorhandler">
-<code class="descname">help_errorhandler</code><span class="sig-paren">(</span><em>ctx</em>, <em>error</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.daCog.help_errorhandler" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="errite.cogs.daCommands.daCog.instantTokenDiagnosisRenewal">
-<code class="descname">instantTokenDiagnosisRenewal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.daCog.instantTokenDiagnosisRenewal" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets a new token without any async delays from DeviantArt, and returns a bool if successful</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="errite.cogs.daCommands.daCog.instantTokenRenewal">
-<code class="descname">instantTokenRenewal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.daCog.instantTokenRenewal" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets a new token without any async delays from DeviantArt, when a 403 is returned this is the first
-method ran to try to fix the issue.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="errite.cogs.daCommands.daCog.listfolders">
-<code class="descname">listfolders</code><em class="property"> = &lt;discord.ext.commands.core.Command object&gt;</em><a class="headerlink" href="#errite.cogs.daCommands.daCog.listfolders" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="errite.cogs.daCommands.daCog.manualSync">
-<code class="descname">manualSync</code><em class="property"> = &lt;discord.ext.commands.core.Command object&gt;</em><a class="headerlink" href="#errite.cogs.daCommands.daCog.manualSync" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="errite.cogs.daCommands.daCog.manualgetNewToken">
-<code class="descname">manualgetNewToken</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.daCog.manualgetNewToken" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets a new token from DeviantArt with no params, grabs the clientid and clientsecret from the class file.
-This function is only ran when a token error occurs having to do with async tasks also failing.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="errite.cogs.daCommands.daCog.rateLimitMeasure">
-<code class="descname">rateLimitMeasure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.daCog.rateLimitMeasure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Triggered when DA sends a Rate Limit response, this tones down SyncGalleries</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="errite.cogs.daCommands.daCog.setuprole">
-<code class="descname">setuprole</code><em class="property"> = &lt;discord.ext.commands.core.Command object&gt;</em><a class="headerlink" href="#errite.cogs.daCommands.daCog.setuprole" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="errite.cogs.daCommands.daCog.setuprole_errorhandler">
-<code class="descname">setuprole_errorhandler</code><span class="sig-paren">(</span><em>ctx</em>, <em>error</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.daCog.setuprole_errorhandler" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="errite.cogs.daCommands.daCog.softTokenRenewal">
-<code class="descname">softTokenRenewal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.daCog.softTokenRenewal" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets a new token from DeviantArt with no params, grabs the clientid and clientsecret from the class file.
-This function is only ran when a token error occurs and fixes the token only!.</p>
-<p>This is usually the second method ran to try to fix a token related issue that doesn’t involve a failure of
-automated async tasks.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="errite.cogs.daCommands.daCog.syncGalleries">
-<code class="descname">syncGalleries</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.daCog.syncGalleries" title="Permalink to this definition">¶</a></dt>
-<dd><p>Checks programmed gallery folders for Deviations. This is the method that is ran to trigger every x minutes
-depending on what the user has it configured to.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="errite.cogs.daCommands.daCog.updatechannel">
-<code class="descname">updatechannel</code><em class="property"> = &lt;discord.ext.commands.core.Command object&gt;</em><a class="headerlink" href="#errite.cogs.daCommands.daCog.updatechannel" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="errite.cogs.daCommands.daCog.updatechannel_errorhandler">
-<code class="descname">updatechannel_errorhandler</code><span class="sig-paren">(</span><em>ctx</em>, <em>error</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.daCog.updatechannel_errorhandler" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="errite.cogs.daCommands.daCog.updatehybrid">
-<code class="descname">updatehybrid</code><em class="property"> = &lt;discord.ext.commands.core.Command object&gt;</em><a class="headerlink" href="#errite.cogs.daCommands.daCog.updatehybrid" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="errite.cogs.daCommands.daCog.updateinverse">
-<code class="descname">updateinverse</code><em class="property"> = &lt;discord.ext.commands.core.Command object&gt;</em><a class="headerlink" href="#errite.cogs.daCommands.daCog.updateinverse" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="errite.cogs.daCommands.daCog.updateinverse_errorhandler">
-<code class="descname">updateinverse_errorhandler</code><span class="sig-paren">(</span><em>ctx</em>, <em>error</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.daCog.updateinverse_errorhandler" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<dl class="function">
+<dt id="errite.cogs.daCommands.checkTokenValid">
+<code class="descclassname">errite.cogs.daCommands.</code><code class="descname">checkTokenValid</code><span class="sig-paren">(</span><em>token</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.checkTokenValid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method ran to check if a token is valid, Login tokens on DeviantArt last for 60 minutes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>token</strong> (<em>string</em>) – The artist’s name that owns the folder.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">int (0 means valid, any other number corresponds with the DeviantArt HTTP Error Code)</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
-<dt id="errite.cogs.daCommands.setup">
-<code class="descclassname">errite.cogs.daCommands.</code><code class="descname">setup</code><span class="sig-paren">(</span><em>bot</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.setup" title="Permalink to this definition">¶</a></dt>
+<dt id="errite.cogs.daCommands.daHasDeviations">
+<code class="descclassname">errite.cogs.daCommands.</code><code class="descname">daHasDeviations</code><span class="sig-paren">(</span><em>artist</em>, <em>accesstoken</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.daHasDeviations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method ran to check if a an artist has Deviations on DA by checking their Gallery All View.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</li>
+<li><strong>accesstoken</strong> (<em>string</em>) – The name of the gallery folder we are working with. Used for json references</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="errite.cogs.daCommands.findFolderUUID">
+<code class="descclassname">errite.cogs.daCommands.</code><code class="descname">findFolderUUID</code><span class="sig-paren">(</span><em>artist</em>, <em>bool</em>, <em>folder</em>, <em>accesstoken</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.findFolderUUID" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method ran to get the List of Folders from an artist and determine if the folder requested exists.
+If it exists then it returns the UUID
+Returns None if it does not exist.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>artist</strong> (<em>string</em>) – The artist’s name to request the folder’s UUID id’s from</li>
+<li><strong>bool</strong> (<em>bool</em>) – Whether mature folders will show or not.</li>
+<li><strong>folder</strong> (<em>string</em>) – The Exact folder name to grab the UUID of</li>
+<li><strong>accesstoken</strong> (<em>string</em>) – The DA Access token to use for this query</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="errite.cogs.daCommands.getAllFolderArrayResponse">
+<code class="descclassname">errite.cogs.daCommands.</code><code class="descname">getAllFolderArrayResponse</code><span class="sig-paren">(</span><em>artist</em>, <em>bool</em>, <em>accesstoken</em>, <em>offset</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.getAllFolderArrayResponse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method ran to get the Gallery Folder data all view from deviantart’s API.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>artist</strong> (<em>string</em>) – The artist’s name that owns the folder.</li>
+<li><strong>bool</strong> (<em>bool</em>) – Whether mature folders will show or not.</li>
+<li><strong>accesstoken</strong> (<em>string</em>) – The DA Access token to use for this query</li>
+<li><strong>offset</strong> (<em>int</em>) – The offset value at which to request the gallery folder contents from. The starting value</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="errite.cogs.daCommands.getFolderArrayResponse">
+<code class="descclassname">errite.cogs.daCommands.</code><code class="descname">getFolderArrayResponse</code><span class="sig-paren">(</span><em>artist</em>, <em>bool</em>, <em>folder</em>, <em>accesstoken</em>, <em>offset</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.getFolderArrayResponse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method ran to get the list of folders from an artist from deviantart’s API.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>artist</strong> (<em>string</em>) – The artist’s name that owns the folder.</li>
+<li><strong>bool</strong> (<em>bool</em>) – Whether mature folders will show or not.</li>
+<li><strong>folder</strong> (<em>string</em>) – The Exact folder name to grab the UUID of</li>
+<li><strong>accesstoken</strong> (<em>string</em>) – The DA Access token to use for this query</li>
+<li><strong>offset</strong> (<em>int</em>) – The offset value at which to request the gallery folder contents from. The starting value</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="errite.cogs.daCommands.getGalleryFolder">
+<code class="descclassname">errite.cogs.daCommands.</code><code class="descname">getGalleryFolder</code><span class="sig-paren">(</span><em>artist</em>, <em>bool</em>, <em>folder</em>, <em>accesstoken</em>, <em>foldername</em>, <em>inverted</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.getGalleryFolder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method ran to get deviation id’s of new deviations in the folder and returns the new deviation url’s
+in a array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>artist</strong> (<em>string</em>) – The artist’s name to request the folder’s deviation id’s from</li>
+<li><strong>bool</strong> (<em>bool</em>) – Whether mature images will show or not.</li>
+<li><strong>folder</strong> (<em>string</em>) – The UUID associated with the folder we are grabbing deviations from.</li>
+<li><strong>accesstoken</strong> (<em>string</em>) – The DA Access token to use for this query</li>
+<li><strong>foldername</strong> (<em>string</em>) – The Exact folder name in the artists gallery</li>
+<li><strong>inverted</strong> (<em>bool</em>) – Whether newest deviations are at the top for this folder.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="errite.cogs.daCommands.getGalleryFolderArrayResponse">
+<code class="descclassname">errite.cogs.daCommands.</code><code class="descname">getGalleryFolderArrayResponse</code><span class="sig-paren">(</span><em>artist</em>, <em>bool</em>, <em>folder</em>, <em>accesstoken</em>, <em>offset</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.getGalleryFolderArrayResponse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method ran to get the Gallery Folder data from deviantart’s API.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>artist</strong> (<em>string</em>) – The artist’s name that owns the folder.</li>
+<li><strong>bool</strong> (<em>bool</em>) – Whether mature folders will show or not.</li>
+<li><strong>folder</strong> (<em>string</em>) – UUID of the folder that data is being grabbed from</li>
+<li><strong>accesstoken</strong> (<em>string</em>) – The DA Access token to use for this query</li>
+<li><strong>offset</strong> (<em>int</em>) – The offset value at which to request the gallery folder contents from. The starting value</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="errite.cogs.daCommands.getGalleryFolderFT">
+<code class="descclassname">errite.cogs.daCommands.</code><code class="descname">getGalleryFolderFT</code><span class="sig-paren">(</span><em>artist</em>, <em>bool</em>, <em>folder</em>, <em>accesstoken</em>, <em>foldername</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.getGalleryFolderFT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method ran to get the GalleryFolder data devations id’s and populate it into the json file.
+This method in particular is only ran on the first time/when a new folder is added.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>artist</strong> (<em>string</em>) – The artist’s name to request the folder’s deviation id’s from</li>
+<li><strong>bool</strong> (<em>bool</em>) – Whether mature images will show or not.</li>
+<li><strong>folder</strong> (<em>string</em>) – The UUID associated with the folder we are grabbing deviations from.</li>
+<li><strong>accesstoken</strong> (<em>string</em>) – The DA Access token to use for this query</li>
+<li><strong>foldername</strong> (<em>string</em>) – The Exact folder name in the artists gallery</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="errite.cogs.daCommands.getGalleryFolderOLD">
+<code class="descclassname">errite.cogs.daCommands.</code><code class="descname">getGalleryFolderOLD</code><span class="sig-paren">(</span><em>artist</em>, <em>bool</em>, <em>folder</em>, <em>accesstoken</em>, <em>foldername</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.getGalleryFolderOLD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="errite.cogs.daCommands.getToken">
+<code class="descclassname">errite.cogs.daCommands.</code><code class="descname">getToken</code><span class="sig-paren">(</span><em>clientsecret</em>, <em>clientid</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.getToken" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method ran to grab a new token from DA and return it, Login tokens on DeviantArt last for 60 minutes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>clientsecret</strong> (<em>string</em>) – The clientsecret associated with your app registered on DeviantArts Dev Area.</li>
+<li><strong>clientid</strong> (<em>string</em>) – The clientid associated with your app registered on DeviantArts Dev Area.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">string</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="errite.cogs.daCommands.getallFolder">
+<code class="descclassname">errite.cogs.daCommands.</code><code class="descname">getallFolder</code><span class="sig-paren">(</span><em>artist</em>, <em>bool</em>, <em>accesstoken</em>, <em>inverted</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.getallFolder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method ran to get the all view data devations id’s and populate it into the json file.
+This method is different from the getGalleryFolderFT. Designed with Slices in mind
+This method in particular is only ran on the first time/when a new folder is added.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>artist</strong> (<em>string</em>) – The artist’s name to request the folder’s deviation id’s from</li>
+<li><strong>bool</strong> (<em>bool</em>) – Whether mature images will show or not.</li>
+<li><strong>accesstoken</strong> (<em>string</em>) – The DA Access token to use for this query</li>
+<li><strong>inverted</strong> – If the folder is inverted or not.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="errite.cogs.daCommands.getallFolderFT">
+<code class="descclassname">errite.cogs.daCommands.</code><code class="descname">getallFolderFT</code><span class="sig-paren">(</span><em>artist</em>, <em>bool</em>, <em>accesstoken</em>, <em>inverted</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.getallFolderFT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method ran to get the all view data devations id’s and populate it into the json file.
+This method is different from the getGalleryFolderFT. Designed with Slices in mind
+This method in particular is only ran on the first time/when a new folder is added.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>artist</strong> (<em>string</em>) – The artist’s name to request the folder’s deviation id’s from</li>
+<li><strong>bool</strong> (<em>bool</em>) – Whether mature images will show or not.</li>
+<li><strong>accesstoken</strong> (<em>string</em>) – The DA Access token to use for this query</li>
+<li><strong>inverted</strong> – If the folder is inverted or not.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="errite.cogs.daCommands.refindFolderUUID">
+<code class="descclassname">errite.cogs.daCommands.</code><code class="descname">refindFolderUUID</code><span class="sig-paren">(</span><em>artist</em>, <em>bool</em>, <em>folder</em>, <em>accesstoken</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.cogs.daCommands.refindFolderUUID" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -358,9 +448,7 @@ depending on what the user has it configured to.</p>
 
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
@@ -369,11 +457,11 @@ depending on what the user has it configured to.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, ErriteEpticRikez.
+        &copy; Copyright 2020, Errite Games LLC
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -388,35 +476,24 @@ depending on what the user has it configured to.</p>
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'bt-1.4.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
 
   
 
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>

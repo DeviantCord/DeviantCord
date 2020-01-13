@@ -1,48 +1,73 @@
 """
 
-    Copyright 2019 Errite Games LLC / ErriteEpticRikez
+    DeviantCord 2 Discord Bot
+    Copyright (C) 2020  Errite Games LLC/ ErriteEpticRikez
 
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-       http://www.apache.org/licenses/LICENSE-2.0
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
 
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 
 """
 import json
 import os
 import sys
+import uuid
+from concurrent.futures import ThreadPoolExecutor
+from pythonjsonlogger import jsonlogger
+import functools
 import discord
 from logging.handlers import TimedRotatingFileHandler
 import asyncio
 import datetime
 import logging
+from sentry_sdk import configure_scope, set_context, set_extra, capture_exception
+import sentry_sdk
 from discord.ext import commands
+import psycopg2
+import psycopg2.errors
 from discord.ext.commands import has_permissions, guild_only, CommandNotFound
 import errite.da.daParser as dp
-from errite.da.jsonTools import createArtistData, artistExists, folderExists, createFolderData, \
-    updateDiscordChannel, updateRole, updateinverseproperty, delfolder, updatehybridproperty, \
-    hasAllFolder, createArtistDataAll, allartistExists, delAllFolder
+from errite.deviantcord.timeTools import prefixTimeOutSatisfied
+from errite.psql.taskManager import syncListeners, addtask, addalltask
+from errite.psql.sourceManager import updateSources, updateallfolders, addsource, verifySourceExistance, \
+    verifySourceExistanceExtra, verifySourceExistanceAll, addallsource
+from errite.psql.sqlManager import grab_sql
+from errite.erritediscord.discordTools import sendDeviationNotifications, createDeviationListString, sendListMessage
 from errite.config.configManager import createConfig, createSensitiveConfig
+from errite.psql.sqlManager import get_sql
 from errite.tools.mis import fileExists
 import urllib
 
 
 class daCog(commands.Cog):
     """The Deviant Art component class for DeviantCord"""
-
     def __init__(self, bot):
         self.clientid = None
+        self.db_connection = None
+        self.connection_info = None
+        self.database_active = False
+        self.dbInfo = None
+        self.database_name = None
+        self.database_host = None
+        self.database_user = None
+        self.database_password = None
+        self.database_port = None
         self.clientsecret = None
         self.guildid = None
         self.enablesr = False
         self.jsonlock = False
+        self.min_roles = {}
+        self.min_roles["guilds"] = []
         self.roleid = 0
         self.failedlogincount = 0
         self.publicmode = None
@@ -51,10 +76,30 @@ class daCog(commands.Cog):
         self.logname = "deviantcog"
 
         self.deviantlogger = logging.getLogger("deviantcog")
-        self.deviantlogger.setLevel(logging.DEBUG)
+        self.deviantlogger.setLevel(logging.INFO)
         self.dlhandler = TimedRotatingFileHandler(self.logname, when='h', interval=12, backupCount=2000,
                                                   encoding='utf-8')
-        self.dlhandler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+        supported_keys = [
+            'asctime',
+            'created',
+            'filename',
+            'funcName',
+            'levelname',
+            'levelno',
+            'lineno',
+            'module',
+            'message',
+            'process',
+            'processName',
+            'relativeCreated',
+            'thread',
+            'threadName'
+        ]
+
+        log_format = lambda x: ['%({0:s})'.format(i) for i in x]
+        custom_format = ' '.join(log_format(supported_keys))
+        self.formatter = jsonlogger.JsonFormatter(custom_format)
+        self.dlhandler.setFormatter(self.formatter)
         self.deviantlogger.addHandler(self.dlhandler)
 
         self.time = 900
@@ -79,6 +124,10 @@ class daCog(commands.Cog):
                     with open("config.json", "r") as configjsonFile:
                         with open("client.json", "r") as clientjsonFile:
                             configData = json.load(configjsonFile)
+                            use_sentry = configData["sentry-enabled"]
+                            if use_sentry:
+                                sentry_url = configData["sentry-url"]
+                                sentry_sdk.init(sentry_url)
                             sensitiveData = json.load(clientjsonFile)
                             configjsonFile.close()
                             clientjsonFile.close()
@@ -87,9 +136,13 @@ class daCog(commands.Cog):
                                     self.clientsecret = sensitiveData["da-secret"]
                                     self.clientid = sensitiveData["da-client-id"]
                                     self.passedJson = True
+            if fileExists("db.json"):
+                self.database_active = True
+                with open("db.json", "r") as dbJson:
+                    self.dbInfo = json.load(dbJson)
 
         if self.passedJson == True:
-            self.deviantlogger.info("Now setting JSON Variables")
+            self.deviantlogger.info("Setting config variables")
             # WEB API
             self.clientsecret = sensitiveData["da-secret"]
             self.clientid = sensitiveData["da-client-id"]
@@ -101,6 +154,29 @@ class daCog(commands.Cog):
             self.guildid = configData["guildid"]
             self.prefix = configData["prefix"]
             self.time = configData["sync-time"]
+            #Database Specific Options
+            self.deviantlogger.info("Setting Database Variables")
+            self.database_name = self.dbInfo["database-name"]
+            self.database_host = self.dbInfo["database-host"]
+            self.database_host2 = self.dbInfo["database-host2"]
+            self.database_host3 = self.dbInfo["database-host3"]
+            self.database_password = self.dbInfo["database-password"]
+            self.database_user = self.dbInfo["database-username"]
+            self.stop_duplicaterecovery = False
+            if self.database_host2 == "none":
+                connect_str = "dbname='" + self.database_name + "' user='" + self.database_user \
+                              + "'host='" + self.database_host +  "' " + \
+                              "password='" + self.database_password + "'"
+            elif self.database_host3 == "none":
+                connect_str = "dbname='" + self.database_name + "' user='" + self.database_user \
+                              + "'host='" + self.database_host + "," + self.database_host2 + "' " + \
+                              "password='" + self.database_password + "'"
+            else:
+                connect_str = "dbname='" + self.database_name + "' user='" + self.database_user \
+                              + "'host='" + self.database_host + "," + self.database_host2 +"," + self.database_host3 + "' " + \
+                              "password='" + self.database_password + "'"
+            print("Connecting to database")
+            self.db_connection = psycopg2.connect(connect_str)
             # Errite LLC Specific Options THIS is for DeviantCord Public Hosting, these settings are what
             # stops the bot from executing code meant for DeviantCord Public Hosting only
             self.errite = configData["errite"]
@@ -109,6 +185,7 @@ class daCog(commands.Cog):
         self.bot.loop.create_task(self.getNewToken())
         self.bot.loop.set_exception_handler(self.error_handler)
         self.bot.loop.create_task(self.syncGalleries())
+        self.bot.loop.create_task(self.timeout_ranks())
 
     async def getNewToken(self):
         """
@@ -121,6 +198,30 @@ class daCog(commands.Cog):
             self.deviantlogger.info("TASK: Obtaining new token...")
             self.token = dp.getToken(self.clientsecret, self.clientid)
             await asyncio.sleep(2400)
+
+    async def recoverConnection(self):
+        toggle = False
+        if not self.stop_duplicaterecovery:
+            toggle = True
+            self.stop_duplicaterecovery = True
+        if toggle:
+            self.deviantlogger.info("Recovery Connection invoked, Waiting 60 seconds.")
+            await asyncio.sleep(120)
+            if self.database_host2 == "none":
+                connect_str = "dbname='" + self.database_name + "' user='" + self.database_user \
+                              + "'host='" + self.database_host +  "' " + \
+                              "password='" + self.database_password + "'"
+            elif self.database_host3 == "none":
+                connect_str = "dbname='" + self.database_name + "' user='" + self.database_user \
+                              + "'host='" + self.database_host + "," + self.database_host2 + "' " + \
+                              "password='" + self.database_password + "'"
+            else:
+                connect_str = "dbname='" + self.database_name + "' user='" + self.database_user \
+                              + "'host='" + self.database_host + "," + self.database_host2 +"," + self.database_host3 + "' " + \
+                              "password='" + self.database_password + "'"
+            print("Connecting to database")
+            self.db_connection = psycopg2.connect(connect_str)
+            self.stop_duplicaterecovery = False
 
     async def manualgetNewToken(self):
         """
@@ -177,9 +278,6 @@ class daCog(commands.Cog):
             """
             self.deviantlogger.info("ManualGetToken: Creating syncGalleries...")
             await asyncio.sleep(400)
-            #        tokenCheckURL = "http://178.128.155.247/simulate503.php"
-            #        with urllib.request.urlopen(tokenCheckURL) as result:
-            #           print("YAY")
             self.bot.loop.create_task(self.syncGalleries())
 
     async def softTokenRenewal(self):
@@ -238,1458 +336,639 @@ class daCog(commands.Cog):
         self.bot.loop.create_task(self.getNewToken())
         self.bot.loop.create_task(self.syncGalleries())
 
+
+    async def grab_min_role(self, msg):
+        #TODO Make this work with threads
+        if not msg.guild.id in self.min_roles:
+            obt_rank = self.db_connection.cursor()
+            sql = grab_sql("grab_server_info")
+            print("Before execute")
+            guild_id = msg.guild.id
+
+            loop = asyncio.get_event_loop()
+            #await loop.run_in_executor(ThreadPoolExecutor(), setup_cursor.execute, sql,
+             #                          (roleid, timestr, ctx.guild.id,))
+            await loop.run_in_executor(ThreadPoolExecutor(), obt_rank.execute, sql, (guild_id,))
+            print("After execute")
+            #obt_rank.execute(sql, (msg.guild.id,))
+            obt_results = await loop.run_in_executor(ThreadPoolExecutor(), obt_rank.fetchone)
+            if obt_results is not None:
+                rank = obt_results[1]
+                # Initialize Dictionary
+                self.min_roles[msg.guild.id] = {}
+                self.min_roles[msg.guild.id]["rank"] = rank
+                timestr = datetime.datetime.now()
+                self.min_roles[msg.guild.id]["last-use"] = timestr
+                self.min_roles["guilds"].append(msg.guild.id)
+                obt_rank.close()
+                print("Returning Role")
+                return self.min_roles[msg.guild.id]["rank"]
+            if obt_results is None:
+                # If for some reason the server is not in the database, then the obt_results will be none
+                print("Returning none")
+                return None
+        elif msg.guild.id in self.min_roles:
+            timestr = datetime.datetime.now()
+            self.min_roles[msg.guild.id]["last-use"] = timestr
+            print("Returning role")
+            return self.min_roles[msg.guild.id]["rank"]
+
+    async def timeout_ranks(self):
+        await self.bot.wait_until_ready()
+        while not self.bot.is_closed():
+            print("Time out started")
+            for entry in self.min_roles["guilds"]:
+                if prefixTimeOutSatisfied(self.min_roles[entry]["last-use"]):
+                    print("Deleted " + str(entry))
+                    del self.min_roles[entry]
+                    self.min_roles["guilds"].remove(entry)
+            print("Timeout sleeping")
+            await asyncio.sleep(900)
+
     async def syncGalleries(self):
+
         """
         Checks programmed gallery folders for Deviations. This is the method that is ran to trigger every x minutes
         depending on what the user has it configured to.
         """
+        delete_notification_tasks = """ DELETE FROM deviantcord.deviation_notifications WHERE id = %s"""
         print("SyncGalleries called")
-        locked = False
-        try:
-            locked = self.jsonlock
-        except NameError:
-            self.deviantlogger.error("Caught Assignment Error...Returning")
-            return;
-        if not locked:
-            if self.passedJson == True:
-                self.jsonlock = True
-                await self.bot.wait_until_ready()
-
-                while not self.bot.is_closed():
-                    dirpath = os.getcwd()
-                    self.deviantlogger.debug("Sync Galleries method ran: current directory is : " + dirpath)
-                    with open("artdata.json", "r") as jsonFile:
-                        self.deviantlogger.info("SyncGalleries: Loading JSON file ArtData")
-                        artdata = json.load(jsonFile)
-                        for element in artdata["artist_store"]["used-artists"]:
-                            self.deviantlogger.debug("Now starting sync for artist " + element)
-                            for foldername in artdata["art-data"][element]["folders"]["folder-list"]:
-                                self.deviantlogger.debug(
-                                    "Starting Sync for folder " + foldername + " from artist " + element)
-                                urls = dp.getGalleryFolder(element, True,
-                                                           artdata['art-data'][element]["folders"][foldername][
-                                                               "artist-folder-id"],
-                                                           self.token,
-                                                           foldername,
-                                                           artdata['art-data'][element]["folders"][foldername][
-                                                               "inverted-folder"])
-                                self.deviantlogger.info("SyncGalleries: getGalleryFolder finished for " + foldername +
-                                                        " in artist " + element)
-                                self.jsonlock = False
-                                channel = self.bot.get_channel(
-                                    int(artdata["art-data"][element]["folders"][foldername]["discord-channel-id"]))
-                                if artdata["art-data"][element]["folders"][foldername]["inverted-folder"]:
-                                    self.deviantlogger.debug("Folder is inverse")
-                                    storage = len(urls)
-                                    currentlength = len(urls["da-urls"])
-                                    while not currentlength == 0:
-                                        self.deviantlogger.info("SyncGalleries: Inverse urls is not empty!")
-                                        trest = urls["da-urls"][currentlength - 1]
-                                        self.deviantlogger.info(
-                                            "SyncGalleries: Current Corrected index: " + str(currentlength - 1))
-                                        self.deviantlogger.info("SyncGalleries: Creating notification embed")
-                                        notification = discord.Embed(title="New Deviation",
-                                                                     url=urls["da-urls"][currentlength - 1])
-                                        self.deviantlogger.info(
-                                            "SyncGallieries: Setting Artist profile Picture in embed")
-                                        profilep = urls["profile-pic-url"]
-                                        self.deviantlogger.debug("SyncGalleries: Using profilepic url: " +
-                                                                 urls["profile-pic-url"])
-                                        self.deviantlogger.info(
-                                            "SyncGallieries: Setting Artist in embed")
-                                        notification.add_field(name="by " + element, value="Link above (blue text)")
-                                        self.deviantlogger.info("SyncGalleries: Setting thumbnail")
-                                        self.deviantlogger.info(
-                                            "SyncGallieries: Setting Artist profile Picture in embed")
-                                        notification.set_thumbnail(url=profilep)
-                                        self.deviantlogger.info("SyncGalleries: Finished Setting thumbnail")
-                                        self.deviantlogger.info("SyncGalleries: Setting Image in embed")
-                                        notification.set_image(url=urls["photo-url"][currentlength - 1])
-                                        self.deviantlogger.info("SyncGalleries: Finished Setting thumbnail!")
-                                        self.deviantlogger.info("SyncGalleries: Setting Footer")
-                                        notification.set_footer(
-                                            text="NOTE: DeviantArt serves its content through the Wix Media Platform.\n" +
-                                                 "This is why the image link is wixmp.com and looks weird.")
-                                        self.deviantlogger.info("SyncGalleries: Sending Notification Embed")
-                                        await channel.send(embed=notification)
-                                        self.deviantlogger.debug("New Deviation URL: ")
-                                        self.deviantlogger.debug("SyncGalleries: Now posting URL")
-                                        currentlength = currentlength - 1
-                                else:
-                                    self.deviantlogger.info("syncGalleries: DA URL's Array Length (NOT Photo URLS) " +
-                                                            str(len(urls["da-urls"])))
-                                    currentlength = len(urls["da-urls"])
-                                    self.deviantlogger.debug(
-                                        "SyncGalleries: Deviation Image URL " + str(urls["photo-url"]))
-                                    print(len(urls["da-urls"]))
-                                    print(len(urls["photo-url"]))
-                                    while not currentlength == 0:
-                                        self.deviantlogger.info("SyncGalleries: Normal urls is not empty!")
-                                        trest = urls["da-urls"][currentlength - 1]
-                                        self.deviantlogger.info(
-                                            "SyncGalleries: Current Corrected index: " + str(currentlength - 1))
-                                        self.deviantlogger.info("SyncGalleries: Creating notification embed")
-                                        notification = discord.Embed(title="New Deviation",
-                                                                     url=urls["da-urls"][currentlength - 1])
-                                        self.deviantlogger.info(
-                                            "SyncGalleries: Setting Artist profile Picture in embed")
-                                        profilep = urls["profile-pic-url"]
-                                        self.deviantlogger.debug("SyncGalleries: Using profilepic url: " +
-                                                                 urls["profile-pic-url"])
-                                        self.deviantlogger.info(
-                                            "SyncGallieries: Setting Artist in embed")
-                                        notification.add_field(name="by " + element, value="Link above (blue text)")
-                                        self.deviantlogger.info("SyncGalleries: Setting thumbnail")
-                                        self.deviantlogger.info(
-                                            "SyncGallieries: Setting Artist profile Picture in embed")
-                                        notification.set_thumbnail(url=profilep)
-                                        self.deviantlogger.info("SyncGalleries: Finished Setting thumbnail")
-                                        self.deviantlogger.info("SyncGalleries: Setting Image in embed")
-                                        notification.set_image(url=urls["photo-url"][currentlength - 1])
-                                        self.deviantlogger.info("SyncGalleries: Finished Setting thumbnail!")
-                                        self.deviantlogger.info("SyncGalleries: Setting Footer")
-                                        notification.set_footer(
-                                            text="NOTE: DeviantArt serves its content through the Wix Media Platform.\n" +
-                                                 "This is why the image link is wixmp.com and looks weird.")
-                                        await channel.send(embed=notification)
-                                        self.deviantlogger.debug("New Deviation URL: ")
-                                        self.deviantlogger.debug("SyncGalleries: Now posting URL")
-                                        currentlength = currentlength - 1
-                        self.deviantlogger.info("SyncGalleries: Now starting All Folder Checks")
-                        for element in artdata["artist_store"]["all-folder-artists"]:
-                            self.deviantlogger.info("SyncGalleries: Grabbing Channel ID of AllFolderArtist " + element)
-                            channel = self.bot.get_channel(
-                                int(artdata["art-data"][element]["all-folder"]["discord-channel-id"]))
-                            self.deviantlogger.info("SyncGalleries: Grabbed Channel id of channel " + channel.name)
-                            self.deviantlogger.info("SyncGalleries: " +
-                                                    "Grabbing AllFolder from DA for AllFolderArtist " + element)
-                            urls = dp.getallFolder(element, True, self.token,
-                                                   artdata["art-data"][element]["all-folder"]["inverted"])
-                            self.deviantlogger.info("SyncGalleries: Finished grabbing All Folder for artist " + element)
-                            self.deviantlogger.info("SyncGalleries: num_items is " + str(urls["index"]))
-                            num_items = urls["index"]
-                            if urls["trigger"]:
-                                self.deviantlogger.info("SyncGalleries: Trigger is True inside dictionary" +
-                                                        " returned by getAllFolder")
-                                while num_items >= 0:
-                                    self.deviantlogger.info("SyncGalleries: All Folder urls is not empty!")
-                                    self.deviantlogger.info("SyncGalleries: Current Num Item: " + str(num_items))
-                                    self.deviantlogger.info("SyncGalleries: Creating notification embed")
-                                    notification = discord.Embed(title="New Deviation",
-                                                                 url=urls["da-urls"][num_items])
-                                    self.deviantlogger.info("SyncGallieries: Setting Artist profile Picture in embed")
-                                    profilep = urls["profile-pic-url"]
-                                    self.deviantlogger.debug("SyncGalleries: Using profilepic url: " +
-                                                             urls["profile-pic-url"])
-                                    self.deviantlogger.info(
-                                        "SyncGallieries: Setting Artist in embed")
-                                    notification.add_field(name="by " + element, value="Link above (blue text)")
-                                    self.deviantlogger.info("SyncGalleries: Setting thumbnail")
-                                    self.deviantlogger.info(
-                                        "SyncGallieries: Setting Artist profile Picture in embed")
-                                    notification.set_thumbnail(url=profilep)
-                                    self.deviantlogger.info("SyncGalleries: Finished Setting thumbnail")
-                                    self.deviantlogger.info("SyncGalleries: Setting Image in embed")
-                                    notification.set_image(url=urls["photo-urls"][num_items])
-                                    self.deviantlogger.info("SyncGalleries: Finished Setting thumbnail!")
-                                    self.deviantlogger.info("SyncGalleries: Setting Footer")
-                                    notification.set_footer(
-                                        text="NOTE: DeviantArt serves its content through the Wix Media Platform.\n" +
-                                             "This is why the image link is wixmp.com and looks weird.")
-                                    self.deviantlogger.info("SyncGalleries: Sending Notification Embed")
-                                    await channel.send(embed=notification)
-                                    self.deviantlogger.debug("New Deviation URL: ")
-                                    self.deviantlogger.debug("SyncGalleries: Now posting URL")
-                                    if num_items == 0:
-                                        break
-                                    elif num_items > 0:
-                                        num_items = num_items - 1
-                        self.jsonlock = False
-                        await asyncio.sleep(self.time)
-        else:
-            await asyncio.sleep(self.time)
+        await self.bot.wait_until_ready()
+        while not self.bot.is_closed():
+            notifications_ids_completed = None
+            loop = asyncio.get_event_loop()
+            get_cursor = self.db_connection.cursor()
+            get_query = "select * from deviantcord.deviation_data"
+            await loop.run_in_executor(ThreadPoolExecutor(), get_cursor.execute, get_query)
+            obt_results = await loop.run_in_executor(ThreadPoolExecutor(), get_cursor.fetchall)
+            source_cursor = self.db_connection.cursor()
+            await loop.run_in_executor(ThreadPoolExecutor(), updateSources, source_cursor, self.db_connection,
+                                       obt_results, self.token )
+            await loop.run_in_executor(ThreadPoolExecutor(), self.db_connection.commit)
+            get_query = "SELECT * from deviantcord.deviation_data_all"
+            await loop.run_in_executor(ThreadPoolExecutor(), get_cursor.execute, get_query)
+            obt_results = await loop.run_in_executor(ThreadPoolExecutor(), get_cursor.fetchall)
+            await loop.run_in_executor(ThreadPoolExecutor(), updateallfolders, source_cursor, self.db_connection,
+                                       obt_results, self.token)
+            task_cursor = self.db_connection.cursor()
+            print("If it happened before this then you got it")
+            await loop.run_in_executor(ThreadPoolExecutor(),syncListeners, self.db_connection, task_cursor, source_cursor)
+            #do_normal_tasks_query = "SELECT * from deviantcord.deviation_notifications where inverse = false"
+            do_normal_tasks_query = "SELECT * from deviantcord.deviation_notifications where inverse = false"
+            await loop.run_in_executor(ThreadPoolExecutor(), get_cursor.execute, do_normal_tasks_query)
+            obt_results = await loop.run_in_executor(ThreadPoolExecutor(), get_cursor.fetchall)
+            notifications_ids_completed = await sendDeviationNotifications(self.bot, obt_results)
+            del_notifications = self.db_connection.cursor()
+            for id in notifications_ids_completed:
+                # id  needs to be a tuple in order for this to work
+                del_notifications.execute(delete_notification_tasks, (id,))
+            await loop.run_in_executor(ThreadPoolExecutor(), self.db_connection.commit)
+            sql = """SELECT * from deviantcord.deviation_notifications WHERE inverse = true ORDER BY notif_creation DESC """
+            await loop.run_in_executor(ThreadPoolExecutor(), get_cursor.execute, sql)
+            obt_results = await loop.run_in_executor(ThreadPoolExecutor(), get_cursor.fetchall)
+            notifications_ids_completed = await sendDeviationNotifications(self.bot, obt_results)
+            for id in notifications_ids_completed:
+                # id  needs to be a tuple in order for this to work
+                del_notifications.execute(delete_notification_tasks, (id,))
+            await loop.run_in_executor(ThreadPoolExecutor(), self.db_connection.commit)
+            source_cursor.close()
+            get_cursor.close()
+            await asyncio.sleep(1500)
 
     @commands.command()
+    async def support(self, ctx):
+        await ctx.message.author.send("Here is the URL to the official DeviantCord Discord server " +
+                                      "\nhttps://discord.gg/ubmkcsk")
+    @commands.command()
     async def help(self, ctx):
-        self.deviantlogger.info("Help command invoked")
-        skiprolecheck = False
-        testvar = None
+        print("Invoked")
         if ctx.guild is None:
+            print("Null guild")
             return;
-        elif ctx.guild.id == self.guildid:
-            permitted = True
-        elif not ctx.guild.id == self.guildid:
-            return
-        elif not self.publicmode:
-            permitted = True
-        if ctx.guild.get_role(self.roleid) is None:
-            if ctx.author.guild_permissions.administrator:
-                skiprolecheck = True
-            else:
-                self.deviantlogger.error("Help Command found that RoleID Is invalid.")
-                await ctx.send("Uh oh, there is an issue with the RoleID I am supposed to be looking for."
-                               " If you are using selfhosting, set rolesetup-enabled in config.json to true or contact"
-                               " DeviantCord Support if you are using our public bot")
-                return;
-        if not skiprolecheck:
-            if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
-                return;
+        print("After test")
+        min_rank = await self.grab_min_role(ctx)
+        print("After")
+        obtained_role = ctx.guild.get_role(min_rank)
+        if obtained_role is None:
+            await ctx.send("The minimum rank required to utilize DeviantCord commands on this server has not been set"
+                           " or something is wrong. Someone with Administrator on this server needs to set the minimum"
+                           "roleid with the setuprole command. \n setuprole <roleid>")
+        if not ctx.author.top_role >= obtained_role:
+            return;
         text = "**DeviantCord Help Guide**\n**" + self.prefix + \
                "help** - Gives a list of command with explaination\n**NOTE: Inverse means that newest deviations are at the top, instead of the bottom. Use true or false to answer it**\n**" + \
-               self.prefix + "addfolder** *<artist_username>* *<folder>* *<channel_id>* *<inverse>* - Adds another artists gallery folder for the bot to notify the specified channel of new deviations. Use this when your adding another folder to an artist already added \n**" + \
-               self.prefix \
-               + "addartist** *<artist_username>* *<folder>* *<channel_id>* *<inverse>*- Used to add an artist and the first folder into the bots datafile. Use this command when you are adding an artist for the first time!\n**" + \
-               self.prefix + "addallfolder** *<artist_username> <channel_id> <inverse>* - Used to add an allfolder listener that listens for any deviations from the artist.\n **" + \
-               self.prefix + "deleteallfolder** *<artist_username*> - Deletes allfolder listener and removes it from artdata\n **" + \
-               self.prefix + "deletefolder** *<artist_username>* *<folder>* - Deletes the listener for the folder and erases it from artdata\n **" + \
-               self.prefix + "manualSync** - Will check all configured folders for new deviations instead of waiting for the timer to trigger and start the check *DO NOT SPAM THIS*\n" + "**" + \
+               self.prefix + "addfolder** *\"<artist_username>\"* *\"<folder>\"* *<channel_id>* *<inverse>* *<hybrid>* *<mature>* - Adds a folder listener fo for the bot to notify user of new deviations in the specified channel\n**" + \
+               self.prefix + "addallfolder** *\"<artist_username>\"* *<channel_id>* *<mature>* - Used to add an allfolder listener that listens for any deviations from the artist.\n **" + \
+               self.prefix + "deleteallfolder** *\"<artist_username>\"* *<channelid>* - Deletes allfolder listener and removes it from artdata\n **" + \
+               self.prefix + "deletefolder** *\"<artist_username>\"* *\"<folder>\"* *<channelid>* - Deletes the listener for the folder and erases it from artdata\n **" + \
                self.prefix + "listfolders** - Lists all the current folder listeners that the bot is listening to. \n **" + \
-               self.prefix + "updatehybrid** *<artist_username> *<folder>* *<hybrid>* - Sets the hybrid property of an existing folder listener \n **" + \
-               self.prefix + "updateinverse** *<artist_username> *<folder>* *<inverse>* - Updates the inverse property of a existing folder listener\n" + \
-               "**" + self.prefix + "updatechannel** *<artist_username> *<folder>* *<channelid>* - Updates the discord channel that notifications will be posted for an existing folder listener\n" + \
+               self.prefix + "updatehybrid** *\"<artist_username>\"* *\"<folder>\"* *<hybrid>* *<channelid>*- Sets the hybrid property of an existing folder listener \n **" + \
+               self.prefix + "updateinverse** *\"<artist_username>\"* *\"<folder>\"* *<inverse>* *<channelid>* - Updates the inverse property of a existing folder listener\n" + \
+               "**" + self.prefix + "updatechannel** *\"<artist_username>\"* *\"<folder>\"* *<newchannelid>* *<oldchannelid>* - Updates the discord channel that notifications will be posted for an existing folder listener\n" + \
+               "**" + self.prefix + "support** - DM's you a server invite to the official DeviantCord Support server\n" + \
                "** __ADMIN COMMANDS__** \n" + \
-               "**" + self.prefix + "erritetoggle** - Toggles the Errite Error Notifier that lets DeviantCord Support know of issues with the bot for your Discord server.\n**ONLY FOR the Official DeviantCord Public Bot NOT SELF HOSTED**\n" + \
-               "**" + self.prefix + "setprefix** *<prefix>* - Updates the prefix for all commands and reloads\n" + \
-               "**" + self.prefix + "reload** - Reloads DeviantCord"
+               "**" + self.prefix + "setprefix** *<prefix>* - Updates the prefix \n"
         await ctx.send(text)
 
     @commands.command()
-    async def addallfolder(self, ctx, artistname, channelid, inverted):
-        skiprolecheck = False
+    async def addallfolder(self, ctx, artistname, channelid:int, mature: bool):
+        print("Invoked")
         if ctx.guild is None:
+            print("Null guild")
             return;
-        elif ctx.guild.id == self.guildid:
-            permitted = True
-        elif not ctx.guild.id == self.guildid:
+        print("After test")
+        min_rank = await self.grab_min_role(ctx)
+        print("After")
+        obtained_role = ctx.guild.get_role(min_rank)
+        if obtained_role is None:
+            await ctx.send("The minimum rank required to utilize DeviantCord commands on this server has not been set"
+                           " or something is wrong. Someone with Administrator on this server needs to set the minimum"
+                           "roleid with the setuprole command. \n setuprole <roleid>")
+        if not ctx.author.top_role >= obtained_role:
+            return;
+        channel = self.bot.get_channel(int(channelid))
+        if channel is None:
+            self.deviantlogger.info("Could not link with provided channelid...sending message to channel")
+            await ctx.send(
+                "Error: I could not link with the provided channelid, is it correct? Do I have permission to access it?" \
+                " I cannot tell because I am just a bot.")
+            return;
+        if not channel.guild.id == ctx.guild.id:
             return
-        elif not self.publicmode:
-            permitted = True
-        if ctx.guild.get_role(self.roleid) is None:
-            if ctx.author.guild_permissions.administrator:
-                skiprolecheck = True
-            else:
-                self.deviantlogger.error("addartist Command found that RoleID Is invalid.")
-                await ctx.send("Uh oh, there is an issue with the RoleID I am supposed to be looking for."
-                               " If you are using selfhosting, set rolesetup-enabled in config.json to true or contact"
-                               " DeviantCord Support if you are using our public bot")
-                self.jsonlock = False
-                return;
-        if not skiprolecheck:
-            if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
-                self.deviantlogger.debug("User that passed Guild check does not have permissiont to use addartist")
-                return;
-        if self.jsonlock:
-            await ctx.send("ERROR: Another command using ArtData is currently running, please wait for that to finish!")
-            return;
-        if permitted:
-            self.jsonlock = True
-            self.deviantlogger.info("addallfolder command invoked.");
-            dirpath = os.getcwd()
-            self.deviantlogger.info("current directory is : " + dirpath)
-            self.deviantlogger.info("Channel ID" + str(channelid))
-            self.deviantlogger.info("Artist: " + artistname)
-            self.deviantlogger.info("Inverted: " + str(inverted))
-            isInverted = False
-            if isinstance(inverted, bool) == True:
-                self.deviantlogger.info("Inverted confirmed as bool")
-                isInverted = inverted
-                self.deviantlogger.info("Inverted Value confirmed as ", isInverted)
-            if isinstance(inverted, str) == True:
-                self.deviantlogger.info("Inverted is confirmed as str")
-                if inverted.lower() == "true":
-                    isInverted = True
-                elif inverted.lower() == "false":
-                    isInverted = False
-                else:
-                    self.jsonlock = False
-                    self.deviantlogger.debug("Inverted Value confirmed as " + str(isInverted))
-                    await ctx.send("Error: Invalid inverted parameter. Must use true or false")
-                    return;
-            channel = self.bot.get_channel(int(channelid))
-            if channel is None:
-                self.jsonlock = False
-                await ctx.send(
-                    "Error: I could not link with the provided channelid, is it correct? Do I have permission to access it?" \
-                    " I cannot tell because I am just a bot.")
-                self.deviantlogger.info("Add Artist: Could not link with provided channelid")
-                return;
-            if channel.guild is None:
-                self.jsonlock = False
-                return;
-            if not channel.guild.id == ctx.guild.id:
-                self.jsonlock = False
-                return
-            if (allartistExists(artistname) == True):
-                self.deviantlogger.info(
-                    "Addallfolder: User tried adding Artist " + artistname + " but they're already in artdata")
-                await ctx.send("There is already an allfolder for this artist!")
-            elif (allartistExists(artistname) == False):
-                deviations = dp.daHasDeviations(artistname, self.token)
-                if deviations:
-                    createArtistDataAll(artistname, channelid, inverted)
-                    await channel.send("Now importing allfolder data for artist " + artistname)
-                    dp.getallFolderFT(artistname, True, self.token, inverted)
-                    self.jsonlock = False
-                    await channel.send("Finished importing, now listening for deviations from " + artistname)
+        sql = grab_sql("duplicate_all_check")
+        check_listener_cursor = self.db_connection.cursor()
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(ThreadPoolExecutor(), check_listener_cursor.execute,
+                                   sql, (channelid, ctx.guild.id, artistname, "All Folder",))
+        duplicate_results = await loop.run_in_executor(ThreadPoolExecutor(), check_listener_cursor.fetchone)
+        if duplicate_results is not None:
+            await ctx.send("You already have a listener for this folder and artist in this channel. You can only have "
+                           "one. If you want to listen for both inverse and noninverse set hybrid for the listener"
+                           "to true using the updatehybrid command")
+            return
+        source_exists = verifySourceExistanceAll(artistname, mature, self.db_connection)
+
+        if not source_exists:
+            await ctx.send("Importing All Folder, this may take a bit.")
+            passedAllFolder = False
+            passedGroupCheck = True
+            try:
+                allfolderData = dp.getAllFolderArrayResponse(artistname, mature, self.token, mature)
+                passedAllFolder = True
+            except urllib.error.HTTPError as AllURLError:
+                if AllURLError.code == 400:
+                    await ctx.send("Could not find an allfolder under this user. Is the username correct? It need to be"
+                                   " exactly as it is on DA.")
+                    check_listener_cursor.close()
                     return
-                elif not deviations:
-                    self.jsonlock = False
-                    await ctx.send("Does this any deviations? Check the artist you specified and try again. I can only"
-                                   + " see artists that at least have one Deviation on their account!")
-                    return
+            try:
+                userinfo = dp.userInfoResponse(artistname, self.token, True)
+                passedGroupCheck = True
+            except urllib.error.HTTPError as err:
+                if err.code == 400:
+                    if not passedAllFolder:
+                        await ctx.send("A bug has occured. Contact DeviantCord Support and reference error code 04")
+                    if passedAllFolder:
+                        await ctx.send("You have designated a group user. Groups do not have all folders."
+                                       " Use the addfolder command instead. Unfortunately this is a limitation by DA :(")
+                    print("This is from a group, setting dummy profile picture")
+                    pp_picture = "none"
+                emptyfolder = True
+            loop = asyncio.get_event_loop()
+            await ctx.send("Importing this folder for first time, this may take a bit.")
+            await loop.run_in_executor(ThreadPoolExecutor(), addallsource, allfolderData, artistname, self.db_connection,
+                                       mature)
+            print("Finished adding source")
+            await loop.run_in_executor(ThreadPoolExecutor(), addalltask, ctx.guild.id, channelid, artistname, mature, self.db_connection)
+        else:
+            loop = asyncio.get_event_loop()
+            await loop.run_in_executor(ThreadPoolExecutor(), addalltask, ctx.guild.id, channelid, artistname, mature,
+                                       self.db_connection)
+        await ctx.send("Listener added for allfolder " + " for artist " + artistname)
 
     @commands.command()
     @has_permissions(administrator=True)
     async def setuprole(self, ctx, roleid):
-        if self.enablesr:
-            if ctx.guild is None:
-                return;
-            if self.guildid == 0:
-                self.deviantlogger.info('Setup has been invoked')
-                updateRole(int(roleid), ctx.guild.id)
-                self.deviantlogger.info("Setup Role: Madeit past update method. ")
-                self.deviantlogger.debug("Before update: " + str(self.roleid))
-                self.roleid = roleid
-                self.deviantlogger.debug("After update: " + str(self.roleid))
-                await ctx.send("Role has been setup!")
+        if ctx.guild is None:
+            return
+        elif not ctx.guild is None:
+            if ctx.author.guild_permissions.administrator:
+                setup_cursor = self.db_connection.cursor()
+                sql = grab_sql("update_rank")
+                loop = asyncio.get_event_loop()
+                timestr = datetime.datetime.now()
+                await loop.run_in_executor(ThreadPoolExecutor(), setup_cursor.execute, sql, (roleid, timestr, ctx.guild.id,))
+                await loop.run_in_executor(ThreadPoolExecutor(), self.db_connection.commit)
+                if not ctx.guild.id in self.min_roles:
+                    self.min_roles[ctx.guild.id] = {}
+                    self.min_roles[ctx.guild.id]["rank"] = roleid
+                    timestr = datetime.datetime.now()
+                    self.min_roles[ctx.guild.id]["last-use"] = timestr
+                    self.min_roles["guilds"].append(ctx.guild.id)
+                if ctx.guild.id in self.min_roles:
+                    self.min_roles[ctx.guild.id]["rank"] = roleid
+                    timestr = datetime.datetime.now()
+                    self.min_roles[ctx.guild.id]["last-use"] = timestr
+                await ctx.send("Rank has been updated.")
         else:
             return
 
     @commands.command()
     async def listfolders(self, ctx):
-        skiprolecheck = False
         if ctx.guild is None:
             return;
-        if ctx.guild.id == self.guildid:
-            permitted = True
-        elif not ctx.guild.id == self.guildid:
-            return
-        if self.jsonlock is True:
-            if ctx.guild.get_role(self.roleid) is None:
-                return
-            elif ctx.author.top_role >= ctx.guild.get_role(self.roleid):
-                await ctx.send(
-                    "ERROR: Another command using ArtData is currently running, please wait for that to finish!")
-            return
-        elif not self.publicmode:
-            permitted = True
-        if ctx.guild.get_role(self.roleid) is None:
-            self.deviantlogger.error("Detected invalid roleid in listfolders ROLEID: " + str(self.roleid))
-            if ctx.author.guild_permissions.administrator:
-                skiprolecheck = True
-            else:
-                await ctx.send("Uh oh, there is an issue with the RoleID I am supposed to be looking for."
-                               " If you are using selfhosting, set rolesetup-enabled in config.json to true or contact"
-                               " DeviantCord Support if you are using our public bot")
-                return;
-        if not skiprolecheck:
-            if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
-                return;
-        if self.jsonlock:
-            await ctx.send(
-                "There is currently a task going on using ArtData, so this data may change soon. You might want to run the command again soon.!")
-            # This is only reading data so there is no risk of just ignoring the json lock no need for return
+        min_rank = await self.grab_min_role(ctx)
+        obtained_role = ctx.guild.get_role(min_rank)
+        if obtained_role is None:
+            await ctx.send("The minimum rank required to utilize DeviantCord commands on this server has not been set"
+                           " or something is wrong. Someone with Administrator on this server needs to set the minimum"
+                           "roleid with the setuprole command. \n setuprole <roleid>")
+        if not ctx.author.top_role >= obtained_role:
+            return;
+        await ctx.send("One moment retrieving your listeners...")
+        sql = grab_sql("grab_server_listeners")
+        list_cursor = self.db_connection.cursor()
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(ThreadPoolExecutor(), list_cursor.execute, sql,(ctx.guild.id,))
+        obt_results = await loop.run_in_executor(ThreadPoolExecutor(), list_cursor.fetchall)
+        messages = await createDeviationListString(obt_results, self.bot)
+        await sendListMessage(ctx.message.channel, messages)
 
-        if permitted:
-            with open("artdata.json", "r") as jsonFile:
-                nofolders = False
-                noallfolders = False
-                tempartdata = json.load(jsonFile)
-                jsonFile.close()
-                if len(tempartdata["artist_store"]["used-artists"]) > 0:
-                    output = "**Current Folder Listeners**\n"
-                    for artist in tempartdata["artist_store"]["used-artists"]:
-                        if len(output + "\n__" + artist + "___\n") > 2000:
-                            await ctx.send(output)
-                            output = "**Continued Folder Listeners**\n" + "\n__" + artist + "___\n"
-
-                        else:
-                            output = output + "\n__" + artist + "___\n"
-                        for folder in tempartdata["art-data"][artist]["folders"]["folder-list"]:
-                            if len(output + "**" + folder + "**\n") > 2000:
-                                await ctx.send(output)
-                                output = "**Continued Folder Listeners**\n" + "\n__" + artist + "___\n" + \
-                                         "**" + folder + "**\n"
-                            else:
-                                output = output + "**" + folder + "**\n"
-                    await ctx.send(output)
-                else:
-                    nofolders = True
-                if len(tempartdata["artist_store"]["all-folder-artists"]) > 0:
-                    output = "__Current AllFolder Listeners__\n"
-                    for artist in tempartdata["artist_store"]["all-folder-artists"]:
-                        if len(output + "**" + artist + "**\n") > 2000:
-                            await ctx.send(output)
-                            output = "__Current AllFolder Listeners Continued__\n" + "**" + artist + "**\n"
-                        else:
-                            output = output + "**" + artist + "**\n"
-                    await ctx.send(output)
-
-                elif nofolders:
-                    await ctx.send(
-                        "Bad News... there aren't any folders. Maybe they went on vacation? I can't tell because I'm a bot, not a travel agent.")
 
     @commands.command()
-    async def deletefolder(self, ctx, artist, folder):
-        skiprolecheck = False
+    async def deletefolder(self, ctx, artist:str, folder:str, channelid: int):
         if ctx.guild is None:
             return;
-        if ctx.guild.id == self.guildid:
-            permitted = True
-        elif not ctx.guild.id == self.guildid:
-            return
-        if self.jsonlock is True:
-            if ctx.guild.get_role(self.roleid) is None:
-                return
-            elif ctx.author.top_role >= ctx.guild.get_role(self.roleid):
-                await ctx.send(
-                    "ERROR: Another command using ArtData is currently running, please wait for that to finish!")
-            return
-        elif not self.publicmode:
-            permitted = True
-        if ctx.guild.get_role(self.roleid) is None:
-            self.deviantlogger.error("Detected invalid roleid in deletefolder ROLEID: " + str(self.roleid))
-            if ctx.author.guild_permissions.administrator:
-                skiprolecheck
-            else:
-                await ctx.send("Uh oh, there is an issue with the RoleID I am supposed to be looking for."
-                               " If you are using selfhosting, set rolesetup-enabled in config.json to true or contact"
-                               " DeviantCord Support if you are using our public bot")
-                return;
-        if not skiprolecheck:
-            if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
-                return;
-        if self.jsonlock:
+        min_rank = await self.grab_min_role(ctx)
+        obtained_role = ctx.guild.get_role(min_rank)
+        if obtained_role is None:
+            await ctx.send("The minimum rank required to utilize DeviantCord commands on this server has not been set"
+                           " or something is wrong. Someone with Administrator on this server needs to set the minimum"
+                           "roleid with the setuprole command. \n setuprole <roleid>")
+        if not ctx.author.top_role >= obtained_role:
+            return;
+        obt_channel = self.bot.get_channel(channelid)
+        if obt_channel is None:
             await ctx.send(
-                "There is currently a task going on using ArtData, so this data may change soon. You might want to run the command again soon.!")
+                "I was not able to grab channel information for the channelid you provided. Is this correct?")
+        if not obt_channel.guild.id == ctx.guild.id:
             return
-        if permitted:
-            self.jsonlock = True
-            if artistExists(artist.lower()):
-                if folderExists(artist, folder):
-                    delfolder(artist, folder)
-                    await ctx.send(
-                        "Folder listener deleted successfully! I will no longer post updates for this folder. ")
-                    self.jsonlock = False
-                    return
-                else:
-                    self.jsonlock = False
-                    await ctx.send(
-                        "Error: This folder does not exist, so I can't delete it! You can't just delete thin air!")
-                    return
-            else:
-                self.jsonlock = False
-                await ctx.send(
-                    "Error: This artist does not have a listener. Is this a mistake? I can't tell I'm just a bot!")
+        sql = grab_sql("delete_listener")
+        delete_cursor = self.db_connection.cursor()
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(ThreadPoolExecutor(), delete_cursor.execute, sql,(ctx.guild.id, artist, folder,
+                                                                                     channelid,))
+        obt_result = await loop.run_in_executor(ThreadPoolExecutor(), delete_cursor.fetchall)
+
+        count = len(obt_result)
+        if count == 1:
+            await ctx.send("Listener deleted")
+            self.db_connection.commit()
+        elif count > 1:
+            await ctx.send("An error has occurred! Please contact support reference error code: del-1")
+        elif count == 0:
+            await ctx.send("I could not find the listener matching the information you provided. Is this right?")
+        delete_cursor.close()
+
 
     @commands.command()
-    async def deleteallfolder(self, ctx, artist):
-        print("Delete All Folder invoked")
-        skiprolecheck = False
+    async def deleteallfolder(self, ctx, artist:str, channelid:int, mature:bool):
         if ctx.guild is None:
             return;
-        if ctx.guild.id == self.guildid:
-            permitted = True
-        elif not ctx.guild.id == self.guildid:
-            return
-        if self.jsonlock is True:
-            if ctx.guild.get_role(self.roleid) is None:
-                return
-            elif ctx.author.top_role >= ctx.guild.get_role(self.roleid):
-                await ctx.send(
-                    "ERROR: Another command using ArtData is currently running, please wait for that to finish!")
-            return
-        elif not self.publicmode:
-            permitted = True
-        if ctx.guild.get_role(self.roleid) is None:
-            self.deviantlogger.error("Detected invalid roleid in deleteallfolder ROLEID: " + str(self.roleid))
-            if ctx.author.guild_permissions.administrator:
-                skiprolecheck
-            else:
-                await ctx.send("Uh oh, there is an issue with the RoleID I am supposed to be looking for."
-                               " If you are using selfhosting, set rolesetup-enabled in config.json to true or contact"
-                               " DeviantCord Support if you are using our public bot")
-                return;
-        if not skiprolecheck:
-            if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
-                return;
-        if self.jsonlock:
+        min_rank = await self.grab_min_role(ctx)
+        obtained_role = ctx.guild.get_role(min_rank)
+        if obtained_role is None:
+            await ctx.send("The minimum rank required to utilize DeviantCord commands on this server has not been set"
+                           " or something is wrong. Someone with Administrator on this server needs to set the minimum"
+                           "roleid with the setuprole command. \n setuprole <roleid>")
+        if not ctx.author.top_role >= obtained_role:
+            return;
+        obt_channel = self.bot.get_channel(channelid)
+        if obt_channel is None:
             await ctx.send(
-                "There is currently a task going on using ArtData, so this data may change soon. You might want to run the command again soon.!")
+                "I was not able to grab channel information for the channelid you provided. Is this correct?")
+        if not obt_channel.guild.id == ctx.guild.id:
             return
-        if permitted:
-            self.jsonlock = True
-            if allartistExists(artist.lower()):
-                # NOTE: DO NOT lowercase artist for delAllFolders this will result in a bug that freezes the
-                # delALlFolder method.
-                delAllFolder(artist)
-                print("Past")
-                await ctx.send(
-                    "AllFolder listener deleted successfully! I will no longer post updates for this allfolder. ")
-                self.jsonlock = False
-                return
-            else:
-                self.jsonlock = False
-                await ctx.send(
-                    "Error: This artist does not have an allfolder listener. Is this a mistake? I can't tell I'm just a bot!")
+        sql = grab_sql("delete_all_listener")
+        delete_cursor = self.db_connection.cursor()
+        loop = asyncio.get_event_loop()
+        test = await loop.run_in_executor(ThreadPoolExecutor(), delete_cursor.execute, sql,(ctx.guild.id, artist, mature,
+                                                                                     channelid, "all-folder",))
 
+        if delete_cursor.rowcount == 1:
+            await ctx.send("Listener deleted")
+            self.db_connection.commit()
+        elif delete_cursor.rowcount > 1:
+            await ctx.send("An error has occurred! Please contact support reference error code: del-1")
+        elif delete_cursor.rowcount == 0:
+            await ctx.send("I could not find the listener matching the information you provided. Is this right?")
+        delete_cursor.close()
     @commands.command()
-    async def addfolder(self, ctx, artistname, foldername, channelid, inverted):
+    async def addfolder(self, ctx, artistname:str, foldername:str, channelid:int, inverted:bool, hybrid:bool, mature:bool):
         """
         The method that is used when the addfolder command is invoked, the addfolder command is used to add another folder
         to an artist that is already in ArtData.
         :return: discord.ext.commands.core.Command object
         """
+        print("Invoked")
         if ctx.guild is None:
+            print("Null guild")
             return;
-        if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
+        print("After test")
+        min_rank = await self.grab_min_role(ctx)
+        print("After")
+        obtained_role = ctx.guild.get_role(min_rank)
+        if obtained_role is None:
+            await ctx.send("The minimum rank required to utilize DeviantCord commands on this server has not been set"
+                           " or something is wrong. Someone with Administrator on this server needs to set the minimum"
+                           "roleid with the setuprole command. \n setuprole <roleid>")
+        if not ctx.author.top_role >= obtained_role:
             return;
-        skiprolecheck = False
-        if ctx.guild.id == self.guildid:
-            permitted = True
-        elif not ctx.guild.id == self.guildid:
+        channel = self.bot.get_channel(int(channelid))
+        if channel is None:
+            self.deviantlogger.info("Could not link with provided channelid...sending message to channel")
+            await ctx.send(
+                "Error: I could not link with the provided channelid, is it correct? Do I have permission to access it?" \
+                " I cannot tell because I am just a bot.")
+            return;
+        if not channel.guild.id == ctx.guild.id:
             return
-        elif not self.publicmode:
-            permitted = True
-        if ctx.guild.get_role(self.roleid) is None:
-            self.deviantlogger.error("Detected invalid roleid in addfolder ROLEID: " + str(self.roleid))
-            if ctx.author.guild_permissions.administrator:
-                skiprolecheck = True
-            else:
-                return;
-        if not skiprolecheck:
-            if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
-                return;
-        if self.jsonlock:
-            await ctx.send("ERROR: Another command using ArtData is currently running, please wait for that to finish!")
-            return;
-        if permitted:
-            self.jsonlock = True
-            self.deviantlogger.info("addFolder command invoked.");
-            dirpath = os.getcwd()
-            self.deviantlogger.info("current directory is : " + str(dirpath))
-            self.deviantlogger.info("Channel ID" + str(channelid))
-            self.deviantlogger.info("Artist: " + artistname)
-            self.deviantlogger.info("Foldername: " + foldername)
-            isInverted = False
-            if isinstance(inverted, bool) == True:
-                self.deviantlogger.info("Inverted confirmed as bool")
-                isInverted = inverted
-                self.deviantlogger.info("Inverted Value confirmed as " + str(isInverted))
-            if isinstance(inverted, str) == True:
-                self.deviantlogger.info("Inverted is confirmed as str")
-                if inverted.lower() == "true":
-                    isInverted = True
-                elif inverted.lower() == "false":
-                    isInverted = False
-                else:
-                    self.jsonlock = False
-                    self.deviantlogger.debug("Inverted Value confirmed as " + str(isInverted))
-                    await ctx.send("Error: Invalid inverted parameter. Must use true or false")
-                    return;
-            channel = self.bot.get_channel(int(channelid))
-            if channel is None:
-                self.jsonlock = False
-                self.deviantlogger.info("Could not link with provided channelid...sending message to channel")
-                await ctx.send(
-                    "Error: I could not link with the provided channelid, is it correct? Do I have permission to access it?" \
-                    " I cannot tell because I am just a bot.")
-                return;
-            if channel.guild is None:
-                self.jsonlock = False
-                return;
-            if not channel.guild.id == ctx.guild.id:
-                self.jsonlock = False
+        sql = grab_sql("duplicate_check")
+        check_listener_cursor = self.db_connection.cursor()
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(ThreadPoolExecutor(), check_listener_cursor.execute,
+                                   sql,(channelid, ctx.guild.id, artistname, foldername,))
+        duplicate_results = await loop.run_in_executor(ThreadPoolExecutor(), check_listener_cursor.fetchone)
+        if duplicate_results is not None:
+            await ctx.send("You already have a listener for this folder and artist in this channel. You can only have "
+                           "one. If you want to listen for both inverse and noninverse set hybrid for the listener"
+                           "to true using the updatehybrid command")
+            return
+        source_exists = verifySourceExistance(artistname, foldername, inverted, hybrid, mature, self.db_connection)
+        folderid = dp.findFolderUUID(artistname, True, foldername, self.token)
+        if folderid is "ERROR":
+            await ctx.send("Could not find a folder specified. Is the artist and foldername exactly as they are on DA?")
+            check_listener_cursor.close()
+            return
+        if not source_exists:
+            if folderid.lower() == "none":
+                await ctx.send("Could not find folder, is the foldername correct?")
                 return
-            if (artistExists(artistname) == False):
-                self.jsonlock = False
-                self.deviantlogger.info("Addfolder command was just ran, but the artist is not in artdata!")
-                await channel.send(
-                    "You need to run the addartist command for a new artist. Use the help command for more information")
-                return;
-            if (folderExists(artistname, foldername) == True):
-                self.jsonlock = False
-                self.deviantlogger.info("This folder is already in the JSON File!")
-                await channel.send("I already know about this folder. Do you mean a different folder?")
-                return;
-            if (folderExists(artistname, foldername) == False):
-                requestedfolderid = dp.findFolderUUID(artistname, True, foldername, self.token)
-                if requestedfolderid == "ERROR":
-                    self.jsonlock = False
-                    self.deviantlogger.info("Invalid artist lookup, input: " + artistname)
-                    await ctx.send("Error: This Artist does not exist!")
-                    return;
-                if requestedfolderid == "None":
-                    self.jsonlock = False
-                    self.deviantlogger.info("Artist folder not found, for " + artistname + " in" + foldername)
-                    await ctx.send("Error: Folder " + foldername + " not found")
-                    return;
-                else:
-                    self.deviantlogger.info("addfolder command passed all checks, now proceeding to execution")
-                    self.deviantlogger.debug("IsInverted: " + str(isInverted))
-                    self.deviantlogger.info("Now creating folder data for " + artistname + "in " + foldername)
-                    createFolderData(artistname, requestedfolderid, foldername, channelid, isInverted)
-                    await channel.send("Added " + artistname + "'s " + foldername + " gallery folder")
-                    self.deviantlogger.info(
-                        "Now populating folder data with deviations for " + artistname + "in " + foldername)
-                    await channel.send("Now populating with current deviations...")
-                    with open("artdata.json", "r") as jsonFile:
-                        artdata = json.load(jsonFile)
-                        jsonFile.close()
-                        self.deviantlogger.info("Addfolder: Now running getGalleryFolderFT")
-                        dp.getGalleryFolderFT(artistname, True,
-                                              artdata["art-data"][artistname.lower()]["folders"][foldername][
-                                                  "artist-folder-id"],
-                                              self.token, foldername)
-                        self.jsonlock = False
-                        await channel.send(
-                            "Finished populating...this channel will now receive updates on new deviations by "
-                            + artistname + " in folder " + foldername)
-                        self.deviantlogger.info("Finished populating folder!")
-
-    @commands.command()
-    async def updateinverse(self, ctx, artistname, foldername, inverse):
-        skiprolecheck = False
-        if ctx.guild is None:
-            return
-        elif ctx.guild.id == self.guildid:
-            permitted = True
-        elif not ctx.guild.id == self.guildid:
-            return
-        if self.jsonlock:
-            return
-        elif not self.publicmode:
-            permitted = True
-        if ctx.guild.get_role(self.roleid) is None:
-            self.deviantlogger.error("Detected invalid roleid in updateinverse ROLEID: " + str(self.roleid))
-            if ctx.author.guild_permissions.administrator:
-                skiprolecheck = True
-            else:
-                await ctx.send("Uh oh, there is an issue with the RoleID I am supposed to be looking for."
-                               " If you are using selfhosting, set rolesetup-enabled in config.json to true or contact"
-                               " DeviantCord Support if you are using our public bot")
-                self.jsonlock = False
-                return;
-        if not skiprolecheck:
-            if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
-                return;
-        if self.jsonlock:
-            await ctx.send("ERROR: Another command using ArtData is currently running, please wait for that to finish!")
-            return;
-        if permitted:
-            self.jsonlock = True
-            if isinstance(inverse, bool):
-                self.deviantlogger.info("New Inverse Instance of bool")
-            elif isinstance(inverse, str):
-                self.deviantlogger.info("New Inverse Instance of String")
-                self.deviantlogger.debug("OBTAINED INVERSE: " + inverse)
-                self.deviantlogger.info("CHECK: " + inverse.lower())
-                print(inverse.lower())
-                if inverse.lower() == "true":
-                    print("Inverse is true")
-                elif inverse.lower() == "false":
-                    print("Inverse is false")
-                else:
-                    await ctx.send("Invalid inverse given...")
-                    self.jsonlock = False
-                    return
-
-            self.deviantlogger.info("UpdateInverse: Entered JSON checks")
-            if artistExists(artistname):
-                if folderExists(artistname, foldername):
-                    updateinverseproperty(artistname, foldername, inverse)
-                    self.deviantlogger.info("Update inverse finished for " + artistname + " on" + foldername)
-                    self.jsonlock = False
-                    await ctx.send("Inverse Updated for " + artistname + " in " + foldername)
-                else:
-                    await ctx.send(
-                        "I am not currently listening for new deviations on " + foldername + "is this the correct " \
-                                                                                             "name for the folder?")
-                    self.jsonlock = False
-                    return;
-            else:
-                self.jsonlock = False
-                await ctx.send("I do not have " + artistname + "in my datafiles is this the correct artist?")
-
-    @commands.command()
-    async def updatehybrid(self, ctx, artistname, foldername, inverse):
-        skiprolecheck = False
-        print("Artist: " + artistname)
-        print("Folder: " + artistname)
-        print("Inverse: " + str(inverse))
-        if ctx.guild is None:
-            return
-        elif ctx.guild.id == self.guildid:
-            permitted = True
-        elif not ctx.guild.id == self.guildid:
-            return
-        if self.jsonlock:
-            return
-        elif not self.publicmode:
-            permitted = True
-        if ctx.guild.get_role(self.roleid) is None:
-            self.deviantlogger.error("Detected invalid roleid in updatehybrid ROLEID: " + str(self.roleid))
-            if ctx.author.guild_permissions.administrator:
-                skiprolecheck = True
-            else:
-                await ctx.send("Uh oh, there is an issue with the RoleID I am supposed to be looking for."
-                               " If you are using selfhosting, set rolesetup-enabled in config.json to true or contact"
-                               " DeviantCord Support if you are using our public bot")
-                self.jsonlock = False
-                return;
-        if not skiprolecheck:
-            if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
-                return;
-        if self.jsonlock:
-            await ctx.send("ERROR: Another command using ArtData is currently running, please wait for that to finish!")
-            return;
-        if permitted:
-            print("Entered Permitted")
-            self.jsonlock = True
-            if isinstance(inverse, bool):
-                self.deviantlogger.info("New Inverse Instance of bool")
-            elif isinstance(inverse, str):
-                self.deviantlogger.info("New Inverse Instance of String")
-                self.deviantlogger.debug("OBTAINED HYBRID: " + inverse)
-                self.deviantlogger.info("CHECK: " + inverse.lower())
-                if inverse.lower() == "true":
-                    print("hybrid is true")
-                elif inverse.lower() == "false":
-                    print("hybrid is false")
-                else:
-                    await ctx.send("Invalid hybrid given...")
-                    self.jsonlock = False
-                    return
-
-            self.deviantlogger.info("UpdateHybrid: Entered JSON checks")
-            if artistExists(artistname):
-                if folderExists(artistname, foldername):
-                    print(str(inverse))
-                    updatehybridproperty(artistname, foldername, inverse)
-                    self.deviantlogger.info("Update hybrid finished for " + artistname + " on" + foldername)
-                    self.jsonlock = False
-                    await ctx.send("Hybrid Updated for " + artistname + " in " + foldername)
-                else:
-                    await ctx.send(
-                        "I am not currently listening for new deviations on " + foldername + "is this the correct " \
-                                                                                             "name for the folder?")
-                    self.jsonlock = False
-                    return;
-            else:
-                self.jsonlock = False
-                await ctx.send("I do not have " + artistname + "in my datafiles is this the correct artist?")
-
-    @commands.command()
-    async def updatechannel(self, ctx, artistname, foldername, newchannelid):
-        skiprolecheck = False
-        if ctx.guild is None:
-            return;
-        elif ctx.guild.id == self.guildid:
-            permitted = True
-        elif not ctx.guild.id == self.guildid:
-            return
-        if self.jsonlock:
-            return
-        if not self.publicmode:
-            permitted = True
-        if ctx.guild.get_role(self.roleid) is None:
-            self.deviantlogger.error("Detected invalid roleid in updatechannel ROLEID: " + str(self.roleid))
-            if ctx.author.guild_permissions.administrator:
-                skiprolecheck = True
-            else:
-                self.deviantlogger.error("updatechannel Command found that RoleID Is invalid.")
-                await ctx.send("Uh oh, there is an issue with the RoleID I am supposed to be looking for."
-                               " If you are using selfhosting, set rolesetup-enabled in config.json to true or contact"
-                               " DeviantCord Support if you are using our public bot")
-                return;
-        if not skiprolecheck:
-            if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
-                return;
-        if self.jsonlock:
-            await ctx.send("ERROR: Another command using ArtData is currently running, please wait for that to finish!")
-            return;
-        if permitted:
-            self.jsonlock = True
-            if isinstance(newchannelid, int):
-                self.deviantlogger.info("New Channelid Instance of Integer")
-                channel = self.bot.get_channel(newchannelid)
-                if channel.guild is None:
-                    self.jsonlock = False
-                    return;
-                if not channel.guild.id == ctx.guild.id:
-                    self.jsonlock = False
-                    return
-
-            elif isinstance(newchannelid, str):
-                self.deviantlogger.info("New ChannelID Instance of String")
-                try:
-                    result = int(newchannelid)
-                    channel = self.bot.get_channel(result)
-                    if channel is None:
-                        self.jsonlock = False
-                        self.deviantlogger.info("INVALID ChannelID: Could not link with provided channelid")
-                        await ctx.send(
-                            "Error: The new channel id you provided is invalid, is it correct? Do I have permission to access it?")
-                        return;
-                except KeyError:
-                    self.jsonlock = False
-                    self.deviantlogger.error(
-                        "Encountered KeyError when verifying newchannelid...newchannelid is not a discordchannelid")
-                    await ctx.send("Error: Invalid discord channel id provided...")
-                    return;
-                if channel.guild is None:
-                    self.jsonlock = False
-                    return;
-                if not channel.guild.id == ctx.guild.id:
-                    self.jsonlock = False
-                    return
-            if artistExists(artistname):
-                if folderExists(artistname, foldername):
-                    updateDiscordChannel(artistname, foldername, newchannelid)
-                    self.jsonlock = False
-                    self.deviantlogger.info("Update Discord Channel finished!")
-                    await ctx.send("Channel Updated!")
-                else:
-                    self.jsonlock = False
-                    self.deviantlogger.warning("Folder " + foldername + " does not exist in artdata")
-                    await ctx.send(
-                        "I am not currently listening for new deviations on " + foldername + "is this the correct " \
-                                                                                             "name for the folder?")
-                    return;
-            else:
-                self.jsonlock = False
-                self.deviantlogger.warning("Artist " + artistname + " is not in artdata")
-                await ctx.send("I do not have " + artistname + "in my datafiles is this the correct artist?")
-
-    @commands.command()
-    async def manualSync(self, ctx):
-        skiprolecheck = False
-        if ctx.guild is None:
-            return;
-        elif ctx.guild.id == self.guildid:
-            permitted = True
-        elif not ctx.guild.id == self.guildid:
-            return
-        elif not self.publicmode:
-            permitted = True
-        if ctx.guild.get_role(self.roleid) is None:
-            if ctx.author.guild_permissions.administrator:
-                skiprolecheck = True
-            else:
-                self.deviantlogger.error("manualsync Command found that RoleID Is invalid.")
-                await ctx.send("Uh oh, there is an issue with the RoleID I am supposed to be looking for."
-                               " If you are using selfhosting, set rolesetup-enabled in config.json to true or contact"
-                               " DeviantCord Support if you are using our public bot")
-                return;
-        if not skiprolecheck:
-            if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
-                return;
-        if self.jsonlock:
-            await ctx.send("ERROR: Another command using ArtData is currently running, please wait for that to finish!")
-            return;
-        if permitted:
-            self.jsonlock = True
-            dirpath = os.getcwd()
-            await ctx.send("ManualSync started")
-            self.deviantlogger.debug("ManualSync method ran: current directory is : " + dirpath)
-            with open("artdata.json", "r") as jsonFile:
-                self.deviantlogger.info("ManualSync: Loading JSON file ArtData")
-                artdata = json.load(jsonFile)
-                for element in artdata["artist_store"]["used-artists"]:
-                    self.deviantlogger.debug("Now starting sync for artist " + element)
-                    for foldername in artdata["art-data"][element]["folders"]["folder-list"]:
-                        self.deviantlogger.debug(
-                            "Starting Sync for folder " + foldername + " from artist " + element)
-                        urls = dp.getGalleryFolder(element, True,
-                                                   artdata['art-data'][element]["folders"][foldername][
-                                                       "artist-folder-id"],
-                                                   self.token,
-                                                   foldername,
-                                                   artdata['art-data'][element]["folders"][foldername][
-                                                       "inverted-folder"])
-                        self.deviantlogger.info("ManualSync: getGalleryFolder finished for " + foldername +
-                                                " in artist " + element)
-                        self.jsonlock = False
-                        channel = self.bot.get_channel(
-                            int(artdata["art-data"][element]["folders"][foldername]["discord-channel-id"]))
-                        if artdata["art-data"][element]["folders"][foldername]["inverted-folder"]:
-                            self.deviantlogger.debug("Folder is inverse")
-                            storage = len(urls)
-                            currentlength = len(urls["da-urls"])
-                            while not currentlength == 0:
-                                self.deviantlogger.info("ManualSync: Inverse urls is not empty!")
-                                trest = urls["da-urls"][currentlength - 1]
-                                self.deviantlogger.info(
-                                    "ManualSync: Current Corrected index: " + str(currentlength - 1))
-                                self.deviantlogger.info("ManualSync: Creating notification embed")
-                                notification = discord.Embed(title="New Deviation",
-                                                             url=urls["da-urls"][currentlength - 1])
-                                self.deviantlogger.info("SyncGallieries: Setting Artist profile Picture in embed")
-                                profilep = urls["profile-pic-url"]
-                                self.deviantlogger.debug("ManualSync: Using profilepic url: " +
-                                                         urls["profile-pic-url"])
-                                self.deviantlogger.info(
-                                    "SyncGallieries: Setting Artist in embed")
-                                notification.add_field(name="by " + element, value="Link above (blue text)")
-                                self.deviantlogger.info("ManualSync: Setting thumbnail")
-                                self.deviantlogger.info(
-                                    "SyncGallieries: Setting Artist profile Picture in embed")
-                                notification.set_thumbnail(url=profilep)
-                                self.deviantlogger.info("ManualSync: Finished Setting thumbnail")
-                                self.deviantlogger.info("ManualSync: Setting Image in embed")
-                                notification.set_image(url=urls["photo-url"][currentlength - 1])
-                                self.deviantlogger.info("ManualSync: Finished Setting thumbnail!")
-                                self.deviantlogger.info("ManualSync: Setting Footer")
-                                notification.set_footer(
-                                    text="NOTE: DeviantArt serves its content through the Wix Media Platform.\n" +
-                                         "This is why the image link is wixmp.com and looks weird.")
-                                self.deviantlogger.info("ManualSync: Sending Notification Embed")
-                                await channel.send(embed=notification)
-                                self.deviantlogger.debug("New Deviation URL: ")
-                                self.deviantlogger.debug("ManualSync: Now posting URL")
-                                currentlength = currentlength - 1
-                        else:
-                            self.deviantlogger.info("ManualSync: URL Array Length " +
-                                                    str(len(urls["da-urls"])))
-                            currentlength = len(urls["da-urls"])
-                            self.deviantlogger.debug("ManualSync: Profile Picture URL " + str(urls["photo-url"]))
-                            print(len(urls["da-urls"]))
-                            print(len(urls["photo-url"]))
-                            while not currentlength == 0:
-                                self.deviantlogger.info("ManualSync: Normal urls is not empty!")
-                                trest = urls["da-urls"][currentlength - 1]
-                                self.deviantlogger.info(
-                                    "ManualSync: Current Corrected index: " + str(currentlength - 1))
-                                self.deviantlogger.info("ManualSync: Creating notification embed")
-                                notification = discord.Embed(title="New Deviation",
-                                                             url=urls["da-urls"][currentlength - 1])
-                                self.deviantlogger.info(
-                                    "ManualSync: Setting Artist profile Picture in embed")
-                                profilep = urls["profile-pic-url"]
-                                self.deviantlogger.debug("ManualSync: Using profilepic url: " +
-                                                         urls["profile-pic-url"])
-                                self.deviantlogger.info(
-                                    "SyncGallieries: Setting Artist in embed")
-                                notification.add_field(name="by " + element, value="Link above (blue text)")
-                                self.deviantlogger.info("ManualSync: Setting thumbnail")
-                                self.deviantlogger.info(
-                                    "SyncGallieries: Setting Artist profile Picture in embed")
-                                notification.set_thumbnail(url=profilep)
-                                self.deviantlogger.info("ManualSync: Finished Setting thumbnail")
-                                self.deviantlogger.info("ManualSync: Setting Image in embed")
-                                notification.set_image(url=urls["photo-url"][currentlength - 1])
-                                self.deviantlogger.info("ManualSync: Finished Setting thumbnail!")
-                                self.deviantlogger.info("ManualSync: Setting Footer")
-                                notification.set_footer(
-                                    text="NOTE: DeviantArt serves its content through the Wix Media Platform.\n" +
-                                         "This is why the image link is wixmp.com and looks weird.")
-                                await channel.send(embed=notification)
-                                self.deviantlogger.debug("New Deviation URL: ")
-                                self.deviantlogger.debug("ManualSync: Now posting URL")
-                                currentlength = currentlength - 1
-                self.deviantlogger.info("ManualSync: Now starting All Folder Checks")
-                for element in artdata["artist_store"]["all-folder-artists"]:
-                    self.deviantlogger.info("ManualSync: Grabbing Channel ID of AllFolderArtist " + element)
-                    channel = self.bot.get_channel(
-                        int(artdata["art-data"][element]["all-folder"]["discord-channel-id"]))
-                    self.deviantlogger.info("ManualSync: Grabbed Channel id of channel " + channel.name)
-                    self.deviantlogger.info("ManualSync: " +
-                                            "Grabbing AllFolder from DA for AllFolderArtist " + element)
-                    urls = dp.getallFolder(element, True, self.token,
-                                           artdata["art-data"][element]["all-folder"]["inverted"])
-                    self.deviantlogger.info("ManualSync: Finished grabbing All Folder for artist " + element)
-                    self.deviantlogger.info("ManualSync: num_items is " + urls["index"])
-                    num_items = urls["index"]
-                    if urls["trigger"]:
-                        self.deviantlogger.info("ManualSync: Trigger is True inside dictionary" +
-                                                " returned by getAllFolder")
-                        while num_items >= 0:
-                            self.deviantlogger.info("ManualSync: All Folder urls is not empty!")
-                            self.deviantlogger.info("ManualSync: Current Num Item: " + str(num_items))
-                            self.deviantlogger.info("ManualSync: Creating notification embed")
-                            notification = discord.Embed(title="New Deviation",
-                                                         url=urls["da-urls"][num_items])
-                            self.deviantlogger.info("SyncGallieries: Setting Artist profile Picture in embed")
-                            profilep = urls["profile-pic-url"]
-                            self.deviantlogger.debug("ManualSync: Using profilepic url: " +
-                                                     urls["profile-pic-url"])
-                            self.deviantlogger.info(
-                                "SyncGallieries: Setting Artist in embed")
-                            notification.add_field(name="by " + element, value="Link above (blue text)")
-                            self.deviantlogger.info("ManualSync: Setting thumbnail")
-                            self.deviantlogger.info(
-                                "SyncGallieries: Setting Artist profile Picture in embed")
-                            notification.set_thumbnail(url=profilep)
-                            self.deviantlogger.info("ManualSync: Finished Setting thumbnail")
-                            self.deviantlogger.info("ManualSync: Setting Image in embed")
-                            notification.set_image(url=urls["photo-urls"][num_items])
-                            self.deviantlogger.info("ManualSync: Finished Setting thumbnail!")
-                            self.deviantlogger.info("ManualSync: Setting Footer")
-                            notification.set_footer(
-                                text="NOTE: DeviantArt serves its content through the Wix Media Platform.\n" +
-                                     "This is why the image link is wixmp.com and looks weird.")
-                            self.deviantlogger.info("ManualSync: Sending Notification Embed")
-                            await channel.send(embed=notification)
-                            self.deviantlogger.debug("New Deviation URL: ")
-                            self.deviantlogger.debug("ManualSync: Now posting URL")
-                            if num_items == 0:
-                                break
-                            elif num_items > 0:
-                                num_items = num_items - 1
-                self.jsonlock = False
-
-    @commands.command()
-    async def addartist(self, ctx, artistname, foldername, channelid, inverted):
-        skiprolecheck = False
-        if ctx.guild is None:
-            return;
-        elif ctx.guild.id == self.guildid:
-            permitted = True
-        elif not ctx.guild.id == self.guildid:
-            return
-        elif not self.publicmode:
-            permitted = True
-        if ctx.guild.get_role(self.roleid) is None:
-            if ctx.author.guild_permissions.administrator:
-                skiprolecheck = True
-            else:
-                self.deviantlogger.error("addartist Command found that RoleID Is invalid.")
-                await ctx.send("Uh oh, there is an issue with the RoleID I am supposed to be looking for."
-                               " If you are using selfhosting, set rolesetup-enabled in config.json to true or contact"
-                               " DeviantCord Support if you are using our public bot")
-                self.jsonlock = False
-                return;
-        if not skiprolecheck:
-            if not ctx.author.top_role >= ctx.guild.get_role(self.roleid):
-                self.deviantlogger.debug("User that passed Guild check does not have permissiont to use addartist")
-                return;
-        if self.jsonlock:
-            await ctx.send("ERROR: Another command using ArtData is currently running, please wait for that to finish!")
-            return;
-        if permitted:
-            self.jsonlock = True
-            self.deviantlogger.info("addArtist command invoked.");
-            dirpath = os.getcwd()
-            self.deviantlogger.info("current directory is : " + dirpath)
-            self.deviantlogger.info("Channel ID" + str(channelid))
-            self.deviantlogger.info("Artist: " + artistname)
-            self.deviantlogger.info("Foldername: " + foldername)
-            self.deviantlogger.info("Inverted: " + str(inverted))
-            isInverted = False
-            if isinstance(inverted, bool) == True:
-                self.deviantlogger.info("Inverted confirmed as bool")
-                isInverted = inverted
-                self.deviantlogger.info("Inverted Value confirmed as ", isInverted)
-            if isinstance(inverted, str) == True:
-                self.deviantlogger.info("Inverted is confirmed as str")
-                if inverted.lower() == "true":
-                    isInverted = True
-                elif inverted.lower() == "false":
-                    isInverted = False
-                else:
-                    self.jsonlock = False
-                    self.deviantlogger.debug("Inverted Value confirmed as " + str(isInverted))
-                    await ctx.send("Error: Invalid inverted parameter. Must use true or false")
-                    return;
-            channel = self.bot.get_channel(int(channelid))
-            if channel is None:
-                self.jsonlock = False
-                await ctx.send(
-                    "Error: I could not link with the provided channelid, is it correct? Do I have permission to access it?" \
-                    " I cannot tell because I am just a bot.")
-                self.deviantlogger.info("Add Artist: Could not link with provided channelid")
-                return;
-            if channel.guild is None:
-                self.jsonlock = False
-                return;
-            if not channel.guild.id == ctx.guild.id:
-                self.jsonlock = False
-                return
-            if (artistExists(artistname) == True):
-                self.jsonlock = False
-                self.deviantlogger.debug("This artist is already in the JSON File!")
-                await channel.send(
-                    "This artist has already been added! Use the addfolder command to add another folder")
-                return;
-            if (artistExists(artistname) == False):
-                requestedfolderid = dp.findFolderUUID(artistname, True, foldername, self.token)
-                if requestedfolderid == "ERROR":
-                    self.jsonlock = False
-                    self.deviantlogger.debug("addartist: findFolderUUID request failed, artist does not exist. ")
-                    await ctx.send(
-                        "Error: Artist " + artistname + " does not exist. If your input did not seem to transfer" +\
-                        " completely surround the artist argument in quotations ")
-                    return;
-                elif requestedfolderid == "None":
-                    self.jsonlock = False
-                    self.deviantlogger.warning("addartist: findFolderUUID request failed, folder does not exist. ")
-                    await ctx.send("Error: Folder " + foldername + " not found")
-                    return;
-                else:
-                    self.deviantlogger.info("Successfully passed checks for addartist, creating ArtistData")
-                    createArtistData(artistname, requestedfolderid, foldername, channelid, isInverted)
-                    self.deviantlogger.info("Successfully created ArtistData, now populating...")
-                    await channel.send("Added " + artistname + "'s " + foldername + " gallery folder")
-                    await channel.send("Now populating with current deviations...")
-                    self.deviantlogger.info("AddArtist: Opening artdata")
-                    with open("artdata.json", "r") as jsonFile:
-                        self.deviantlogger.info("Loading json for artdata")
-                        artdata = json.load(jsonFile)
-                        jsonFile.close()
-                        dp.getGalleryFolderFT(artistname, True,
-                                              artdata["art-data"][artistname.lower()]["folders"][foldername][
-                                                  "artist-folder-id"],
-                                              self.token, foldername)
-                        self.jsonlock = False
-                        self.deviantlogger.info("Finished populating deviations for " + artistname + "in " + foldername)
-                        await channel.send(
-                            "Finished populating...this channel will now receive updates on new deviations by "
-                            + artistname + " in folder " + foldername)
-
-    @help.error
-    async def help_errorhandler(self, ctx, error):
-        if isinstance(error, commands.NoPrivateMessage):
-            return;
-        if isinstance(error, commands.errors.NoPrivateMessage):
-            return;
-        if isinstance(error, discord.ext.commands.NoPrivateMessage):
-            return;
+            loop = asyncio.get_event_loop()
+            await ctx.send("Importing this folder for first time, this may take a bit.")
+            await loop.run_in_executor(ThreadPoolExecutor(),addsource, artistname, foldername, folderid, inverted, hybrid, self.token,
+                                       self.db_connection, mature)
+            print("Finished adding source")
+            await loop.run_in_executor(ThreadPoolExecutor(), addtask, ctx.guild.id, channelid, artistname, foldername,
+                                       folderid, inverted, hybrid, mature, self.db_connection)
         else:
-            self.deviantlogger.error("ERROR ENCOUNTERED with help command Error: " + str(error))
-            self.deviantlogger.exception(error)
+            loop = asyncio.get_event_loop()
+            await loop.run_in_executor(ThreadPoolExecutor(), addtask, ctx.guild.id, channelid, artistname, foldername,
+                                       folderid, inverted, hybrid, mature, self.db_connection)
+        await ctx.send("Listener added for folder " + foldername + " for artist " + artistname)
 
-    @updateinverse.error
-    @updatehybrid.error
-    async def updateinverse_errorhandler(self, ctx, error):
-        self.jsonlock = False;
-        try:
-            if ctx.guild.id is None:
-                return;
-        except AttributeError:
+
+    @commands.command()
+    async def updateinverse(self, ctx, artistname:str, foldername:str, inverse:bool, channelid:int):
+        if ctx.guild is None:
             return;
-        if ctx.guild.id == self.guildid:
-            permitted = True
-        elif not ctx.guild.id == self.guildid:
+        test = await self.grab_min_role(ctx)
+        min_rank = await self.grab_min_role(ctx)
+        obtained_role = ctx.guild.get_role(min_rank)
+        if obtained_role is None:
+            await ctx.send("The minimum rank required to utilize DeviantCord commands on this server has not been set"
+                           " or something is wrong. Someone with Administrator on this server needs to set the minimum"
+                           "roleid with the setuprole command. \n setuprole <roleid>")
+        if not ctx.author.top_role >= obtained_role:
+            return;
+        obt_channel = self.bot.get_channel(channelid)
+        if obt_channel is None:
+            await ctx.send("I was not able to grab channel information for the channelid you provided. Is this correct?")
+        if not obt_channel.guild.id == ctx.guild.id:
             return
-        elif not self.publicmode:
-            permitted = True
-        else:
-            return;
-        if permitted:
-            if isinstance(error, commands.MissingRequiredArgument):
-                if error.param.name == 'inverse':
-                    await ctx.send(
-                        "Error: No inverse argument found, use " + self.prefix + "help for more information")
-                if error.param.name == 'artistname':
-                    await ctx.send(
-                        "Error: No artistname argument found, use " + self.prefix + "help for more information")
-                if error.param.name == 'foldername':
-                    await ctx.send(
-                        "Error: No foldername argument found, use " + self.prefix + "help for more information")
-                if error.param.name == 'channelid':
-                    await ctx.send(
-                        "Error: No channelid argument found, use " + self.prefix + "help for more information")
-            elif isinstance(error, commands.errors.NoPrivateMessage):
-                return
-            else:
-                self.deviantlogger.error(error)
-                self.deviantlogger.exception(error)
+        check_listener = self.db_connection.cursor()
+        sql = grab_sql("get_listener")
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(ThreadPoolExecutor(), check_listener.execute, sql, (artistname, foldername, channelid,))
+        check_results = await loop.run_in_executor(ThreadPoolExecutor(), check_listener.fetchall)
 
+        if check_results is None:
+            await ctx.send("There is no listener with the information provided. Is this correct?", inverse)
+            return
+        if check_results[0][11] == inverse:
+            await ctx.send("That listener already has inverse set to " + str(inverse).lower())
+        else:
+            folderid = check_results[0][2]
+            hybrid = check_results[0][10]
+            exists = await loop.run_in_executor(ThreadPoolExecutor(), verifySourceExistance, artistname,
+                                                foldername, inverse, hybrid, True, self.db_connection)
+            if not exists:
+                dcuuid = str(uuid.uuid1())
+                await ctx.send("Reimporting folder for first time with this inverse property this may take a bit")
+                information = await loop.run_in_executor(ThreadPoolExecutor(), addsource,
+                                           artistname, foldername, folderid, inverse,hybrid,
+                                           self.token, self.db_connection, True, dcuuid)
+                update_cursor = self.db_connection.cursor()
+                sql = grab_sql("update_inverse")
+                timestr = datetime.datetime.now()
+                await loop.run_in_executor(ThreadPoolExecutor(), update_cursor.execute, sql, (inverse, dcuuid,
+                                                                                              information["normal-ids"],
+                                                                                              information["hybrid-ids"],
+                                                                                              timestr, ctx.guild.id,
+                                                                                              channelid,folderid,
+                                                                                              "regular",))
+                self.db_connection.commit()
+                update_cursor.close()
+                await ctx.send("Inverse updated")
+            else:
+                uuid_cursor = self.db_connection.cursor()
+                uuid_sql = grab_sql("grab_source_dcuuid")
+                await loop.run_in_executor(ThreadPoolExecutor(), uuid_cursor.execute, uuid_sql,(
+                    artistname, foldername, inverse, hybrid,))
+                uuid_result = await loop.run_in_executor(ThreadPoolExecutor(), uuid_cursor.fetchone)
+                update_cursor = self.db_connection.cursor()
+                sql = grab_sql("update_inverse")
+                timestr = datetime.datetime.now()
+                await loop.run_in_executor(ThreadPoolExecutor(), update_cursor.execute, sql, (
+                    inverse, uuid_result, uuid_result[1], uuid_result[2], timestr, ctx.guild.id, channelid, folderid, "regular",))
+                self.db_connection.commit()
+                uuid_cursor.close()
+                update_cursor.close()
+                await ctx.send("Inverse updated")
+        check_listener.close()
+
+
+
+    @commands.command()
+    async def updatehybrid(self, ctx, artistname:str, foldername:str, hybrid: bool, channelid: int):
+        if ctx.guild is None:
+            return;
+        min_rank = await self.grab_min_role(ctx)
+        obtained_role = ctx.guild.get_role(min_rank)
+        if obtained_role is None:
+            await ctx.send("The minimum rank required to utilize DeviantCord commands on this server has not been set"
+                           " or something is wrong. Someone with Administrator on this server needs to set the minimum"
+                           "roleid with the setuprole command. \n setuprole <roleid>")
+        if not ctx.author.top_role >= obtained_role:
+            return;
+        check_listener = self.db_connection.cursor()
+        sql = grab_sql("get_listener")
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(ThreadPoolExecutor(), check_listener.execute, sql, (artistname, foldername, channelid,))
+        check_results = await loop.run_in_executor(ThreadPoolExecutor(), check_listener.fetchall)
+        if len(check_results) is None:
+            await ctx.send("Hmm...I dont have a listener for that folder.")
+            return
+        elif check_results[0][10] == hybrid:
+            await ctx.send("This folder is already set to " + str(hybrid))
+            return
+        else:
+            folderid = check_results[0][2]
+            obt_hybrid = check_results[0][10]
+            inverse = check_results[0][11]
+            exists = await loop.run_in_executor(ThreadPoolExecutor(), verifySourceExistance, artistname,
+                                                foldername, inverse, hybrid, True, self.db_connection)
+            if not exists:
+                dcuuid = str(uuid.uuid1())
+                await ctx.send("Reimporting folder for first time with this hybrid property this may take a bit")
+                information = await loop.run_in_executor(ThreadPoolExecutor(), addsource,
+                                           artistname, foldername, folderid, inverse,hybrid,
+                                           self.token, self.db_connection, True, dcuuid)
+                update_cursor = self.db_connection.cursor()
+                sql = grab_sql("update_hybrid")
+                timestr = datetime.datetime.now()
+                await loop.run_in_executor(ThreadPoolExecutor(), update_cursor.execute, sql, (hybrid, dcuuid,
+                                                                                              information["normal-ids"],
+                                                                                              information["hybrid-ids"],
+                                                                                              timestr, ctx.guild.id,
+                                                                                              channelid,folderid,
+                                                                                              "regular",))
+                self.db_connection.commit()
+                await ctx.send("Hybrid updated")
+                update_cursor.close()
+            else:
+                uuid_cursor = self.db_connection.cursor()
+                uuid_sql = grab_sql("grab_source_dcuuid")
+                await loop.run_in_executor(ThreadPoolExecutor(), uuid_cursor.execute, uuid_sql,(
+                    artistname, foldername, inverse, hybrid,))
+                uuid_result = await loop.run_in_executor(ThreadPoolExecutor(), uuid_cursor.fetchone)
+                update_cursor = self.db_connection.cursor()
+                sql = grab_sql("update_hybrid")
+                timestr = datetime.datetime.now()
+                await loop.run_in_executor(ThreadPoolExecutor(), update_cursor.execute, sql, (
+                    hybrid, uuid_result, uuid_result[1], uuid_result[2], timestr, ctx.guild.id, channelid, folderid, "regular",))
+                self.db_connection.commit()
+                uuid_cursor.close()
+                await ctx.send("Hybrid updated")
+                update_cursor.close()
+        check_listener.close()
+
+    @commands.command()
+    async def updatechannel(self, ctx, artistname:str, foldername:str, newchannelid: int, oldchannelid: int):
+        if ctx.guild is None:
+            print("Null guild")
+            return;
+        min_rank = await self.grab_min_role(ctx)
+        obtained_role = ctx.guild.get_role(min_rank)
+        if obtained_role is None:
+            await ctx.send("The minimum rank required to utilize DeviantCord commands on this server has not been set"
+                           " or something is wrong. Someone with Administrator on this server needs to set the minimum"
+                           "roleid with the setuprole command. \n setuprole <roleid>")
+        if not ctx.author.top_role >= obtained_role:
+            return;
+        new_channel_obt = self.bot.get_channel(int(newchannelid))
+        if new_channel_obt is None:
+            self.deviantlogger.info("Could not link with provided newchannelid...sending message to channel")
+            await ctx.send(
+                "Error: I could not link with the provided newchannelid, is it correct? Do I have permission to access it?" \
+                " I cannot tell because I am just a bot.")
+            return;
+        if not new_channel_obt.guild.id == ctx.guild.id:
+            return
+        oldchannelid_obt = self.bot.get_channel(int(oldchannelid))
+        if oldchannelid_obt is None:
+            self.deviantlogger.info("Could not link with provided newchannelid...sending message to channel")
+            await ctx.send(
+                "Error: I could not link with the provided oldchannelid, is it correct? Do I have permission to access it?" \
+                " I cannot tell because I am just a bot.")
+            return;
+        if not oldchannelid_obt.guild.id == ctx.guild.id:
+            return
+        check_listener = self.db_connection.cursor()
+        sql = grab_sql("duplicate_check")
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(ThreadPoolExecutor(), check_listener.execute, sql, (oldchannelid_obt.id, ctx.guild.id,artistname,
+                                                                                       foldername,))
+        check_results = await loop.run_in_executor(ThreadPoolExecutor(), check_listener.fetchall)
+        if len(check_results) == 0:
+            await ctx.send("Could not find listener. Is this information provided right?")
+            return
+        sql = grab_sql("update_channel")
+        update_cursor = self.db_connection.cursor()
+        await loop.run_in_executor(ThreadPoolExecutor(),
+                                   update_cursor.execute, sql,(new_channel_obt.id, oldchannelid_obt.id, foldername, artistname,))
+        await loop.run_in_executor(ThreadPoolExecutor(), self.db_connection.commit)
+        await ctx.send("Channel Updated!")
+        update_cursor.close()
+        check_listener.close()
+
+    @listfolders.error
     @updatechannel.error
-    async def updatechannel_errorhandler(self, ctx, error):
-        self.jsonlock = False;
-        try:
-            if ctx.guild.id is None:
-                return;
-        except AttributeError:
-            return;
-        if ctx.guild.id == self.guildid:
-            permitted = True
-        elif not ctx.guild.id == self.guildid:
-            return
-        elif not self.publicmode:
-            permitted = True
-        else:
-            return;
-        if permitted:
-            if isinstance(error, commands.MissingRequiredArgument):
-                if error.param.name == 'inverted':
-                    await ctx.send(
-                        "Error: No inverted argument found, use " + self.prefix + "help for more information")
-                if error.param.name == 'artistname':
-                    await ctx.send(
-                        "Error: No artistname argument found, use " + self.prefix + "help for more information")
-                if error.param.name == 'foldername':
-                    await ctx.send(
-                        "Error: No foldername argument found, use " + self.prefix + "help for more information")
-                if error.param.name == 'channelid':
-                    await ctx.send(
-                        "Error: No channelid argument found, use " + self.prefix + "help for more information")
-            elif isinstance(error, commands.errors.NoPrivateMessage):
-                return
-            else:
-                self.deviantlogger.error(error)
-                self.deviantlogger.exception(error)
-
-    @setuprole.error
-    async def setuprole_errorhandler(self, ctx, error):
-        try:
-            if ctx.guild.id is None:
-                return;
-        except AttributeError:
-            return;
-        if ctx.guild.id == self.guildid:
-            permitted = True
-        elif not ctx.guild.id == self.guildid:
-            return
-        elif not self.publicmode:
-            permitted = True
-        else:
-            return;
-        if permitted:
-            if isinstance(error, commands.MissingRequiredArgument):
-                if error.param.name == 'roleid':
-                    await ctx.send(
-                        "Error: No roleid argument found, use " + self.prefix + "help for more information")
-            if isinstance(error, commands.MissingPermissions):
-                print("You don't have admin!")
-            if isinstance(error, commands.errors.NoPrivateMessage):
-                return
-            else:
-                self.deviantlogger.error(error)
-                self.deviantlogger.exception(error)
-
+    @updatehybrid.error
     @addfolder.error
-    async def addfolder_errorhandler(self, ctx, error):
-        self.jsonlock = False;
-        try:
-            if ctx.guild.id is None:
-                return;
-        except AttributeError:
-            return;
-        if ctx.guild.id == self.guildid:
-            permitted = True
-        elif not ctx.guild.id == self.guildid:
-            return
-        elif not self.publicmode:
-            permitted = True
-        else:
-            return;
-        if permitted:
-            if isinstance(error, commands.MissingRequiredArgument):
-                if error.param.name == 'inverted':
-                    await ctx.send(
-                        "Error: No inverted argument found, use " + self.prefix + "help for more information")
-                if error.param.name == 'artistname':
-                    await ctx.send(
-                        "Error: No artistname argument found, use " + self.prefix + "help for more information")
-                if error.param.name == 'foldername':
-                    await ctx.send(
-                        "Error: No foldername argument found, use " + self.prefix + "help for more information")
-                if error.param.name == 'channelid':
-                    await ctx.send(
-                        "Error: No channelid argument found, use " + self.prefix + "help for more information")
-            if isinstance(error, urllib.error.HTTPError):
-                if error.code == 401:
-                    await ctx.send(
-                        "Error: Automatic Token renewal didn't taken place, tokens will renew in 10 minutes, "
-                        "if issues persist past 20 minutes please contact DeviantCord support.")
-                    self.deviantlogger.error("addfolder command returned a HTTP 401, ")
-                    await self.softTokenRenewal()
-                if error.code == 503:
-                    self.deviantlogger.error(
-                        "addfolder command returned a HTTP 503, DA Servers are down for maintenance ")
-                    await ctx.send("Error: DA's servers are down for maintenance. Please wait a few minutes");
-                if error.code == 500:
-                    self.deviantlogger.error("addfolder command returned a HTTP 500, Internal Error ")
-                    await ctx.send("DA's servers returned a Error 500 Internal Error. Try again in a few minutes");
-                if error.code == 429:
-                    self.deviantlogger.error("addfolder command returned a HTTP 429, DA API Overloaded ")
-                    await ctx.send("Error: DA API is currently overloaded...please wait for an hour. ")
-                    return 429;
-            if isinstance(error, commands.errors.NoPrivateMessage):
-                return
-            else:
-                self.deviantlogger.error(error)
-                self.deviantlogger.exception(error)
-
     @addallfolder.error
-    async def addallfolder_errorhandler(self, ctx, error):
-        self.jsonlock = False;
-        try:
-            if ctx.guild.id is None:
-                return;
-        except AttributeError:
-            return;
-        if ctx.guild.id == self.guildid:
-            permitted = True
-        elif not ctx.guild.id == self.guildid:
-            return
-        elif not self.publicmode:
-            permitted = True
-        else:
-            return;
-        if permitted:
-            if isinstance(error, commands.MissingRequiredArgument):
-                if error.param.name == 'inverted':
-                    await ctx.send(
-                        "Error: No inverted argument found, use " + self.prefix + "help for more information")
-                if error.param.name == 'artistname':
-                    await ctx.send(
-                        "Error: No artistname argument found, use " + self.prefix + "help for more information")
-                if error.param.name == 'foldername':
-                    await ctx.send(
-                        "Error: No foldername argument found, use " + self.prefix + "help for more information")
-                if error.param.name == 'channelid':
-                    await ctx.send(
-                        "Error: No channelid argument found, use " + self.prefix + "help for more information")
-            if isinstance(error, urllib.error.HTTPError):
-                if error.code == 401:
-                    await ctx.send(
-                        "Error: Automatic Token renewal didn't taken place, tokens will renew in 10 minutes, if issues persist"
-                        "past 20 minutes please contact DeviantCord support.")
-                    self.deviantlogger.error("AddArtist command returned a HTTP 401, ")
-                    self.deviantlogger.info("Invoking softTokenRenewal")
-                    await self.softTokenRenewal()
-                if error.code == 503:
-                    self.deviantlogger.error(
-                        "AddArtist command returned a HTTP 503, DA Servers are down for maintenance ")
-                    await ctx.send(
-                        "Error: DA's servers are down, check DeviantArt's Twitter and DeviantCord Support for more information");
-                if error.code == 500:
-                    self.deviantlogger.error("AddArtist command returned a HTTP 500, Internal Error ")
-                    await ctx.send("DA's servers returned a Error 500 Internal Error. Try again in a few minutes");
-                if error.code == 429:
-                    self.deviantlogger.error("AddArtist command returned a HTTP 429, DA API Overloaded ")
-                    await ctx.send("Error: DA API is currently overloaded...please wait for an hour. DeviantCord"
-                                   "will continue to check for deviations at a delayed pace. Though commands will be "
-                                   "delayed")
-                    return 429;
-            if isinstance(error, commands.errors.NoPrivateMessage):
-                return
-            else:
-                self.deviantlogger.error(error)
-                self.deviantlogger.exception(error)
-
+    @setuprole.error
+    @updateinverse.error
+    @deletefolder.error
     @deleteallfolder.error
-    async def daf_errorhandler(self, ctx, error):
-        self.jsonlock = False;
-        try:
-            if ctx.guild.id is None:
-                return;
-        except AttributeError:
-            return;
-        if ctx.guild.id == self.guildid:
-            permitted = True
-        elif not ctx.guild.id == self.guildid:
+    async def command_errorhandler(self, ctx, error):
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send("Error: "
+                           "" + str(error.param.name) + " was not found. Use the help command for more information."
+                                                        " If the parameter specified by this message has quotes in "
+                                                        "the help command. It means that parameter needs to be surrounded"
+                                                        " by quotes. ")
+        elif isinstance(error, psycopg2.OperationalError):
+            ctx.send("Uh oh looks like DeviantCord's database is having issues. This should resolve itself within 5 minutes"
+                     " if this continues contact DeviantCord Support Reference Error code 09")
+            await self.recoverConnection()
+        elif isinstance(error, psycopg2.DatabaseError):
+            ctx.send(
+                "Uh oh looks like DeviantCord's database is having issues. This should resolve itself within 5 minutes"
+                " if this continues contact DeviantCord Support Reference Error code 08")
+            await self.recoverConnection()
+        elif isinstance(error, urllib.error.HTTPError):
+            if error.code == 401:
+                await ctx.send(
+                    "Error: Automatic Token renewal didn't taken place, tokens will renew in 10 minutes, "
+                    "if issues persist past 20 minutes please contact DeviantCord support.")
+                self.deviantlogger.error("addfolder command returned a HTTP 401, ")
+                await self.softTokenRenewal()
+            if error.code == 503:
+                self.deviantlogger.error(
+                    ctx.command.name +" returned a HTTP 503, DA Servers are down for maintenance ")
+                await ctx.send("Error: DA's servers are down for maintenance. Please wait a few minutes");
+            if error.code == 500:
+                self.deviantlogger.error( ctx.command.name + " returned a HTTP 500, Internal Error ")
+                await ctx.send("DA's servers returned a Error 500 Internal Error. Try again in a few minutes");
+            if error.code == 429:
+                self.deviantlogger.error(ctx.command.name + " returned a HTTP 429, DA API Overloaded ")
+                await ctx.send("Error: DA API is currently overloaded...please wait for an hour. ")
+                return 429;
+        elif isinstance(error, commands.errors.NoPrivateMessage):
             return
-        elif not self.publicmode:
-            permitted = True
         else:
-            return;
-        if permitted:
-            if isinstance(error, commands.MissingRequiredArgument):
-                if error.param.name == 'inverted':
-                    await ctx.send(
-                        "Error: No inverted argument found, use " + self.prefix + "help for more information")
-                if error.param.name == 'artist':
-                    await ctx.send(
-                        "Error: No artistname argument found, use " + self.prefix + "help for more information")
-                if error.param.name == 'foldername':
-                    await ctx.send(
-                        "Error: No foldername argument found, use " + self.prefix + "help for more information")
-                if error.param.name == 'channelid':
-                    await ctx.send(
-                        "Error: No channelid argument found, use " + self.prefix + "help for more information")
-            if isinstance(error, urllib.error.HTTPError):
-                if error.code == 401:
-                    await ctx.send(
-                        "Error: Automatic Token renewal didn't taken place, tokens will renew in 10 minutes, if issues persist"
-                        "past 20 minutes please contact DeviantCord support.")
-                    self.deviantlogger.error("AddArtist command returned a HTTP 401, ")
-                    self.deviantlogger.info("Invoking softTokenRenewal")
-                    await self.softTokenRenewal()
-                if error.code == 503:
-                    self.deviantlogger.error(
-                        "AddArtist command returned a HTTP 503, DA Servers are down for maintenance ")
-                    await ctx.send(
-                        "Error: DA's servers are down, check DeviantArt's Twitter and DeviantCord Support for more information");
-                if error.code == 500:
-                    self.deviantlogger.error("AddArtist command returned a HTTP 500, Internal Error ")
-                    await ctx.send("DA's servers returned a Error 500 Internal Error. Try again in a few minutes");
-                if error.code == 429:
-                    self.deviantlogger.error("AddArtist command returned a HTTP 429, DA API Overloaded ")
-                    await ctx.send("Error: DA API is currently overloaded...please wait for an hour. DeviantCord"
-                                   "will continue to check for deviations at a delayed pace. Though commands will be "
-                                   "delayed")
-                    return 429;
-            if isinstance(error, commands.errors.NoPrivateMessage):
-                return
-            else:
-                self.deviantlogger.error(error)
-                self.deviantlogger.exception(error)
-
-    @addartist.error
-    async def addartist_errorhandler(self, ctx, error):
-        self.jsonlock = False;
-        try:
-            if ctx.guild.id is None:
-                return;
-        except AttributeError:
-            return;
-        if ctx.guild.id == self.guildid:
-            permitted = True
-        elif not ctx.guild.id == self.guildid:
-            return
-        elif not self.publicmode:
-            permitted = True
-        else:
-            return;
-        if permitted:
-            if isinstance(error, commands.MissingRequiredArgument):
-                if error.param.name == 'inverted':
-                    await ctx.send(
-                        "Error: No inverted argument found, use " + self.prefix + "help for more information")
-                if error.param.name == 'artistname':
-                    await ctx.send(
-                        "Error: No artistname argument found, use " + self.prefix + "help for more information")
-                if error.param.name == 'foldername':
-                    await ctx.send(
-                        "Error: No foldername argument found, use " + self.prefix + "help for more information")
-                if error.param.name == 'channelid':
-                    await ctx.send(
-                        "Error: No channelid argument found, use " + self.prefix + "help for more information")
-            if isinstance(error, urllib.error.HTTPError):
-                if error.code == 401:
-                    await ctx.send(
-                        "Error: Automatic Token renewal didn't taken place, tokens will renew in 10 minutes, if issues persist"
-                        "past 20 minutes please contact DeviantCord support.")
-                    self.deviantlogger.error("AddArtist command returned a HTTP 401, ")
-                    self.deviantlogger.info("Invoking softTokenRenewal")
-                    await self.softTokenRenewal()
-                if error.code == 503:
-                    self.deviantlogger.error(
-                        "AddArtist command returned a HTTP 503, DA Servers are down for maintenance ")
-                    await ctx.send(
-                        "Error: DA's servers are down, check DeviantArt's Twitter and DeviantCord Support for more information");
-                if error.code == 500:
-                    self.deviantlogger.error("AddArtist command returned a HTTP 500, Internal Error ")
-                    await ctx.send("DA's servers returned a Error 500 Internal Error. Try again in a few minutes");
-                if error.code == 429:
-                    self.deviantlogger.error("AddArtist command returned a HTTP 429, DA API Overloaded ")
-                    await ctx.send("Error: DA API is currently overloaded...please wait for an hour. DeviantCord"
-                                   "will continue to check for deviations at a delayed pace. Though commands will be "
-                                   "delayed")
-                    return 429;
-            if isinstance(error, commands.errors.NoPrivateMessage):
-                return
-            else:
-                self.deviantlogger.error(error)
-                self.deviantlogger.exception(error)
+            with configure_scope() as scope:
+                scope.set_extra("command", ctx.command.name)
+                scope.set_extra("discord-guild", ctx.guild.name)
+                scope.set_extra("guild-id", ctx.guild.id)
+                scope.set_extra("channel-id", ctx.channel.id)
+                scope.set_extra("channel-name", ctx.channel.name)
+                capture_exception(error)
 
     def error_handler(self, loop, context):
-        self.jsonlock = False
         print("Exception: ", context['exception'])
+        capture_exception(context['exception'])
         logger = logging.getLogger("deviantcog")
         logger.exception(context["exception"])
         if self.failedlogincount >= 3:
@@ -1708,33 +987,32 @@ class daCog(commands.Cog):
             if self.failedlogincount >= 3:
                 print("Exceeded 3 failed login limit. If this was hit when starting up then you need to check"
                       "your DA info in client.json..Attempting softtokenrenewal ")
-                loop.run_until_complete(self.fix_error(1200))
-
+                self.bot.loop.create_task(self.fix_error(1200))
+        if str(context['exception']).find("psycopg2") > -1:
+            logger.error("psycopg2 exception encountered")
+            self.bot.loop.create_task(self.recoverConnection())
         if str(context['exception']) == "HTTP Error 400: Bad request":
             logger.error("HTTP Error 400 encountered, ignoring...")
-        elif str(context['exception']).find("NoneType") > -1:
-            print("The error above is pointless, you can ignore this. Regenerating syncGalleryTask")
-            loop.run_until_complete(self.fix_error(10))
         elif str(context['exception']).find("HTTP Error 400") > -1:
             logger.error("HTTP Error 400 encountered")
-            loop.run_until_complete(self.fix_error(120))
+            self.bot.loop.create_task(self.fix_error(120))
         elif str(context['exception']).find("HTTP Error 500") > -1:
             logger.error("HTTP Error 500 Encountered")
-            loop.run_until_complete(self.fix_error(1200))
+            self.bot.loop.create_task(self.fix_error(1200))
         elif str(context['exception']).find("HTTP Error 503") > -1:
             logger.error("Encountered a HTTP Error 503: DA's servers are likely down. Now creating task to renew token"
                          "in 20 minutes")
-            loop.run_until_complete(self.fix_error(2400))
+            self.bot.loop.create_task(self.fix_error(2400))
             # loop.run_until_complete(self.manualgetNewToken())
         elif str(context['exception']).find("HTTP Error 429") > -1:
             logger.error("Encountered a HTTP Error 429: Received Rate Limit response, toning down responses for "
                          "in 20 minutes")
-            loop.run_until_complete(self.fix_error(600))
+            self.bot.loop.create_task(self.fix_error(600))
             # loop.run_until_complete(self.rateLimitMeasure())
         else:
             print("Exception encountered: ", context['exception'])
             logger.error("Exception Encountered " + str(context['exception']))
-            loop.run_until_complete(self.fix_error(500))
+            self.bot.loop.create_task(self.fix_error(500))
 
 
 def setup(bot):
