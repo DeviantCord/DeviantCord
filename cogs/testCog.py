@@ -18,7 +18,7 @@ from errite.tools.mis import fileExists
 class testCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        sentry_sdk.init("https://9a825fa0779744fd99f475cb5a4775dc@sentry.io/1876771")
+        sentry_sdk.init("Key")
     @commands.command()
     async def testError(self, ctx):
         print("Triggered")
