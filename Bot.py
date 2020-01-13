@@ -1,27 +1,36 @@
 """
 
-    Copyright 2019 Errite Games LLC / ErriteEpticRikez
+    DeviantCord 2 Discord Bot
+    Copyright (C) 2020  Errite Games LLC/ ErriteEpticRikez
 
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-       http://www.apache.org/licenses/LICENSE-2.0
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
 
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 
 """
+
 import json
 import os
 import asyncio
+from concurrent.futures.thread import ThreadPoolExecutor
+
 import discord
+import psycopg2
 import datetime
 import sys, traceback
 import logging
+from sentry_sdk import configure_scope, set_context, set_extra, capture_exception
+import sentry_sdk
 from logging.handlers import RotatingFileHandler, TimedRotatingFileHandler
 from discord.ext import commands
 from discord.ext.commands import has_permissions
@@ -29,20 +38,27 @@ from errite.da.jsonTools import updateprefix, updatelogchannel, update_errite
 from errite.config.configManager import createConfig, createSensitiveConfig
 from errite.tools.mis import fileExists
 from errite.config.converter import convert
+from errite.psql.sqlManager import grab_sql
+from errite.deviantcord.timeTools import prefixTimeOutSatisfied
 from os import listdir
 from os.path import isfile, join
 
 # DeviantCord Message Variables (Not all are here)
 invalid_cog_errite = "Invalid cog found on reload for discord server "
-print("Starting DeviantCord bt-1.4.5")
+print("Starting DeviantCord bt-2.0.7")
 print("If this causes a HTTP 401 Error when trying to load daCommands your DeviantArt info is wrong. Set it in client.json")
 started = True
 configData = {}
+DBData = None
 sensitiveData = {}
+server_prefixes = {}
+server_prefixes["guilds"] = []
 errite = False
 prefix = None
 passed = True
 roleid = None
+work = False
+stopCollision = False
 passedJson = False;
 whiletrigger = False
 logname = "discord"
@@ -56,7 +72,7 @@ if fileExists(logname):
                     whiletrigger = True
 
 botlogger = logging.getLogger()
-botlogger.setLevel(logging.DEBUG)
+botlogger.setLevel(logging.INFO)
 handler = TimedRotatingFileHandler(logname, when='h',interval=6, backupCount=2000, encoding='utf-8')
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 botlogger.addHandler(handler)
@@ -70,22 +86,87 @@ if fileExists("client.json") == False:
 
 if passed == True:
     if fileExists("config.json") == True:
-
         if fileExists("client.json") == True:
             convert()
             with open("config.json", "r") as configjsonFile:
                 with open("client.json", "r") as clientjsonFile:
                     configData = json.load(configjsonFile)
+                    use_sentry = configData["sentry-enabled"]
+                    if use_sentry:
+                        sentry_url = configData["sentry-url"]
+                        sentry_sdk.init(sentry_url)
                     sensitiveData = json.load(clientjsonFile)
                     configjsonFile.close()
                     clientjsonFile.close()
                     if sensitiveData["da-client-id"] is not "id here":
                         if sensitiveData["da-secret"] is not "secret":
                             passedJson = True
+        if fileExists("db.json"):
+            with open("db.json") as BotdbJsonFile:
+                dbInfo = json.load(BotdbJsonFile)
+                database_name = dbInfo["database-name"]
+                database_host = dbInfo["database-host"]
+                database_host2 = dbInfo["database-host2"]
+                database_host3 = dbInfo["database-host3"]
+                database_password = dbInfo["database-password"]
+                database_user = dbInfo["database-username"]
+                if database_host2 == "none":
+                    connect_str = "dbname='" + database_name + "' user='" + database_user \
+                                  + "'host='" + database_host + "' " + \
+                                  "password='" + database_password + "'"
+                elif database_host3 == "none":
+                    connect_str = "dbname='" + database_name + "' user='" + database_user \
+                                  + "'host='" + database_host + "," + database_host2 + "' " + \
+                                  "password='" + database_password + "'"
+                else:
+                    connect_str = "dbname='" + database_name + "' user='" + database_user \
+                                  + "'host='" + database_host + "," + database_host2 + "," + database_host3 + "' " + \
+                                  "password='" + database_password + "'"
+                print("DeviantCord Main Bot component now connecting to DB")
+                db_connection = psycopg2.connect(connect_str)
+
+def grab_prefix(bot, msg):
+    if msg.guild is None:
+        return "$"
+    if not msg.guild.id in server_prefixes:
+        obt_prefix = db_connection.cursor()
+        sql = grab_sql("grab_server_info")
+        obt_prefix.execute(sql,(msg.guild.id,))
+        obt_results = obt_prefix.fetchone()
+        if obt_results is not None:
+            prefix = obt_results[0][0]
+            #Initialize Dictionary
+            server_prefixes[msg.guild.id] = {}
+            server_prefixes[msg.guild.id]["prefix"] = prefix
+            timestr = datetime.datetime.now()
+            server_prefixes[msg.guild.id]["last-use"] = timestr
+            server_prefixes["guilds"].append(msg.guild.id)
+            obt_prefix.close()
+            return server_prefixes[msg.guild.id]["prefix"]
+        if obt_results is None:
+            #If for some reason the server is not in the database, then the obt_results will be none
+            return "~"
+    elif msg.guild.id in server_prefixes:
+        timestr = datetime.datetime.now()
+        server_prefixes[msg.guild.id]["last-use"] = timestr
+        return server_prefixes[msg.guild.id]["prefix"]
+
+async def timeout_prefixes():
+    await client.wait_until_ready()
+
+    while not client.is_closed():
+        print("Time out started")
+        for entry in server_prefixes["guilds"]:
+            if prefixTimeOutSatisfied(server_prefixes[entry]["last-use"]):
+                print("Deleted " + str(entry))
+                del server_prefixes[entry]
+                server_prefixes["guilds"].remove(entry)
+        print("Timeout sleeping")
+        await asyncio.sleep(900)
 
 if passedJson == True:
     prefix = configData["prefix"]
-    client = commands.Bot(command_prefix=prefix)
+    client = commands.Bot(command_prefix=grab_prefix)
     # WEB API
     clientsecret = sensitiveData["da-secret"]
     clientid = sensitiveData["da-client-id"]
@@ -98,10 +179,12 @@ if passedJson == True:
     errite = configData["errite"]
     errite_channel = configData["errite-channel"]
     location = configData["region"]
+    stop_duplicaterecovery = False
     server = configData["server"]
     # The variable below this is referred to as client in all other python files. Its because client is already used
     # that this is different. It refers to the name of the Discord Server internally on Errite Servers.
     discord_server = configData["client"]
+    client.loop.create_task(timeout_prefixes())
 else:
     print("JSON Test failed, reverting to default settings")
     client = commands.Bot(command_prefix="$")
@@ -129,289 +212,106 @@ async def tester():
         print("Tested!")
         await asyncio.sleep(20)
 
+async def setRecover(input:bool):
+    stopCollision = input
+async def recoverConnection():
+    toggle = False
+    if not stopCollision:
+        toggle = True
+        setRecover(True)
+    if toggle:
+        await asyncio.sleep(120)
+        if database_host2 == "none":
+            connect_str = "dbname='" + database_name + "' user='" + database_user \
+                          + "'host='" + database_host + "' " + \
+                          "password='" + database_password + "'"
+        elif database_host3 == "none":
+            connect_str = "dbname='" + database_name + "' user='" + database_user \
+                          + "'host='" + database_host + "," + database_host2 + "' " + \
+                          "password='" + database_password + "'"
+        else:
+            connect_str = "dbname='" + database_name + "' user='" + database_user \
+                          + "'host='" + database_host + "," + database_host2 + "," + database_host3 + "' " + \
+                          "password='" + database_password + "'"
+        print("Connecting to database")
+        db_connection = psycopg2.connect(connect_str)
+        setRecover(False)
+@client.event
+async def on_guild_join(guild):
+    sql = grab_sql("new_server")
+    ns_cursor = db_connection.cursor()
+    await client.loop.run_in_executor(ThreadPoolExecutor(), ns_cursor.execute, sql,(guild.id, '~', False, 0,))
+    await asyncio.get_event_loop().run_in_executor(ThreadPoolExecutor(), db_connection.commit)
+
+@client.event
+async def on_guild_remove(guild):
+    sql = grab_sql("delete_server_config")
+    delserver_cursor = db_connection.cursor()
+    await client.loop.run_in_executor(ThreadPoolExecutor(), delserver_cursor.execute, sql,(guild.id,))
+    sql = grab_sql("delete_server_data")
+    await client.loop.run_in_executor(ThreadPoolExecutor(), delserver_cursor.execute, sql, (guild.id,))
+    await asyncio.get_event_loop().run_in_executor(ThreadPoolExecutor(), db_connection.commit)
+
+
 
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
 
-@client.command()
-@has_permissions(administrator=True)
-async def setlogchannel(ctx, logchannel):
-    if ctx.guild is None:
-        return;
-    elif ctx.guild.id == guildid:
-        permitted = True
-    elif guildid is "not-setup":
-        permitted = True;
-    if permitted:
-        if isinstance(logchannel, int):
-            print("Logchannel input is Integer")
-            try:
-                channel = client.get_channel(logchannel)
-                if channel is None:
-                    print("Could not link with provided channelid")
-                    await ctx.send(
-                        "Error: The new channel id you provided is invalid, is it correct? Do I have permission to access it?")
-                    return;
-                updatelogchannel(logchannel)
-                logchannelid = logchannel
-            except KeyError:
-                print("Encountered KeyError when verifying newchannelid...newchannelid is not a discordchannelid")
-                print("Notifying channel")
-                await ctx.send("Error: Invalid discord channel id provided...")
-                return;
-        elif isinstance(logchannel, str):
-            print("Log Channel input is String")
-            try:
-                result = int(logchannel)
-                print("Successfully Converted new channelid to ", result)
-                channel = client.get_channel(result)
-                if channel is None:
-                    print("Could not link with provided channelid")
-                    await ctx.send(
-                        "Error: The new channel id you provided is invalid, is it correct? Do I have permission to access it?")
-                    return;
-                updatelogchannel(logchannel)
-                logchannelid = logchannel
-            except KeyError:
-                print("Encountered KeyError when verifying newchannelid...newchannelid is not a discordchannelid")
-                print("Notifying channel")
-                await ctx.send("Error: Invalid discord channel id provided...")
-                return;
-    await ctx.send("Log Channel updated to ", logchannel)
-
 
 @client.command()
-@has_permissions(administrator=True)
 async def setprefix(ctx, suppliedprefix):
     skiprolecheck = False
     if ctx.guild is None:
         return;
-    elif ctx.guild.id == guildid:
-        permitted = True
-    elif not ctx.guild.id == guildid:
-        return
-    elif errite is None:
-        return
-    elif not publicmode:
-        permitted = True
-    if permitted:
-        updateprefix(suppliedprefix)
-        prefix = suppliedprefix
-        client.command_prefix = suppliedprefix
-        await ctx.send("Set prefix to " + suppliedprefix + "now reloading...")
-        if errite:
-            botlogger.info("setprefix: Errite is true")
-        if not errite:
-            botlogger.info("setprefix: Errite is false")
-        cogs_dir = "cogs"
-        if __name__ == '__main__':
-            for extension in [f.replace('.py', '') for f in listdir(cogs_dir) if isfile(join(cogs_dir, f))]:
-                try:
-                    if not extension == "__init__":
-                        botlogger.info("setprefix: Unloading " + extension)
-                        print("Unloading " + extension)
-                        client.unload_extension(cogs_dir + "." + extension)
-                        botlogger.info("setprefix: loading " + extension)
-                        print("Loading " + extension)
-                        client.load_extension(cogs_dir + "." + extension)
-                        botlogger.info("setprefix: Successfully reloaded " + extension)
-                        print("Successfully reloaded " + extension)
-                except (discord.ClientException, ModuleNotFoundError):
-                    print('Failed to load extension {extension}.')
-                    botlogger.error("setprefix: Invalid Cog found for " + extension)
-                    traceback.print_exc()
-                    await ctx.send("Invalid cog found inside the cogs folder. If you are using the public bot contact"
-                                   " DeviantCord Support. ")
-                    botlogger.error(extension + " cog failed to load ")
-                    if errite:
-                        botlogger.info("setprefix: Errite is true, now getting channel")
-                        support_channel = client.get_channel(errite_channel)
-                        if support_channel is None:
-                            botlogger.info("setprefix: Was unable to link with Errite channel")
-                            await ctx.send("AutoErrorReport is not working, please mention this while"
-                                           " speaking to support.")
-                        else:
-                            botlogger.info("setprefix: Errite channel successfully established, now sending message")
-                            await support_channel.send("Exception experienced while reloading\n"
-                                                       "**Server Info:**\n" +
-                                                       "Current Server Name: " + ctx.guild.name +
-                                                       "\nServer Id: " + str(ctx.guild.id) +
-                                                       "\nInternal Name: " + discord_server +
-                                                       "\nEGServer: " + server +
-                                                       "\nServer Location: " + location +
-                                                       "\nException: TEST" +
-                                                       "\nCog: " + extension)
-                            botlogger.info("setprefix: Errite SOS Reload Message successfully sent")
-                except Exception as e:
-                    print("Experienced exception while loading " + extension + "\n")
-                    botlogger.error("Experienced exeption while loading " + extension)
-                    await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}' + "Please contact DeviantCord Support")
-                    if errite:
-                        support_channel = client.get_channel(errite_channel)
-                        if support_channel is None:
-                            botlogger.error("setprefix: was unable to link with Errite channel")
-                            await ctx.send("AutoErrorReport is not working, please mention this while"
-                                           " speaking to support.")
-                        else:
-                            botlogger.info("setprefix: Errite channel successfully established, now sending message")
-                            await support_channel.send("Exception experienced while reloading\n"
-                                                       "**Server Info:**\n" +
-                                                       "Current Server Name: " + ctx.guild.name +
-                                                       "\nServer Id: " + str(ctx.guild.id) +
-                                                       "\nInternal Name: " + discord_server +
-                                                       "\nEGServer: " + server +
-                                                       "\nServer Location: " + location +
-                                                       "\nException: " + e)
-                            botlogger.info("setprefix: Errite SOS Reload Message successfully sent")
-                else:
-                    botlogger.info("setprefix: " + extension + "successfully reloaded")
-                    await ctx.send('**`SUCCESSFULLY RELOADED `' + extension + '**')
-            await ctx.send("Reload Finished! ")
-
-
-@client.command()
-@has_permissions(administrator=True)
-async def reload(ctx):
-    """Command which Reloads a Module.
-    Remember to use dot path. e.g: cogs.owner"""
-    skiprolecheck = False
-    if ctx.guild is None:
-        return;
-    elif ctx.guild.id == guildid:
-        permitted = True
-    elif not publicmode:
-        permitted = True
-    if permitted:
-        if errite:
-            botlogger.info("Reload: Errite is true")
-        if not errite:
-            botlogger.info("Reload: Errite is false")
-        if errite is None:
-            return
-        cogs_dir = "cogs"
-        if __name__ == '__main__':
-            for extension in [f.replace('.py', '') for f in listdir(cogs_dir) if isfile(join(cogs_dir, f))]:
-                try:
-                    if not extension == "__init__":
-                        botlogger.info("Reload: Unloading " + extension)
-                        print("Unloading " + extension)
-                        client.unload_extension(cogs_dir + "." + extension)
-                        botlogger.info("Reload: loading " + extension)
-                        print("Loading " + extension)
-                        client.load_extension(cogs_dir + "." + extension)
-                        botlogger.info("Reload: Successfully reloaded " + extension)
-                        print("Successfully reloaded " + extension)
-                except (discord.ClientException, ModuleNotFoundError):
-                    print('Failed to load extension {extension}.')
-                    botlogger.error("Reload: Invalid Cog found for " + extension)
-                    traceback.print_exc()
-                    await ctx.send("Invalid cog found inside the cogs folder. If you are using the public bot contact"
-                                   " DeviantCord Support. ")
-                    botlogger.error(extension + " cog failed to load ")
-                    if errite:
-                        botlogger.info("Reload: Errite is true, now getting channel")
-                        support_channel = client.get_channel(errite_channel)
-                        if support_channel is None:
-                            botlogger.info("Reload: Was unable to link with Errite channel")
-                            await ctx.send("AutoErrorReport is not working, please mention this while"
-                                           " speaking to support.")
-                        else:
-                            botlogger.info("Reload: Errite channel successfully established, now sending message")
-                            await support_channel.send("Exception experienced while reloading\n"
-                                                       "**Server Info:**\n" +
-                                                       "Current Server Name: " + ctx.guild.name +
-                                                       "\nServer Id: " + str(ctx.guild.id) +
-                                                       "\nInternal Name: " + discord_server +
-                                                       "\nEGServer: " + server +
-                                                       "\nServer Location: " + location +
-                                                       "\nException: TEST" +
-                                                       "\nCog: " + extension)
-                            botlogger.info("Reload: Errite SOS Reload Message successfully sent")
-                except Exception as e:
-                    print("Experienced exception while loading " + extension + "\n")
-                    botlogger.error("Experienced exeption while loading " + extension)
-                    await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}' + "Please contact DeviantCord Support")
-                    if errite:
-                        support_channel = client.get_channel(errite_channel)
-                        if support_channel is None:
-                            botlogger.error("Reload: was unable to link with Errite channel")
-                            await ctx.send("AutoErrorReport is not working, please mention this while"
-                                           " speaking to support.")
-                        else:
-                            botlogger.info("Reload: Errite channel successfully established, now sending message")
-                            await support_channel.send("Exception experienced while reloading\n"
-                                                       "**Server Info:**\n" +
-                                                       "Current Server Name: " + ctx.guild.name +
-                                                       "\nServer Id: " + str(ctx.guild.id) +
-                                                       "\nInternal Name: " + discord_server +
-                                                       "\nEGServer: " + server +
-                                                       "\nServer Location: " + location +
-                                                       "\nException: " + e)
-                            botlogger.info("Reload: Errite SOS Reload Message successfully sent")
-                else:
-                    botlogger.info("Reload: " + extension + "successfully reloaded")
-                    await ctx.send('**`SUCCESSFULLY RELOADED `' + extension + '**')
-
-
-@client.command()
-@has_permissions(administrator=True)
-async def erritetoggle(ctx):
-    if ctx.guild is None:
-        return
-    if ctx.guild.id == guildid:
-        if not publicmode:
-            if errite:
-                update_errite(False)
-                await ctx.send("Errite has been toggled to false")
-                await ctx.author.send("Originally, errite was to set to true despite " +
-                                      "publicmode being false. If you are using the public DeviantCord bot, contact " +
-                                      "DeviantCord support **IMMEDIATELY! ** If you are using self hosting" +
-                                      "check the bots config.json file to make sure the settings are correct.")
-            if not errite:
-                await ctx.author.send("The errite property for the bot in config.json is used to tell whether the bot" +
-                                      " should use certain lines of code that were designed only for the DeviantCord " +
-                                      "public bot. If you are running a self host bot use logchannels instead.  " +
-                                      "\n If you are using the DeviantCord public bot and see this message contact" +
-                                      "DeviantCord support **IMMEDIATELY**")
-        if publicmode:
-            if errite:
-                update_errite(False)
-                await ctx.send("You have opted out of Errite's Auto Error Reporting")
-            elif not errite:
-                update_errite(True)
-                await ctx.send("You have opted back into Errite's Auto Error Reporting")
+    elif not ctx.guild is None:
+        if ctx.author.guild_permissions.administrator:
+            print("Entered")
+            setup_cursor = db_connection.cursor()
+            sql = grab_sql("update_prefix")
+            timestr = datetime.datetime.now()
+            await client.loop.run_in_executor(ThreadPoolExecutor(), setup_cursor.execute, sql,(suppliedprefix, timestr, ctx.guild.id,))
+            print("Committing")
+            await client.loop.run_in_executor(ThreadPoolExecutor(), db_connection.commit)
+            server_prefixes[ctx.guild.id]["prefix"] = suppliedprefix
+            await ctx.send("Prefix has been updated.")
+        elif not ctx.author.guild_permissions.administrator:
+            await ctx.send("You need to have a rank with Administrator permissions")
 
 
 @setprefix.error
 async def setprefix_errorhandler(ctx, error):
     if ctx.guild is None:
         return
-    if ctx.guild.id == guildid:
-        permitted = True
-    elif not publicmode:
-        permitted = True
-    else:
+    if isinstance(error, commands.NoPrivateMessage):
         return;
-    if permitted:
-        print("Entered Permitted")
-        if isinstance(error, commands.NoPrivateMessage):
+    elif isinstance(error, commands.MissingRequiredArgument):
+        if error.param.name == 'suppliedprefix':
+            await ctx.send(
+                "Error: No prefix argument found, use the help command for more information")
+    elif isinstance(error, discord.ext.commands.errors.MissingRequiredArgument):
+        if error.param.name == 'suppliedprefix':
+            await ctx.send(
+                "Error: No prefix argument found, use the help command for more information")
+    elif isinstance(error,commands.MissingPermissions):
             return;
-        elif isinstance(error, commands.MissingRequiredArgument):
-            if error.param.name == 'suppliedprefix':
-                await ctx.send(
-                    "Error: No prefix argument found, use " + prefix + "help for more information")
-        elif isinstance(error, discord.ext.commands.errors.MissingRequiredArgument):
-            if error.param.name == 'suppliedprefix':
-                await ctx.send(
-                        "Error: No prefix argument found, use " + prefix + "help for more information")
-        elif isinstance(error,commands.MissingPermissions):
-                return;
-        elif isinstance(error, commands.errors.NoPrivateMessage):
-                return;
+    elif isinstance(error, commands.errors.NoPrivateMessage):
+            return;
+    else:
+        with configure_scope() as scope:
+            scope.set_extra("command", ctx.command.name)
+            scope.set_extra("discord-guild", ctx.guild.name)
+            scope.set_extra("guild-id", ctx.guild.id)
+            scope.set_extra("channel-id", ctx.channel.id)
+            scope.set_extra("channel-name", ctx.channel.name)
+            capture_exception(error)
+
 
 def error_handler(loop, context):
     print("Exception: ", context['exception'])
+    if str(context['exception']).find("psycopg2") > -1:
+        botlogger.error("psycopg2 exception encountered")
+        client.loop.create_task(recoverConnection())
     if str(context['exception']) == "HTTP Error 401: Unauthorized":
 
         print("Your DA info is invalid, please check client.json to see if it matches your DA developer page")

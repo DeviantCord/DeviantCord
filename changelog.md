@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## DeviantCord 2
+### [bt-2.0.7]
+
+## Changes
+- Mature Folders are now require the folder to be in a NSFW channel.
+
+## Fixes
+- Fixed an issue with minimum role ID not being the correct data type. 
 ### [bt-2.0.6]
 
 ## Fixes

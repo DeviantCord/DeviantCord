@@ -371,7 +371,7 @@ class daCog(commands.Cog):
             timestr = datetime.datetime.now()
             self.min_roles[msg.guild.id]["last-use"] = timestr
             print("Returning role")
-            return self.min_roles[msg.guild.id]["rank"]
+            return int(self.min_roles[msg.guild.id]["rank"])
 
     async def timeout_ranks(self):
         await self.bot.wait_until_ready()
@@ -453,9 +453,8 @@ class daCog(commands.Cog):
             await ctx.send("The minimum rank required to utilize DeviantCord commands on this server has not been set"
                            " or something is wrong. Someone with Administrator on this server needs to set the minimum"
                            "roleid with the setuprole command. \n setuprole <roleid>")
-        if not ctx.author.top_role >= obtained_role:
-            return;
-        text = "**DeviantCord Help Guide**\n**" + self.prefix + \
+        text = "**DeviantCord Help Guide**\n** **NOTE arguments with quotes around it need those quotes when executing " \
+               "the command with multi-words**\n" + self.prefix + \
                "help** - Gives a list of command with explaination\n**NOTE: Inverse means that newest deviations are at the top, instead of the bottom. Use true or false to answer it**\n**" + \
                self.prefix + "addfolder** *\"<artist_username>\"* *\"<folder>\"* *<channel_id>* *<inverse>* *<hybrid>* *<mature>* - Adds a folder listener fo for the bot to notify user of new deviations in the specified channel\n**" + \
                self.prefix + "addallfolder** *\"<artist_username>\"* *<channel_id>* *<mature>* - Used to add an allfolder listener that listens for any deviations from the artist.\n **" + \
@@ -495,6 +494,10 @@ class daCog(commands.Cog):
             return;
         if not channel.guild.id == ctx.guild.id:
             return
+        if mature:
+            if not channel.is_nsfw():
+                await ctx.send("Folders marked as mature must be in a NSFW channel!")
+                return
         sql = grab_sql("duplicate_all_check")
         check_listener_cursor = self.db_connection.cursor()
         loop = asyncio.get_event_loop()
@@ -547,7 +550,6 @@ class daCog(commands.Cog):
         await ctx.send("Listener added for allfolder " + " for artist " + artistname)
 
     @commands.command()
-    @has_permissions(administrator=True)
     async def setuprole(self, ctx, roleid):
         if ctx.guild is None:
             return
@@ -570,6 +572,8 @@ class daCog(commands.Cog):
                     timestr = datetime.datetime.now()
                     self.min_roles[ctx.guild.id]["last-use"] = timestr
                 await ctx.send("Rank has been updated.")
+            if not ctx.author.guild_permissions.administrator:
+                await ctx.send("Setup role requires the user executing the command to have Administrator!")
         else:
             return
 
@@ -693,6 +697,10 @@ class daCog(commands.Cog):
             return;
         if not channel.guild.id == ctx.guild.id:
             return
+        if mature:
+            if not channel.is_nsfw():
+                await ctx.send("Folders marked as mature must be in a NSFW channel!")
+                return
         sql = grab_sql("duplicate_check")
         check_listener_cursor = self.db_connection.cursor()
         loop = asyncio.get_event_loop()
