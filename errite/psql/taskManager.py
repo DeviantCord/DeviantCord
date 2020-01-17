@@ -64,7 +64,7 @@ def syncListeners(conn, task_cursor, source_cursor):
                             FROM (VALUES %s) AS data(dcuuid, last_update, last_hybrids, artist, folderid, serverid, channelid)
                              WHERE deviantcord.deviation_listeners.artist = data.artist AND deviantcord.deviation_listeners.folderid = data.folderid
                              AND deviantcord.deviation_listeners.serverid = data.serverid AND deviantcord.deviation_listeners.channelid = data.channelid"""
-    insert_notification_sql = """INSERT INTO deviantcord.deviation_notifications(channelid, artist, foldername, deviation_link, img_url, pp_url, id, inverse, notif_creation)
+    insert_notification_sql = """INSERT INTO deviantcord.deviation_notifications(channelid, artist, foldername, deviation_link, img_url, pp_url, id, inverse, notif_creation, mature_only)
                  VALUES %s """
     source_get_sql = """ SELECT * from deviantcord.deviation_data where artist = %s AND folderid = %s 
     AND inverse_folder = %s AND hybrid = %s"""
@@ -138,7 +138,8 @@ def syncListeners(conn, task_cursor, source_cursor):
                             while not passes == new_deviation_count:
                                 dump_tstr = datetime.datetime.now()
                                 discord_commits.append(
-                                    (channel_id, artist, foldername, obt_last_urls[temp_index],obt_img_urls[temp_index] , obt_pp, inverse, dump_tstr))
+                                    (channel_id, artist, foldername, obt_last_urls[temp_index],
+                                     obt_img_urls[temp_index] , obt_pp, inverse, dump_tstr, mature))
                                 temp_index = temp_index + 1
                                 passes = passes + 1
                         if not inverse:
@@ -147,7 +148,8 @@ def syncListeners(conn, task_cursor, source_cursor):
                             while not passes == (len(obt_last_urls) - 1):
                                 dump_tstr = datetime.datetime.now()
                                 discord_commits.append(
-                                    (channel_id, artist, foldername, obt_last_urls[temp_index], obt_img_urls[temp_index], obt_pp, inverse, dump_tstr))
+                                    (channel_id, artist, foldername, obt_last_urls[temp_index],
+                                     obt_img_urls[temp_index], obt_pp, inverse, dump_tstr, mature))
                                 
                                 temp_index = temp_index + 1
                                 passes = passes + 1
@@ -161,7 +163,7 @@ def syncListeners(conn, task_cursor, source_cursor):
                                 dump_tstr = datetime.datetime.now()
                                 discord_commits.append(
                                     (channel_id, artist, foldername, obt_hybrid_urls[temp_index],
-                                     obt_hybrid_img_urls[temp_index], obt_pp, sort_inverse, dump_tstr))
+                                     obt_hybrid_img_urls[temp_index], obt_pp, sort_inverse, dump_tstr, mature))
                                 temp_index = temp_index + 1
                                 passes = passes + 1
                         if not inverse:
@@ -171,7 +173,8 @@ def syncListeners(conn, task_cursor, source_cursor):
                             while not passes == (len(obt_hybrid_ids) - 1):
                                 dump_tstr = datetime.datetime.now()
                                 discord_commits.append(
-                                    (channel_id, artist, foldername, obt_hybrid_urls[temp_index], obt_hybrid_img_urls[temp_index], obt_pp, sort_inverse, dump_tstr))
+                                    (channel_id, artist, foldername, obt_hybrid_urls[temp_index],
+                                     obt_hybrid_img_urls[temp_index], obt_pp, sort_inverse, dump_tstr, mature))
                                 temp_index = temp_index + 1
                                 passes = passes + 1
                                 # NOTE: MAYBE Change this to use values instead?
@@ -191,7 +194,8 @@ def syncListeners(conn, task_cursor, source_cursor):
                         while not passes == new_deviation_count:
                             dump_tstr = datetime.datetime.now()
                             discord_commits.append(
-                                (channel_id, artist, foldername, obt_last_urls[temp_index], obt_img_urls[temp_index], obt_pp, inverse, dump_tstr))
+                                (channel_id, artist, foldername, obt_last_urls[temp_index],
+                                 obt_img_urls[temp_index], obt_pp, inverse, dump_tstr, mature))
                             temp_index = temp_index + 1
                             passes = passes + 1
 
@@ -201,7 +205,8 @@ def syncListeners(conn, task_cursor, source_cursor):
                         while not passes == (len(obt_last_urls) - 1):
                             dump_tstr = datetime.datetime.now()
                             discord_commits.append(
-                                (channel_id, artist, foldername, obt_last_urls[temp_index], obt_img_urls[temp_index], obt_pp, inverse, dump_tstr))
+                                (channel_id, artist, foldername, obt_last_urls[temp_index],
+                                 obt_img_urls[temp_index], obt_pp, inverse, dump_tstr, mature))
                             temp_index = temp_index + 1
                             passes = passes + 1
 
@@ -218,7 +223,7 @@ def syncListeners(conn, task_cursor, source_cursor):
                 psycopg2.extras.execute_values(temp_cursor, change_hybrid_sql, hybrid_commits)
                 psycopg2.extras.execute_values(temp_cursor, change_hybrid_only_sql, hybrid_only_commits)
                 psycopg2.extras.execute_values(temp_cursor, insert_notification_sql, discord_commits,
-                                               "(%s, %s, %s, %s, %s, %s, default, %s, %s)")
+                                               "(%s, %s, %s, %s, %s, %s, default, %s, %s, %s)")
                 deviantlogger.info("Committing transactions to DB")
                 conn.commit()
                 deviantlogger.info("Transactions committed.")
@@ -244,7 +249,7 @@ def syncListeners(conn, task_cursor, source_cursor):
                         discord_commits.append(
                             (
                             channel_id, artist, foldername, obt_last_urls[temp_index], obt_img_urls[temp_index], obt_pp,
-                            True, dump_tstr))
+                            True, dump_tstr, mature))
                         temp_index = temp_index + 1
                         passes = passes + 1
                 temp_cursor = conn.cursor()
@@ -252,7 +257,7 @@ def syncListeners(conn, task_cursor, source_cursor):
                 deviantlogger.info("AllFolder Discord Commits " + str(len(discord_commits)))
                 psycopg2.extras.execute_values(temp_cursor, change_all_sql, all_folder_commits)
                 psycopg2.extras.execute_values(temp_cursor, insert_notification_sql, discord_commits,
-                                               "(%s, %s, %s, %s, %s, %s, default, %s, %s)")
+                                               "(%s, %s, %s, %s, %s, %s, default, %s, %s, %s)")
                 deviantlogger.info("Committing Transactions to DB")
                 conn.commit()
                 deviantlogger.info("Transactions committed successfully")
