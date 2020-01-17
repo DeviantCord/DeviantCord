@@ -338,7 +338,6 @@ class daCog(commands.Cog):
 
 
     async def grab_min_role(self, msg):
-        #TODO Make this work with threads
         if not msg.guild.id in self.min_roles:
             obt_rank = self.db_connection.cursor()
             sql = grab_sql("grab_server_info")
@@ -353,9 +352,11 @@ class daCog(commands.Cog):
             #obt_rank.execute(sql, (msg.guild.id,))
             obt_results = await loop.run_in_executor(ThreadPoolExecutor(), obt_rank.fetchone)
             if obt_results is not None:
+                prefix = obt_results[0]
                 rank = obt_results[1]
                 # Initialize Dictionary
                 self.min_roles[msg.guild.id] = {}
+                self.min_roles[msg.guild.id]["prefix"] = prefix
                 self.min_roles[msg.guild.id]["rank"] = rank
                 timestr = datetime.datetime.now()
                 self.min_roles[msg.guild.id]["last-use"] = timestr
@@ -384,6 +385,43 @@ class daCog(commands.Cog):
                     self.min_roles["guilds"].remove(entry)
             print("Timeout sleeping")
             await asyncio.sleep(900)
+
+    async def grab_prefix(self, msg):
+        if not msg.guild.id in self.min_roles:
+            obt_rank = self.db_connection.cursor()
+            sql = grab_sql("grab_server_info")
+            print("Before execute")
+            guild_id = msg.guild.id
+
+            loop = asyncio.get_event_loop()
+            #await loop.run_in_executor(ThreadPoolExecutor(), setup_cursor.execute, sql,
+             #                          (roleid, timestr, ctx.guild.id,))
+            await loop.run_in_executor(ThreadPoolExecutor(), obt_rank.execute, sql, (guild_id,))
+            print("After execute")
+            #obt_rank.execute(sql, (msg.guild.id,))
+            obt_results = await loop.run_in_executor(ThreadPoolExecutor(), obt_rank.fetchone)
+            if obt_results is not None:
+                prefix = obt_results[0]
+                rank = obt_results[1]
+                # Initialize Dictionary
+                self.min_roles[msg.guild.id] = {}
+                self.min_roles[msg.guild.id]["prefix"] = prefix
+                self.min_roles[msg.guild.id]["rank"] = rank
+                timestr = datetime.datetime.now()
+                self.min_roles[msg.guild.id]["last-use"] = timestr
+                self.min_roles["guilds"].append(msg.guild.id)
+                obt_rank.close()
+                print("Returning Prefix")
+                return str(self.min_roles[msg.guild.id]["prefix"])
+            if obt_results is None:
+                # If for some reason the server is not in the database, then the obt_results will be none
+                print("Returning none")
+                return None
+        elif msg.guild.id in self.min_roles:
+            timestr = datetime.datetime.now()
+            self.min_roles[msg.guild.id]["last-use"] = timestr
+            print("Returning role")
+            return str(self.min_roles[msg.guild.id]["prefix"])
 
     async def syncGalleries(self):
 
@@ -441,32 +479,42 @@ class daCog(commands.Cog):
                                       "\nhttps://discord.gg/ubmkcsk")
     @commands.command()
     async def help(self, ctx):
-        print("Invoked")
         if ctx.guild is None:
-            print("Null guild")
             return;
-        print("After test")
+
         min_rank = await self.grab_min_role(ctx)
-        print("After")
         obtained_role = ctx.guild.get_role(min_rank)
+        obtained_prefix = await self.grab_prefix(ctx)
         if obtained_role is None:
             await ctx.send("The minimum rank required to utilize DeviantCord commands on this server has not been set"
                            " or something is wrong. Someone with Administrator on this server needs to set the minimum"
                            "roleid with the setuprole command. \n setuprole <roleid>")
-        text = "**DeviantCord Help Guide**\n** **NOTE arguments with quotes around it need those quotes when executing " \
-               "the command with multi-words**\n" + self.prefix + \
+        if obtained_prefix is None:
+            obtained_prefix = "~"
+        glossary = "** __ DeviantCord Glossary__ ** \n **Inverse:** " \
+               "- If answered true, newest deviations will be checked from the top of the folder instead of the bottom.\n " \
+               "**Hybrid:** - If answered true, the opposite of the inverse given will also be checked in addition to the given inverse" \
+               "folders should be read from the top instead of the bottom.\n" \
+               "** Mature:** - Whether Deviations marked as mature on DA should be posted. \n **NOTE:** This includes both" \
+               " mature options Moderate and Strict on DA. Regardless of which one is marked the bot will treat it as mature.\n" \
+               "**NOTE:** arguments with quotes around it require quotes when the command is executed and is **Case Sensitive**" \
+               " the artists name and folder need to be exact!\n"
+        await ctx.send(glossary)
+        text = "** __DeviantCord Help Guide__**\n **" + obtained_prefix + \
                "help** - Gives a list of command with explaination\n**NOTE: Inverse means that newest deviations are at the top, instead of the bottom. Use true or false to answer it**\n**" + \
-               self.prefix + "addfolder** *\"<artist_username>\"* *\"<folder>\"* *<channel_id>* *<inverse>* *<hybrid>* *<mature>* - Adds a folder listener fo for the bot to notify user of new deviations in the specified channel\n**" + \
-               self.prefix + "addallfolder** *\"<artist_username>\"* *<channel_id>* *<mature>* - Used to add an allfolder listener that listens for any deviations from the artist.\n **" + \
-               self.prefix + "deleteallfolder** *\"<artist_username>\"* *<channelid>* - Deletes allfolder listener and removes it from artdata\n **" + \
-               self.prefix + "deletefolder** *\"<artist_username>\"* *\"<folder>\"* *<channelid>* - Deletes the listener for the folder and erases it from artdata\n **" + \
-               self.prefix + "listfolders** - Lists all the current folder listeners that the bot is listening to. \n **" + \
-               self.prefix + "updatehybrid** *\"<artist_username>\"* *\"<folder>\"* *<hybrid>* *<channelid>*- Sets the hybrid property of an existing folder listener \n **" + \
-               self.prefix + "updateinverse** *\"<artist_username>\"* *\"<folder>\"* *<inverse>* *<channelid>* - Updates the inverse property of a existing folder listener\n" + \
-               "**" + self.prefix + "updatechannel** *\"<artist_username>\"* *\"<folder>\"* *<newchannelid>* *<oldchannelid>* - Updates the discord channel that notifications will be posted for an existing folder listener\n" + \
-               "**" + self.prefix + "support** - DM's you a server invite to the official DeviantCord Support server\n" + \
+               obtained_prefix + "addfolder** *\"<artist_username>\"* *\"<folder>\"* *<channel_id>* *<inverse>* *<hybrid>* *<mature>* - Adds a folder listener fo for the bot to notify user of new deviations in the specified channel\n**" + \
+               obtained_prefix + "addallfolder** *\"<artist_username>\"* *<channel_id>* *<mature>* - Used to add an allfolder listener that listens for any deviations from the artist.\n **" + \
+               obtained_prefix + "deleteallfolder** *\"<artist_username>\"* *<channelid>* - Deletes allfolder listener and removes it from artdata\n **" + \
+               obtained_prefix + "deletefolder** *\"<artist_username>\"* *\"<folder>\"* *<channelid>* - Deletes the listener for the folder and erases it from artdata\n **" + \
+               obtained_prefix + "listfolders** - Lists all the current folder listeners that the bot is listening to. \n **" + \
+               obtained_prefix + "updatehybrid** *\"<artist_username>\"* *\"<folder>\"* *<hybrid>* *<channelid>*- Sets the hybrid property of an existing folder listener \n **" + \
+               obtained_prefix + "updateinverse** *\"<artist_username>\"* *\"<folder>\"* *<inverse>* *<channelid>* - Updates the inverse property of a existing folder listener\n" + \
+               "**" + obtained_prefix + "updatechannel** *\"<artist_username>\"* *\"<folder>\"* *<newchannelid>* *<oldchannelid>* - Updates the discord channel that notifications will be posted for an existing folder listener\n" + \
+               "**" + obtained_prefix + "support** - DM's you a server invite to the official DeviantCord Support server\n" + \
                "** __ADMIN COMMANDS__** \n" + \
-               "**" + self.prefix + "setprefix** *<prefix>* - Updates the prefix \n"
+               "**" + obtained_prefix + "setprefix** *<prefix>* - Updates the prefix \n" \
+                                    "**" + obtained_prefix + "setuprole** *<roleid>* - Sets the minimum roleid to " \
+                                                             "use DeviantCord commands."
         await ctx.send(text)
 
     @commands.command()
@@ -622,15 +670,13 @@ class daCog(commands.Cog):
         loop = asyncio.get_event_loop()
         await loop.run_in_executor(ThreadPoolExecutor(), delete_cursor.execute, sql,(ctx.guild.id, artist, folder,
                                                                                      channelid,))
-        obt_result = await loop.run_in_executor(ThreadPoolExecutor(), delete_cursor.fetchall)
 
-        count = len(obt_result)
-        if count == 1:
+        if delete_cursor.rowcount == 1:
             await ctx.send("Listener deleted")
             self.db_connection.commit()
-        elif count > 1:
+        elif delete_cursor.rowcount > 1:
             await ctx.send("An error has occurred! Please contact support reference error code: del-1")
-        elif count == 0:
+        elif delete_cursor.rowcount == 0:
             await ctx.send("I could not find the listener matching the information you provided. Is this right?")
         delete_cursor.close()
 

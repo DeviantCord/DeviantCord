@@ -6,6 +6,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## DeviantCord 2
+### [bt-2.0.8]
+
+## Changes
+- Changed the help command to include common terms within the help command
+
+## Fixes
+- Help command now lists the servers prefix, instead of always displaying the default prefix
+- Fixed an issue with the delete command not working.
+- DeviantCord will now check the NSFW status of the channel before posting deviations ontop of checking when the folder is created.
+- Fixed an issue with minimum role ID not being the correct data type. 
+
 ### [bt-2.0.7]
 
 ## Changes
