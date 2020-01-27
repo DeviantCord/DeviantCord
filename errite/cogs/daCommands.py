@@ -19,13 +19,10 @@
 
 """
 import json
-import os
 import sys
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 from pythonjsonlogger import jsonlogger
-import functools
-import discord
 from logging.handlers import TimedRotatingFileHandler
 import asyncio
 import datetime
@@ -35,22 +32,23 @@ import sentry_sdk
 from discord.ext import commands
 import psycopg2
 import psycopg2.errors
-from discord.ext.commands import has_permissions, guild_only, CommandNotFound
+from discord.ext.commands import has_permissions, guild_only, CommandNotFound, BadArgument
 import errite.da.daParser as dp
 from errite.deviantcord.timeTools import prefixTimeOutSatisfied
 from errite.psql.taskManager import syncListeners, addtask, addalltask
 from errite.psql.sourceManager import updateSources, updateallfolders, addsource, verifySourceExistance, \
     verifySourceExistanceExtra, verifySourceExistanceAll, addallsource
 from errite.psql.sqlManager import grab_sql
-from errite.erritediscord.discordTools import sendDeviationNotifications, createDeviationListString, sendListMessage
+from errite.erritediscord.discordTools import sendDeviationNotifications, createDeviationListString, sendListMessage, \
+    convertRoleID, convertChannelID
 from errite.config.configManager import createConfig, createSensitiveConfig
-from errite.psql.sqlManager import get_sql
 from errite.tools.mis import fileExists
 import urllib
 
 
 class daCog(commands.Cog):
     """The Deviant Art component class for DeviantCord"""
+
     def __init__(self, bot):
         self.clientid = None
         self.db_connection = None
@@ -154,7 +152,7 @@ class daCog(commands.Cog):
             self.guildid = configData["guildid"]
             self.prefix = configData["prefix"]
             self.time = configData["sync-time"]
-            #Database Specific Options
+            # Database Specific Options
             self.deviantlogger.info("Setting Database Variables")
             self.database_name = self.dbInfo["database-name"]
             self.database_host = self.dbInfo["database-host"]
@@ -165,7 +163,7 @@ class daCog(commands.Cog):
             self.stop_duplicaterecovery = False
             if self.database_host2 == "none":
                 connect_str = "dbname='" + self.database_name + "' user='" + self.database_user \
-                              + "'host='" + self.database_host +  "' " + \
+                              + "'host='" + self.database_host + "' " + \
                               "password='" + self.database_password + "'"
             elif self.database_host3 == "none":
                 connect_str = "dbname='" + self.database_name + "' user='" + self.database_user \
@@ -173,7 +171,7 @@ class daCog(commands.Cog):
                               "password='" + self.database_password + "'"
             else:
                 connect_str = "dbname='" + self.database_name + "' user='" + self.database_user \
-                              + "'host='" + self.database_host + "," + self.database_host2 +"," + self.database_host3 + "' " + \
+                              + "'host='" + self.database_host + "," + self.database_host2 + "," + self.database_host3 + "' " + \
                               "password='" + self.database_password + "'"
             print("Connecting to database")
             self.db_connection = psycopg2.connect(connect_str)
@@ -209,7 +207,7 @@ class daCog(commands.Cog):
             await asyncio.sleep(120)
             if self.database_host2 == "none":
                 connect_str = "dbname='" + self.database_name + "' user='" + self.database_user \
-                              + "'host='" + self.database_host +  "' " + \
+                              + "'host='" + self.database_host + "' " + \
                               "password='" + self.database_password + "'"
             elif self.database_host3 == "none":
                 connect_str = "dbname='" + self.database_name + "' user='" + self.database_user \
@@ -217,7 +215,7 @@ class daCog(commands.Cog):
                               "password='" + self.database_password + "'"
             else:
                 connect_str = "dbname='" + self.database_name + "' user='" + self.database_user \
-                              + "'host='" + self.database_host + "," + self.database_host2 +"," + self.database_host3 + "' " + \
+                              + "'host='" + self.database_host + "," + self.database_host2 + "," + self.database_host3 + "' " + \
                               "password='" + self.database_password + "'"
             print("Connecting to database")
             self.db_connection = psycopg2.connect(connect_str)
@@ -336,7 +334,6 @@ class daCog(commands.Cog):
         self.bot.loop.create_task(self.getNewToken())
         self.bot.loop.create_task(self.syncGalleries())
 
-
     async def grab_min_role(self, msg):
         if not msg.guild.id in self.min_roles:
             obt_rank = self.db_connection.cursor()
@@ -345,11 +342,11 @@ class daCog(commands.Cog):
             guild_id = msg.guild.id
 
             loop = asyncio.get_event_loop()
-            #await loop.run_in_executor(ThreadPoolExecutor(), setup_cursor.execute, sql,
-             #                          (roleid, timestr, ctx.guild.id,))
+            # await loop.run_in_executor(ThreadPoolExecutor(), setup_cursor.execute, sql,
+            #                          (roleid, timestr, ctx.guild.id,))
             await loop.run_in_executor(ThreadPoolExecutor(), obt_rank.execute, sql, (guild_id,))
             print("After execute")
-            #obt_rank.execute(sql, (msg.guild.id,))
+            # obt_rank.execute(sql, (msg.guild.id,))
             obt_results = await loop.run_in_executor(ThreadPoolExecutor(), obt_rank.fetchone)
             if obt_results is not None:
                 prefix = obt_results[0]
@@ -394,11 +391,11 @@ class daCog(commands.Cog):
             guild_id = msg.guild.id
 
             loop = asyncio.get_event_loop()
-            #await loop.run_in_executor(ThreadPoolExecutor(), setup_cursor.execute, sql,
-             #                          (roleid, timestr, ctx.guild.id,))
+            # await loop.run_in_executor(ThreadPoolExecutor(), setup_cursor.execute, sql,
+            #                          (roleid, timestr, ctx.guild.id,))
             await loop.run_in_executor(ThreadPoolExecutor(), obt_rank.execute, sql, (guild_id,))
             print("After execute")
-            #obt_rank.execute(sql, (msg.guild.id,))
+            # obt_rank.execute(sql, (msg.guild.id,))
             obt_results = await loop.run_in_executor(ThreadPoolExecutor(), obt_rank.fetchone)
             if obt_results is not None:
                 prefix = obt_results[0]
@@ -441,7 +438,7 @@ class daCog(commands.Cog):
             obt_results = await loop.run_in_executor(ThreadPoolExecutor(), get_cursor.fetchall)
             source_cursor = self.db_connection.cursor()
             await loop.run_in_executor(ThreadPoolExecutor(), updateSources, source_cursor, self.db_connection,
-                                       obt_results, self.token )
+                                       obt_results, self.token)
             await loop.run_in_executor(ThreadPoolExecutor(), self.db_connection.commit)
             get_query = "SELECT * from deviantcord.deviation_data_all"
             await loop.run_in_executor(ThreadPoolExecutor(), get_cursor.execute, get_query)
@@ -450,8 +447,9 @@ class daCog(commands.Cog):
                                        obt_results, self.token)
             task_cursor = self.db_connection.cursor()
             print("If it happened before this then you got it")
-            await loop.run_in_executor(ThreadPoolExecutor(),syncListeners, self.db_connection, task_cursor, source_cursor)
-            #do_normal_tasks_query = "SELECT * from deviantcord.deviation_notifications where inverse = false"
+            await loop.run_in_executor(ThreadPoolExecutor(), syncListeners, self.db_connection, task_cursor,
+                                       source_cursor)
+            # do_normal_tasks_query = "SELECT * from deviantcord.deviation_notifications where inverse = false"
             do_normal_tasks_query = "SELECT * from deviantcord.deviation_notifications where inverse = false"
             await loop.run_in_executor(ThreadPoolExecutor(), get_cursor.execute, do_normal_tasks_query)
             obt_results = await loop.run_in_executor(ThreadPoolExecutor(), get_cursor.fetchall)
@@ -477,6 +475,7 @@ class daCog(commands.Cog):
     async def support(self, ctx):
         await ctx.message.author.send("Here is the URL to the official DeviantCord Discord server " +
                                       "\nhttps://discord.gg/ubmkcsk")
+
     @commands.command()
     async def help(self, ctx):
         if ctx.guild is None:
@@ -489,16 +488,17 @@ class daCog(commands.Cog):
             await ctx.send("The minimum rank required to utilize DeviantCord commands on this server has not been set"
                            " or something is wrong. Someone with Administrator on this server needs to set the minimum"
                            "roleid with the setuprole command. \n setuprole <roleid>")
+            return
         if obtained_prefix is None:
             obtained_prefix = "~"
         glossary = "** __ DeviantCord Glossary__ ** \n **Inverse:** " \
-               "- If answered true, newest deviations will be checked from the top of the folder instead of the bottom.\n " \
-               "**Hybrid:** - If answered true, the opposite of the inverse given will also be checked in addition to the given inverse" \
-               "folders should be read from the top instead of the bottom.\n" \
-               "** Mature:** - Whether Deviations marked as mature on DA should be posted. \n **NOTE:** This includes both" \
-               " mature options Moderate and Strict on DA. Regardless of which one is marked the bot will treat it as mature.\n" \
-               "**NOTE:** arguments with quotes around it require quotes when the command is executed and is **Case Sensitive**" \
-               " the artists name and folder need to be exact!\n"
+                   "- If answered true, newest deviations will be checked from the top of the folder instead of the bottom.\n " \
+                   "**Hybrid:** - If answered true, the opposite of the inverse given will also be checked in addition to the given inverse" \
+                   "folders should be read from the top instead of the bottom.\n" \
+                   "** Mature:** - Marked true as to whether Deviations marked as mature on DA should be posted. \n **NOTE:** This includes both" \
+                   " mature options Moderate and Strict on DA. Regardless of which one is marked the bot will treat it as mature.\n" \
+                   "**NOTE:** arguments with quotes around it require quotes when the command is executed and is **Case Sensitive**" \
+                   " the artists name and folder need to be exact!\n"
         await ctx.send(glossary)
         text = "** __DeviantCord Help Guide__**\n **" + obtained_prefix + \
                "help** - Gives a list of command with explaination\n**NOTE: Inverse means that newest deviations are at the top, instead of the bottom. Use true or false to answer it**\n**" + \
@@ -513,16 +513,17 @@ class daCog(commands.Cog):
                "**" + obtained_prefix + "support** - DM's you a server invite to the official DeviantCord Support server\n" + \
                "** __ADMIN COMMANDS__** \n" + \
                "**" + obtained_prefix + "setprefix** *<prefix>* - Updates the prefix \n" \
-                                    "**" + obtained_prefix + "setuprole** *<roleid>* - Sets the minimum roleid to " \
-                                                             "use DeviantCord commands."
+                                        "**" + obtained_prefix + "setuprole** *<roleid>* - Sets the minimum roleid to " \
+                                                                 "use DeviantCord commands."
         await ctx.send(text)
 
     @commands.command()
-    async def addallfolder(self, ctx, artistname, channelid:int, mature: bool):
+    async def addallfolder(self, ctx, artistname, channelid, mature: bool):
         print("Invoked")
         if ctx.guild is None:
             print("Null guild")
             return;
+        useConvChannelID = False
         print("After test")
         min_rank = await self.grab_min_role(ctx)
         print("After")
@@ -531,15 +532,26 @@ class daCog(commands.Cog):
             await ctx.send("The minimum rank required to utilize DeviantCord commands on this server has not been set"
                            " or something is wrong. Someone with Administrator on this server needs to set the minimum"
                            "roleid with the setuprole command. \n setuprole <roleid>")
+            return
         if not ctx.author.top_role >= obtained_role:
             return;
-        channel = self.bot.get_channel(int(channelid))
-        if channel is None:
-            self.deviantlogger.info("Could not link with provided channelid...sending message to channel")
-            await ctx.send(
-                "Error: I could not link with the provided channelid, is it correct? Do I have permission to access it?" \
-                " I cannot tell because I am just a bot.")
-            return;
+        useConvChannelID = False
+        if isinstance(channelid, str):
+            convChannelId = await convertChannelID(channelid, ctx)
+            if convChannelId == 0:
+                await ctx.send("Invalid channelID")
+                return
+            else:
+                useConvChannelID = True
+                channel = self.bot.get_channel(convChannelId)
+        elif isinstance(channelid, int):
+            channel = self.bot.get_channel(channelid)
+            if channel is None:
+                await ctx.send("Invalid ChannelID, is the channel ID correct? Try mentioning the text channel instead")
+                return
+        else:
+            await ctx.send("Invalid ChannelID, is the channel ID correct? Try mentioning the text channel instead")
+            return
         if not channel.guild.id == ctx.guild.id:
             return
         if mature:
@@ -549,8 +561,12 @@ class daCog(commands.Cog):
         sql = grab_sql("duplicate_all_check")
         check_listener_cursor = self.db_connection.cursor()
         loop = asyncio.get_event_loop()
-        await loop.run_in_executor(ThreadPoolExecutor(), check_listener_cursor.execute,
-                                   sql, (channelid, ctx.guild.id, artistname, "All Folder",))
+        if not useConvChannelID:
+            await loop.run_in_executor(ThreadPoolExecutor(), check_listener_cursor.execute,
+                                       sql, (channelid, ctx.guild.id, artistname, "All Folder",))
+        elif useConvChannelID:
+            await loop.run_in_executor(ThreadPoolExecutor(), check_listener_cursor.execute,
+                                       sql, (convChannelId, ctx.guild.id, artistname, "All Folder",))
         duplicate_results = await loop.run_in_executor(ThreadPoolExecutor(), check_listener_cursor.fetchone)
         if duplicate_results is not None:
             await ctx.send("You already have a listener for this folder and artist in this channel. You can only have "
@@ -587,15 +603,28 @@ class daCog(commands.Cog):
                 emptyfolder = True
             loop = asyncio.get_event_loop()
             await ctx.send("Importing this folder for first time, this may take a bit.")
-            await loop.run_in_executor(ThreadPoolExecutor(), addallsource, allfolderData, artistname, self.db_connection,
+            await loop.run_in_executor(ThreadPoolExecutor(), addallsource, allfolderData, artistname,
+                                       self.db_connection,
                                        mature)
             print("Finished adding source")
-            await loop.run_in_executor(ThreadPoolExecutor(), addalltask, ctx.guild.id, channelid, artistname, mature, self.db_connection)
+            if useConvChannelID:
+                await loop.run_in_executor(ThreadPoolExecutor(), addalltask, ctx.guild.id, convChannelId, artistname,
+                                           mature, self.db_connection)
+            elif not useConvChannelID:
+                await loop.run_in_executor(ThreadPoolExecutor(), addalltask, ctx.guild.id, channelid, artistname,
+                                           mature, self.db_connection)
         else:
             loop = asyncio.get_event_loop()
-            await loop.run_in_executor(ThreadPoolExecutor(), addalltask, ctx.guild.id, channelid, artistname, mature,
-                                       self.db_connection)
-        await ctx.send("Listener added for allfolder " + " for artist " + artistname)
+            if useConvChannelID:
+                await loop.run_in_executor(ThreadPoolExecutor(), addalltask, ctx.guild.id, convChannelId, artistname,
+                                           mature,
+                                           self.db_connection)
+            elif not useConvChannelID:
+                await loop.run_in_executor(ThreadPoolExecutor(), addalltask, ctx.guild.id, channelid, artistname,
+                                           mature,
+                                           self.db_connection)
+        await ctx.send(
+            "Listener added for allfolder " + " for artist " + artistname + " Reminder: The bot only checks for Deviations every 25 to 30 minutes from when the bot is started!")
 
     @commands.command()
     async def setuprole(self, ctx, roleid):
@@ -603,11 +632,44 @@ class daCog(commands.Cog):
             return
         elif not ctx.guild is None:
             if ctx.author.guild_permissions.administrator:
+                useConvID = False
+                if isinstance(roleid, str):
+                    convRoleId = await convertRoleID(roleid, ctx)
+                    if convRoleId == 0:
+                        await ctx.send("Invalid RoleId, try mentioning the bot or using the numerical roleid. You can "
+                                       "grab the numerical id by putting a \ infront of the mention and putting that id")
+                        return
+                    else:
+                        useConvID = True
+                elif not isinstance(roleid, int):
+                    await ctx.send("Invalid RoleID, try mentioning the bot or using the numerical roleid. You can "
+                                   "grab the numerical id by putting a \ infront of the mention and putting that id")
+                    return
+                else:
+                    await ctx.send("Invalid roleid")
+                    return
+                if useConvID:
+                    role_obj = ctx.guild.get_role(convRoleId)
+                else:
+                    role_obj = ctx.guild.get_role(roleid)
+                if role_obj is None:
+                    await ctx.send("Invalid RoleID, try mentioning the bot or using the numerical roleid. You can "
+                                   "grab the numerical id by putting a \ infront of the mention and putting that id")
+                    return
+                if ctx.author.top_role < role_obj:
+                    await ctx.send("You specified a minimum rank for the bot higher then your highest role "
+                                   "on the server. The minimum rank needs to be lower or equal to your highest role")
+                    return
                 setup_cursor = self.db_connection.cursor()
                 sql = grab_sql("update_rank")
                 loop = asyncio.get_event_loop()
                 timestr = datetime.datetime.now()
-                await loop.run_in_executor(ThreadPoolExecutor(), setup_cursor.execute, sql, (roleid, timestr, ctx.guild.id,))
+                if not useConvID:
+                    await loop.run_in_executor(ThreadPoolExecutor(), setup_cursor.execute, sql,
+                                               (roleid, timestr, ctx.guild.id,))
+                elif useConvID:
+                    await loop.run_in_executor(ThreadPoolExecutor(), setup_cursor.execute, sql,
+                                               (convRoleId, timestr, ctx.guild.id,))
                 await loop.run_in_executor(ThreadPoolExecutor(), self.db_connection.commit)
                 if not ctx.guild.id in self.min_roles:
                     self.min_roles[ctx.guild.id] = {}
@@ -635,31 +697,48 @@ class daCog(commands.Cog):
             await ctx.send("The minimum rank required to utilize DeviantCord commands on this server has not been set"
                            " or something is wrong. Someone with Administrator on this server needs to set the minimum"
                            "roleid with the setuprole command. \n setuprole <roleid>")
+            return
         if not ctx.author.top_role >= obtained_role:
             return;
         await ctx.send("One moment retrieving your listeners...")
         sql = grab_sql("grab_server_listeners")
         list_cursor = self.db_connection.cursor()
         loop = asyncio.get_event_loop()
-        await loop.run_in_executor(ThreadPoolExecutor(), list_cursor.execute, sql,(ctx.guild.id,))
+        await loop.run_in_executor(ThreadPoolExecutor(), list_cursor.execute, sql, (ctx.guild.id,))
         obt_results = await loop.run_in_executor(ThreadPoolExecutor(), list_cursor.fetchall)
         messages = await createDeviationListString(obt_results, self.bot)
         await sendListMessage(ctx.message.channel, messages)
 
-
     @commands.command()
-    async def deletefolder(self, ctx, artist:str, folder:str, channelid: int):
+    async def deletefolder(self, ctx, artist: str, folder: str, channelid):
         if ctx.guild is None:
             return;
+        useConvChannelID = False
         min_rank = await self.grab_min_role(ctx)
         obtained_role = ctx.guild.get_role(min_rank)
         if obtained_role is None:
             await ctx.send("The minimum rank required to utilize DeviantCord commands on this server has not been set"
                            " or something is wrong. Someone with Administrator on this server needs to set the minimum"
                            "roleid with the setuprole command. \n setuprole <roleid>")
+            return
         if not ctx.author.top_role >= obtained_role:
             return;
-        obt_channel = self.bot.get_channel(channelid)
+        if isinstance(channelid, str):
+            convChannelId = await convertChannelID(channelid, ctx)
+            if convChannelId == 0:
+                await ctx.send("Invalid channelID")
+                return
+            else:
+                useConvChannelID = True
+                obt_channel = self.bot.get_channel(convChannelId)
+        elif isinstance(channelid, int):
+            obt_channel = self.bot.get_channel(channelid)
+            if obt_channel is None:
+                await ctx.send("Invalid ChannelID, is the channel ID correct? Try mentioning the text channel instead")
+                return
+        else:
+            await ctx.send("Invalid ChannelID, is the channel ID correct? Try mentioning the text channel instead")
+            return
         if obt_channel is None:
             await ctx.send(
                 "I was not able to grab channel information for the channelid you provided. Is this correct?")
@@ -668,8 +747,12 @@ class daCog(commands.Cog):
         sql = grab_sql("delete_listener")
         delete_cursor = self.db_connection.cursor()
         loop = asyncio.get_event_loop()
-        await loop.run_in_executor(ThreadPoolExecutor(), delete_cursor.execute, sql,(ctx.guild.id, artist, folder,
-                                                                                     channelid,))
+        if not useConvChannelID:
+            await loop.run_in_executor(ThreadPoolExecutor(), delete_cursor.execute, sql, (ctx.guild.id, artist, folder,
+                                                                                          channelid,))
+        elif useConvChannelID:
+            await loop.run_in_executor(ThreadPoolExecutor(), delete_cursor.execute, sql, (ctx.guild.id, artist, folder,
+                                                                                          convChannelId,))
 
         if delete_cursor.rowcount == 1:
             await ctx.send("Listener deleted")
@@ -680,19 +763,36 @@ class daCog(commands.Cog):
             await ctx.send("I could not find the listener matching the information you provided. Is this right?")
         delete_cursor.close()
 
-
     @commands.command()
-    async def deleteallfolder(self, ctx, artist:str, channelid:int, mature:bool):
+    async def deleteallfolder(self, ctx, artist: str, channelid, mature: bool):
         if ctx.guild is None:
             return;
+        useConvChannelID = False
         min_rank = await self.grab_min_role(ctx)
         obtained_role = ctx.guild.get_role(min_rank)
         if obtained_role is None:
             await ctx.send("The minimum rank required to utilize DeviantCord commands on this server has not been set"
                            " or something is wrong. Someone with Administrator on this server needs to set the minimum"
                            "roleid with the setuprole command. \n setuprole <roleid>")
+            return
         if not ctx.author.top_role >= obtained_role:
             return;
+        if isinstance(channelid, str):
+            convChannelId = await convertChannelID(channelid, ctx)
+            if convChannelId == 0:
+                await ctx.send("Invalid channelID")
+                return
+            else:
+                useConvChannelID = True
+                obt_channel = self.bot.get_channel(convChannelId)
+        elif isinstance(channelid, int):
+            obt_channel = self.bot.get_channel(channelid)
+            if obt_channel is None:
+                await ctx.send("Invalid ChannelID, is the channel ID correct? Try mentioning the text channel instead")
+                return
+        else:
+            await ctx.send("Invalid ChannelID, is the channel ID correct? Try mentioning the text channel instead")
+            return
         obt_channel = self.bot.get_channel(channelid)
         if obt_channel is None:
             await ctx.send(
@@ -702,9 +802,14 @@ class daCog(commands.Cog):
         sql = grab_sql("delete_all_listener")
         delete_cursor = self.db_connection.cursor()
         loop = asyncio.get_event_loop()
-        test = await loop.run_in_executor(ThreadPoolExecutor(), delete_cursor.execute, sql,(ctx.guild.id, artist, mature,
-                                                                                     channelid, "all-folder",))
-
+        if not useConvChannelID:
+            test = await loop.run_in_executor(ThreadPoolExecutor(), delete_cursor.execute, sql,
+                                              (ctx.guild.id, artist, mature,
+                                               channelid, "all-folder",))
+        elif useConvChannelID:
+            test = await loop.run_in_executor(ThreadPoolExecutor(), delete_cursor.execute, sql,
+                                              (ctx.guild.id, artist, mature,
+                                               convChannelId, "all-folder",))
         if delete_cursor.rowcount == 1:
             await ctx.send("Listener deleted")
             self.db_connection.commit()
@@ -713,8 +818,10 @@ class daCog(commands.Cog):
         elif delete_cursor.rowcount == 0:
             await ctx.send("I could not find the listener matching the information you provided. Is this right?")
         delete_cursor.close()
+
     @commands.command()
-    async def addfolder(self, ctx, artistname:str, foldername:str, channelid:int, inverted:bool, hybrid:bool, mature:bool):
+    async def addfolder(self, ctx, artistname: str, foldername: str, channelid, inverted: bool, hybrid: bool,
+                        mature: bool):
         """
         The method that is used when the addfolder command is invoked, the addfolder command is used to add another folder
         to an artist that is already in ArtData.
@@ -722,19 +829,33 @@ class daCog(commands.Cog):
         """
         print("Invoked")
         if ctx.guild is None:
-            print("Null guild")
             return;
-        print("After test")
+        useConvChannelID = False
         min_rank = await self.grab_min_role(ctx)
-        print("After")
         obtained_role = ctx.guild.get_role(min_rank)
+
         if obtained_role is None:
             await ctx.send("The minimum rank required to utilize DeviantCord commands on this server has not been set"
                            " or something is wrong. Someone with Administrator on this server needs to set the minimum"
                            "roleid with the setuprole command. \n setuprole <roleid>")
+            return
         if not ctx.author.top_role >= obtained_role:
             return;
-        channel = self.bot.get_channel(int(channelid))
+        if isinstance(channelid, str):
+            convChannelId = await convertChannelID(channelid, ctx)
+            if convChannelId == 0:
+                return
+            else:
+                useConvChannelID = True
+                channel = self.bot.get_channel(convChannelId)
+        elif isinstance(channelid, int):
+            channel = self.bot.get_channel(channelid)
+            if channel is None:
+                await ctx.send("Invalid ChannelID, is the channel ID correct? Try mentioning the text channel instead")
+                return
+        else:
+            await ctx.send("Invalid ChannelID, is the channel ID correct? Try mentioning the text channel instead")
+            return
         if channel is None:
             self.deviantlogger.info("Could not link with provided channelid...sending message to channel")
             await ctx.send(
@@ -750,8 +871,12 @@ class daCog(commands.Cog):
         sql = grab_sql("duplicate_check")
         check_listener_cursor = self.db_connection.cursor()
         loop = asyncio.get_event_loop()
-        await loop.run_in_executor(ThreadPoolExecutor(), check_listener_cursor.execute,
-                                   sql,(channelid, ctx.guild.id, artistname, foldername,))
+        if useConvChannelID:
+            await loop.run_in_executor(ThreadPoolExecutor(), check_listener_cursor.execute,
+                                       sql, (convChannelId, ctx.guild.id, artistname, foldername,))
+        elif not useConvChannelID:
+            await loop.run_in_executor(ThreadPoolExecutor(), check_listener_cursor.execute,
+                                       sql, (channelid, ctx.guild.id, artistname, foldername,))
         duplicate_results = await loop.run_in_executor(ThreadPoolExecutor(), check_listener_cursor.fetchone)
         if duplicate_results is not None:
             await ctx.send("You already have a listener for this folder and artist in this channel. You can only have "
@@ -770,22 +895,36 @@ class daCog(commands.Cog):
                 return
             loop = asyncio.get_event_loop()
             await ctx.send("Importing this folder for first time, this may take a bit.")
-            await loop.run_in_executor(ThreadPoolExecutor(),addsource, artistname, foldername, folderid, inverted, hybrid, self.token,
+            await loop.run_in_executor(ThreadPoolExecutor(), addsource, artistname, foldername, folderid, inverted,
+                                       hybrid, self.token,
                                        self.db_connection, mature)
             print("Finished adding source")
-            await loop.run_in_executor(ThreadPoolExecutor(), addtask, ctx.guild.id, channelid, artistname, foldername,
-                                       folderid, inverted, hybrid, mature, self.db_connection)
+            if not useConvChannelID:
+                await loop.run_in_executor(ThreadPoolExecutor(), addtask, ctx.guild.id, channelid, artistname,
+                                           foldername,
+                                           folderid, inverted, hybrid, mature, self.db_connection)
+            elif useConvChannelID:
+                await loop.run_in_executor(ThreadPoolExecutor(), addtask, ctx.guild.id, convChannelId, artistname,
+                                           foldername,
+                                           folderid, inverted, hybrid, mature, self.db_connection)
         else:
             loop = asyncio.get_event_loop()
-            await loop.run_in_executor(ThreadPoolExecutor(), addtask, ctx.guild.id, channelid, artistname, foldername,
-                                       folderid, inverted, hybrid, mature, self.db_connection)
-        await ctx.send("Listener added for folder " + foldername + " for artist " + artistname)
-
+            if not useConvChannelID:
+                await loop.run_in_executor(ThreadPoolExecutor(), addtask, ctx.guild.id, channelid, artistname,
+                                           foldername,
+                                           folderid, inverted, hybrid, mature, self.db_connection)
+            elif useConvChannelID:
+                await loop.run_in_executor(ThreadPoolExecutor(), addtask, ctx.guild.id, convChannelId, artistname,
+                                           foldername,
+                                           folderid, inverted, hybrid, mature, self.db_connection)
+        await ctx.send(
+            "Listener added for folder " + foldername + " for artist " + artistname + " Reminder: The bot only checks for deviations every 25-30 minutes from when the bot was started!")
 
     @commands.command()
-    async def updateinverse(self, ctx, artistname:str, foldername:str, inverse:bool, channelid:int):
+    async def updateinverse(self, ctx, artistname: str, foldername: str, inverse: bool, channelid):
         if ctx.guild is None:
             return;
+        useConvChannelID = False
         test = await self.grab_min_role(ctx)
         min_rank = await self.grab_min_role(ctx)
         obtained_role = ctx.guild.get_role(min_rank)
@@ -793,22 +932,48 @@ class daCog(commands.Cog):
             await ctx.send("The minimum rank required to utilize DeviantCord commands on this server has not been set"
                            " or something is wrong. Someone with Administrator on this server needs to set the minimum"
                            "roleid with the setuprole command. \n setuprole <roleid>")
+            return
         if not ctx.author.top_role >= obtained_role:
             return;
-        obt_channel = self.bot.get_channel(channelid)
-        if obt_channel is None:
-            await ctx.send("I was not able to grab channel information for the channelid you provided. Is this correct?")
+        if isinstance(channelid, str):
+            convChannelId = await convertChannelID(channelid, ctx)
+            if convChannelId == 0:
+                await ctx.send(
+                    "Invalid channelid, try using the numeric channelid or mention the channel the listener is in."
+                    " You can use the listfolders command. ")
+                return
+            else:
+                useConvChannelID = True
+                obt_channel = self.bot.get_channel(convChannelId)
+        elif isinstance(channelid, int):
+            obt_channel = self.bot.get_channel(channelid)
+            if obt_channel is None:
+                await ctx.send(
+                    "Invalid channelid, try using the numeric channelid or mention the channel the listener is in."
+                    " You can use the listfolders command. ")
+                return
+        else:
+            await ctx.send(
+                "Invalid channelid, try using the numeric channelid or mention the channel the listener is in."
+                " You can use the listfolders command. ")
+            return
         if not obt_channel.guild.id == ctx.guild.id:
             return
         check_listener = self.db_connection.cursor()
         sql = grab_sql("get_listener")
         loop = asyncio.get_event_loop()
-        await loop.run_in_executor(ThreadPoolExecutor(), check_listener.execute, sql, (artistname, foldername, channelid,))
+        if not useConvChannelID:
+            await loop.run_in_executor(ThreadPoolExecutor(), check_listener.execute, sql,
+                                       (artistname, foldername, channelid,))
+        elif useConvChannelID:
+            await loop.run_in_executor(ThreadPoolExecutor(), check_listener.execute, sql,
+                                       (artistname, foldername, convChannelId,))
         check_results = await loop.run_in_executor(ThreadPoolExecutor(), check_listener.fetchall)
-
         if check_results is None:
             await ctx.send("There is no listener with the information provided. Is this correct?", inverse)
             return
+        if len(check_results) == 0:
+            await ctx.send("Really?")
         if check_results[0][11] == inverse:
             await ctx.send("That listener already has inverse set to " + str(inverse).lower())
         else:
@@ -820,57 +985,103 @@ class daCog(commands.Cog):
                 dcuuid = str(uuid.uuid1())
                 await ctx.send("Reimporting folder for first time with this inverse property this may take a bit")
                 information = await loop.run_in_executor(ThreadPoolExecutor(), addsource,
-                                           artistname, foldername, folderid, inverse,hybrid,
-                                           self.token, self.db_connection, True, dcuuid)
+                                                         artistname, foldername, folderid, inverse, hybrid,
+                                                         self.token, self.db_connection, True, dcuuid)
                 update_cursor = self.db_connection.cursor()
                 sql = grab_sql("update_inverse")
                 timestr = datetime.datetime.now()
-                await loop.run_in_executor(ThreadPoolExecutor(), update_cursor.execute, sql, (inverse, dcuuid,
-                                                                                              information["normal-ids"],
-                                                                                              information["hybrid-ids"],
-                                                                                              timestr, ctx.guild.id,
-                                                                                              channelid,folderid,
-                                                                                              "regular",))
+                if useConvChannelID:
+                    await loop.run_in_executor(ThreadPoolExecutor(), update_cursor.execute, sql, (inverse, dcuuid,
+                                                                                                  information[
+                                                                                                      "normal-ids"],
+                                                                                                  information[
+                                                                                                      "hybrid-ids"],
+                                                                                                  timestr, ctx.guild.id,
+                                                                                                  convChannelId,
+                                                                                                  folderid,
+                                                                                                  "regular",))
+                elif not useConvChannelID:
+                    await loop.run_in_executor(ThreadPoolExecutor(), update_cursor.execute, sql, (inverse, dcuuid,
+                                                                                                  information[
+                                                                                                      "normal-ids"],
+                                                                                                  information[
+                                                                                                      "hybrid-ids"],
+                                                                                                  timestr, ctx.guild.id,
+                                                                                                  channelid, folderid,
+                                                                                                  "regular",))
                 self.db_connection.commit()
                 update_cursor.close()
                 await ctx.send("Inverse updated")
             else:
                 uuid_cursor = self.db_connection.cursor()
                 uuid_sql = grab_sql("grab_source_dcuuid")
-                await loop.run_in_executor(ThreadPoolExecutor(), uuid_cursor.execute, uuid_sql,(
+                await loop.run_in_executor(ThreadPoolExecutor(), uuid_cursor.execute, uuid_sql, (
                     artistname, foldername, inverse, hybrid,))
                 uuid_result = await loop.run_in_executor(ThreadPoolExecutor(), uuid_cursor.fetchone)
                 update_cursor = self.db_connection.cursor()
                 sql = grab_sql("update_inverse")
                 timestr = datetime.datetime.now()
-                await loop.run_in_executor(ThreadPoolExecutor(), update_cursor.execute, sql, (
-                    inverse, uuid_result, uuid_result[1], uuid_result[2], timestr, ctx.guild.id, channelid, folderid, "regular",))
+                if useConvChannelID:
+                    await loop.run_in_executor(ThreadPoolExecutor(), update_cursor.execute, sql, (
+                        inverse, uuid_result, uuid_result[1], uuid_result[2], timestr, ctx.guild.id, convChannelId,
+                        folderid, "regular",))
+                elif not useConvChannelID:
+                    await loop.run_in_executor(ThreadPoolExecutor(), update_cursor.execute, sql, (
+                        inverse, uuid_result, uuid_result[1], uuid_result[2], timestr, ctx.guild.id, channelid,
+                        folderid, "regular",))
                 self.db_connection.commit()
                 uuid_cursor.close()
                 update_cursor.close()
                 await ctx.send("Inverse updated")
         check_listener.close()
 
-
-
     @commands.command()
-    async def updatehybrid(self, ctx, artistname:str, foldername:str, hybrid: bool, channelid: int):
+    async def updatehybrid(self, ctx, artistname: str, foldername: str, hybrid: bool, channelid):
         if ctx.guild is None:
             return;
+        useConvChannelID = False
         min_rank = await self.grab_min_role(ctx)
         obtained_role = ctx.guild.get_role(min_rank)
         if obtained_role is None:
             await ctx.send("The minimum rank required to utilize DeviantCord commands on this server has not been set"
                            " or something is wrong. Someone with Administrator on this server needs to set the minimum"
                            "roleid with the setuprole command. \n setuprole <roleid>")
+            return
         if not ctx.author.top_role >= obtained_role:
             return;
+        if isinstance(channelid, str):
+            convChannelId = await convertChannelID(channelid, ctx)
+            if convChannelId == 0:
+                await ctx.send(
+                    "Invalid channelid, try using the numeric channelid or mention the channel the listener is in."
+                    " You can use the listfolders command. ")
+                return
+            else:
+                useConvChannelID = True
+                obt_channel = self.bot.get_channel(convChannelId)
+        elif isinstance(channelid, int):
+            obt_channel = self.bot.get_channel(channelid)
+            if obt_channel is None:
+                await ctx.send(
+                    "Invalid channelid, try using the numeric channelid or mention the channel the listener is in."
+                    " You can use the listfolders command. ")
+                return
+        else:
+            await ctx.send(
+                "Invalid channelid, try using the numeric channelid or mention the channel the listener is in."
+                " You can use the listfolders command. ")
+            return
         check_listener = self.db_connection.cursor()
         sql = grab_sql("get_listener")
         loop = asyncio.get_event_loop()
-        await loop.run_in_executor(ThreadPoolExecutor(), check_listener.execute, sql, (artistname, foldername, channelid,))
+        if useConvChannelID:
+            await loop.run_in_executor(ThreadPoolExecutor(), check_listener.execute, sql,
+                                       (artistname, foldername, convChannelId,))
+        elif not useConvChannelID:
+            await loop.run_in_executor(ThreadPoolExecutor(), check_listener.execute, sql,
+                                       (artistname, foldername, channelid,))
         check_results = await loop.run_in_executor(ThreadPoolExecutor(), check_listener.fetchall)
-        if len(check_results) is None:
+        if len(check_results ) == 0:
             await ctx.send("Hmm...I dont have a listener for that folder.")
             return
         elif check_results[0][10] == hybrid:
@@ -886,31 +1097,50 @@ class daCog(commands.Cog):
                 dcuuid = str(uuid.uuid1())
                 await ctx.send("Reimporting folder for first time with this hybrid property this may take a bit")
                 information = await loop.run_in_executor(ThreadPoolExecutor(), addsource,
-                                           artistname, foldername, folderid, inverse,hybrid,
-                                           self.token, self.db_connection, True, dcuuid)
+                                                         artistname, foldername, folderid, inverse, hybrid,
+                                                         self.token, self.db_connection, True, dcuuid)
                 update_cursor = self.db_connection.cursor()
                 sql = grab_sql("update_hybrid")
                 timestr = datetime.datetime.now()
-                await loop.run_in_executor(ThreadPoolExecutor(), update_cursor.execute, sql, (hybrid, dcuuid,
-                                                                                              information["normal-ids"],
-                                                                                              information["hybrid-ids"],
-                                                                                              timestr, ctx.guild.id,
-                                                                                              channelid,folderid,
-                                                                                              "regular",))
+                if not useConvChannelID:
+                    await loop.run_in_executor(ThreadPoolExecutor(), update_cursor.execute, sql, (hybrid, dcuuid,
+                                                                                                  information[
+                                                                                                      "normal-ids"],
+                                                                                                  information[
+                                                                                                      "hybrid-ids"],
+                                                                                                  timestr, ctx.guild.id,
+                                                                                                  channelid, folderid,
+                                                                                                  "regular",))
+                elif useConvChannelID:
+                    await loop.run_in_executor(ThreadPoolExecutor(), update_cursor.execute, sql, (hybrid, dcuuid,
+                                                                                                  information[
+                                                                                                      "normal-ids"],
+                                                                                                  information[
+                                                                                                      "hybrid-ids"],
+                                                                                                  timestr, ctx.guild.id,
+                                                                                                  convChannelId,
+                                                                                                  folderid,
+                                                                                                  "regular",))
                 self.db_connection.commit()
                 await ctx.send("Hybrid updated")
                 update_cursor.close()
             else:
                 uuid_cursor = self.db_connection.cursor()
                 uuid_sql = grab_sql("grab_source_dcuuid")
-                await loop.run_in_executor(ThreadPoolExecutor(), uuid_cursor.execute, uuid_sql,(
+                await loop.run_in_executor(ThreadPoolExecutor(), uuid_cursor.execute, uuid_sql, (
                     artistname, foldername, inverse, hybrid,))
                 uuid_result = await loop.run_in_executor(ThreadPoolExecutor(), uuid_cursor.fetchone)
                 update_cursor = self.db_connection.cursor()
                 sql = grab_sql("update_hybrid")
                 timestr = datetime.datetime.now()
-                await loop.run_in_executor(ThreadPoolExecutor(), update_cursor.execute, sql, (
-                    hybrid, uuid_result, uuid_result[1], uuid_result[2], timestr, ctx.guild.id, channelid, folderid, "regular",))
+                if not useConvChannelID:
+                    await loop.run_in_executor(ThreadPoolExecutor(), update_cursor.execute, sql, (
+                        hybrid, uuid_result, uuid_result[1], uuid_result[2], timestr, ctx.guild.id, channelid, folderid,
+                        "regular",))
+                elif useConvChannelID:
+                    await loop.run_in_executor(ThreadPoolExecutor(), update_cursor.execute, sql, (
+                        hybrid, uuid_result, uuid_result[1], uuid_result[2], timestr, ctx.guild.id, channelid, folderid,
+                        "regular",))
                 self.db_connection.commit()
                 uuid_cursor.close()
                 await ctx.send("Hybrid updated")
@@ -918,19 +1148,71 @@ class daCog(commands.Cog):
         check_listener.close()
 
     @commands.command()
-    async def updatechannel(self, ctx, artistname:str, foldername:str, newchannelid: int, oldchannelid: int):
+    async def test(self, ctx):
+        print("Here")
+    @commands.command()
+    async def updatechannel(self, ctx, artistname: str, foldername: str, newchannelid, oldchannelid):
         if ctx.guild is None:
             print("Null guild")
             return;
+        useConvChannelID = False
         min_rank = await self.grab_min_role(ctx)
         obtained_role = ctx.guild.get_role(min_rank)
         if obtained_role is None:
             await ctx.send("The minimum rank required to utilize DeviantCord commands on this server has not been set"
                            " or something is wrong. Someone with Administrator on this server needs to set the minimum"
                            "roleid with the setuprole command. \n setuprole <roleid>")
+            return
         if not ctx.author.top_role >= obtained_role:
             return;
-        new_channel_obt = self.bot.get_channel(int(newchannelid))
+        if isinstance(oldchannelid, str):
+            convChannelId = await convertChannelID(oldchannelid, ctx)
+            if convChannelId == 0:
+                await ctx.send(
+                    "Invalid channelid, try using the numeric channelid or mention the channel the listener is in."
+                    " You can use the listfolders command. ")
+                return
+            else:
+                useConvChannelID = True
+                obt_channel = self.bot.get_channel(convChannelId)
+        elif isinstance(oldchannelid, int):
+            obt_channel = self.bot.get_channel(oldchannelid)
+            if obt_channel is None:
+                await ctx.send(
+                    "Invalid channelid, try using the numeric channelid or mention the channel the listener is in."
+                    " You can use the listfolders command. ")
+                return
+        else:
+            await ctx.send(
+                "Invalid channelid, try using the numeric channelid or mention the channel the listener is in."
+                " You can use the listfolders command. ")
+            return
+        if isinstance(oldchannelid, str):
+            convNewChannelId = await convertChannelID(oldchannelid, ctx)
+            if convNewChannelId == 0:
+                await ctx.send(
+                    "Invalid channelid, try using the numeric channelid or mention the channel the listener is in."
+                    " You can use the listfolders command. ")
+                return
+            else:
+                useConvNewChannelID = True
+                obt_newchannel = self.bot.get_channel(convNewChannelId)
+        elif isinstance(oldchannelid, int):
+            obt_channel = self.bot.get_channel(oldchannelid)
+            if obt_channel is None:
+                await ctx.send(
+                    "Invalid channelid, try using the numeric channelid or mention the channel the listener is in."
+                    " You can use the listfolders command. ")
+                return
+        else:
+            await ctx.send(
+                "Invalid channelid, try using the numeric channelid or mention the channel the listener is in."
+                " You can use the listfolders command. ")
+            return
+        if useConvNewChannelID:
+            new_channel_obt = self.bot.get_channel(convNewChannelId)
+        elif not useConvNewChannelID:
+            new_channel_obt = self.bot.get_channel(int(newchannelid))
         if new_channel_obt is None:
             self.deviantlogger.info("Could not link with provided newchannelid...sending message to channel")
             await ctx.send(
@@ -939,7 +1221,10 @@ class daCog(commands.Cog):
             return;
         if not new_channel_obt.guild.id == ctx.guild.id:
             return
-        oldchannelid_obt = self.bot.get_channel(int(oldchannelid))
+        if not useConvChannelID:
+            oldchannelid_obt = self.bot.get_channel(int(oldchannelid))
+        elif useConvChannelID:
+            oldchannelid_obt = self.bot.get_channel(int(convChannelId))
         if oldchannelid_obt is None:
             self.deviantlogger.info("Could not link with provided newchannelid...sending message to channel")
             await ctx.send(
@@ -951,8 +1236,9 @@ class daCog(commands.Cog):
         check_listener = self.db_connection.cursor()
         sql = grab_sql("duplicate_check")
         loop = asyncio.get_event_loop()
-        await loop.run_in_executor(ThreadPoolExecutor(), check_listener.execute, sql, (oldchannelid_obt.id, ctx.guild.id,artistname,
-                                                                                       foldername,))
+        await loop.run_in_executor(ThreadPoolExecutor(), check_listener.execute, sql,
+                                   (oldchannelid_obt.id, ctx.guild.id, artistname,
+                                    foldername,))
         check_results = await loop.run_in_executor(ThreadPoolExecutor(), check_listener.fetchall)
         if len(check_results) == 0:
             await ctx.send("Could not find listener. Is this information provided right?")
@@ -960,7 +1246,8 @@ class daCog(commands.Cog):
         sql = grab_sql("update_channel")
         update_cursor = self.db_connection.cursor()
         await loop.run_in_executor(ThreadPoolExecutor(),
-                                   update_cursor.execute, sql,(new_channel_obt.id, oldchannelid_obt.id, foldername, artistname,))
+                                   update_cursor.execute, sql,
+                                   (new_channel_obt.id, oldchannelid_obt.id, foldername, artistname,))
         await loop.run_in_executor(ThreadPoolExecutor(), self.db_connection.commit)
         await ctx.send("Channel Updated!")
         update_cursor.close()
@@ -982,15 +1269,62 @@ class daCog(commands.Cog):
                                                         " If the parameter specified by this message has quotes in "
                                                         "the help command. It means that parameter needs to be surrounded"
                                                         " by quotes. ")
-        elif isinstance(error, psycopg2.OperationalError):
-            ctx.send("Uh oh looks like DeviantCord's database is having issues. This should resolve itself within 5 minutes"
-                     " if this continues contact DeviantCord Support Reference Error code 09")
-            await self.recoverConnection()
-        elif isinstance(error, psycopg2.DatabaseError):
-            ctx.send(
-                "Uh oh looks like DeviantCord's database is having issues. This should resolve itself within 5 minutes"
-                " if this continues contact DeviantCord Support Reference Error code 08")
-            await self.recoverConnection()
+        elif isinstance(error, commands.CommandInvokeError):
+            if isinstance(error.original, psycopg2.DataError):
+                await ctx.send("Uh oh DeviantCord's database refused the data you submitted. Check that the arguments you"
+                               " provided is correct and try again. Otherwise contact DeviantCord support. Error Code 11")
+                self.db_connection.rollback()
+            elif isinstance(error.original, psycopg2.InternalError):
+                await ctx.send(
+                    "Uh oh looks like DeviantCord experienced a database related error. Contact DeviantCord support via"
+                    " the support command. Reference Error Code: 10")
+                self.db_connection.rollback()
+            elif isinstance(error.original, psycopg2.ProgrammingError):
+                ctx.send(
+                    "Uh oh looks like DeviantCord encountered a bug. Please contact DeviantCord Support via the Support command")
+                self.db_connection.rollback()
+            elif isinstance(error.original, psycopg2.IntegrityError):
+                await ctx.send(
+                    "Uh oh DeviantCord's database refused the data you submitted. Check that the arguments you"
+                    " provided is correct and try again. Otherwise contact DeviantCord support. Error Code 11")
+                self.db_connection.rollback()
+            elif isinstance(error.original, psycopg2.OperationalError):
+                ctx.send(
+                    "Uh oh looks like DeviantCord's database is having issues. This should resolve itself within 5 minutes"
+                    " if this continues contact DeviantCord Support Reference Error code 09")
+                await self.recoverConnection()
+            elif isinstance(error.original, psycopg2.DatabaseError):
+                ctx.send(
+                    "Uh oh looks like DeviantCord's database is having issues. If this doesnt resolve itself within 5 min"
+                    " contact DeviantCord Support Reference Error code 08")
+                await self.recoverConnection()
+            elif isinstance(error.original, urllib.error.HTTPError):
+                if error.original.code == 401:
+                    await ctx.send(
+                        "Error: Automatic Token renewal didn't taken place, tokens will renew in 10 minutes, "
+                        "if issues persist past 20 minutes please contact DeviantCord support.")
+                    self.deviantlogger.error("addfolder command returned a HTTP 401, ")
+                    await self.softTokenRenewal()
+                if error.original.code == 503:
+                    self.deviantlogger.error(
+                        ctx.command.name + " returned a HTTP 503, DA Servers are down for maintenance ")
+                    await ctx.send("Error: DA's servers are down for maintenance. Please wait a few minutes");
+                if error.original.code == 500:
+                    self.deviantlogger.error(ctx.command.name + " returned a HTTP 500, Internal Error ")
+                    await ctx.send("DA's servers returned a Error 500 Internal Error. Try again in a few minutes");
+                if error.original.code == 429:
+                    self.deviantlogger.error(ctx.command.name + " returned a HTTP 429, DA API Overloaded ")
+                    await ctx.send("Error: DA API is currently overloaded...please wait for an hour. ")
+                    return 429;
+            with configure_scope() as scope:
+                scope.set_extra("command", ctx.command.name)
+                scope.set_extra("discord-guild", ctx.guild.name)
+                scope.set_extra("guild-id", ctx.guild.id)
+                scope.set_extra("channel-id", ctx.channel.id)
+                scope.set_extra("channel-name", ctx.channel.name)
+                capture_exception(error)
+            self.db_connection.rollback()
+            return
         elif isinstance(error, urllib.error.HTTPError):
             if error.code == 401:
                 await ctx.send(
@@ -1000,10 +1334,10 @@ class daCog(commands.Cog):
                 await self.softTokenRenewal()
             if error.code == 503:
                 self.deviantlogger.error(
-                    ctx.command.name +" returned a HTTP 503, DA Servers are down for maintenance ")
+                    ctx.command.name + " returned a HTTP 503, DA Servers are down for maintenance ")
                 await ctx.send("Error: DA's servers are down for maintenance. Please wait a few minutes");
             if error.code == 500:
-                self.deviantlogger.error( ctx.command.name + " returned a HTTP 500, Internal Error ")
+                self.deviantlogger.error(ctx.command.name + " returned a HTTP 500, Internal Error ")
                 await ctx.send("DA's servers returned a Error 500 Internal Error. Try again in a few minutes");
             if error.code == 429:
                 self.deviantlogger.error(ctx.command.name + " returned a HTTP 429, DA API Overloaded ")
@@ -1042,6 +1376,25 @@ class daCog(commands.Cog):
                 print("Exceeded 3 failed login limit. If this was hit when starting up then you need to check"
                       "your DA info in client.json..Attempting softtokenrenewal ")
                 self.bot.loop.create_task(self.fix_error(1200))
+        if isinstance(context["exception"], psycopg2.DataError):
+            self.db_connection.rollback()
+            self.bot.loop.create_task(self.fix_error(120))
+        elif isinstance(context["exception"], psycopg2.InternalError):
+            self.db_connection.rollback()
+            self.bot.loop.create_task(self.fix_error(120))
+        elif isinstance(context["exception"], psycopg2.ProgrammingError):
+            self.db_connection.rollback()
+            self.bot.loop.create_task(self.fix_error(120))
+        elif isinstance(context["exception"], psycopg2.IntegrityError):
+            self.db_connection.rollback()
+            self.bot.loop.create_task(self.fix_error(120))
+        elif isinstance(context["exception"], psycopg2.OperationalError):
+            self.bot.loop.create_task(self.recoverConnection())
+            self.bot.loop.create_task(self.fix_error(120))
+        elif isinstance(context["exception"], psycopg2.DatabaseError):
+            self.bot.loop.create_task(self.recoverConnection())
+            self.bot.loop.create_task(self.fix_error(120))
+
         if str(context['exception']).find("psycopg2") > -1:
             logger.error("psycopg2 exception encountered")
             self.bot.loop.create_task(self.recoverConnection())
@@ -1075,5 +1428,7 @@ def setup(bot):
 
     @bot.event
     async def on_command_error(ctx, error):
+        if isinstance(error, BadArgument):
+            await ctx.send("Incorrect usage of arguments, use the help command for more information")
         if isinstance(error, CommandNotFound):
             return

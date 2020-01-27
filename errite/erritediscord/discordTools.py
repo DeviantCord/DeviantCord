@@ -24,6 +24,51 @@ import discord
 import traceback
 import psycopg2
 
+async def convertChannelID(channelid:str, ctx):
+    print("Starting convert role")
+    startIndex = channelid.find("#") + 1
+    print("After find")
+    if startIndex == -1:
+        return 0
+    else:
+        endIndex = channelid.find(">")
+        if endIndex == -1:
+            return 0
+        try:
+            int_channelid = int(channelid[startIndex:endIndex])
+        except Exception as ex:
+            return 0
+        convrole = ctx.guild.get_channel(int_channelid)
+        print("Conve")
+        if convrole is None:
+            return 0
+        else:
+            return int_channelid
+
+
+async def convertRoleID(roleid:str, ctx):
+    print("Starting convert role")
+    startIndex = roleid.find("&") + 1
+    print("After find")
+    if startIndex == -1:
+        return 0
+    else:
+        endIndex = roleid.find(">")
+        if endIndex == -1:
+            return 0
+        try:
+            int_roleid = int(roleid[startIndex:endIndex])
+        except Exception as ex:
+            return 0
+        convrole = ctx.guild.get_role(int_roleid)
+        print("Conve")
+        if convrole is None:
+            return 0
+        else:
+            return int_roleid
+
+
+
 async def sendDeviationNotifications(ctx, obt_notifications):
     sent_ids = []
     incorrect_mature = []

@@ -6,6 +6,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## DeviantCord 2
+
+### [bt-2.0.11]
+
+## Improvements
+- You now longer need to use roleids or channelids You can now just mention the channel in arguements
+- Command Error Handler now will properly respond to PostGres related errors involving faulty transactions.
+## Changes
+- All commands that reference a channelid, or roleid can now use their mention equivalent
+- The bot will now acknowledge invalid/missing arguements of any kind with a message.
+
+## Fixes
+- Fixed a crashing bug, for when mentions are used in arguements in the wrong place due to a wrong data type error
+- Fixed issues with checks looking for none instead of an empty list when fetchall in psycopg2 is used
+- Fixed incorrect exception catching with command error handler.
+
 ### [bt-2.0.8]
 
 ## Changes
