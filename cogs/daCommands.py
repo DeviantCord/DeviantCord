@@ -33,6 +33,8 @@ from discord.ext import commands
 import psycopg2
 import psycopg2.errors
 from discord.ext.commands import has_permissions, guild_only, CommandNotFound, BadArgument
+from sentry_sdk.integrations.aiohttp import AioHttpIntegration
+
 import errite.da.daParser as dp
 from errite.deviantcord.timeTools import prefixTimeOutSatisfied
 from errite.psql.taskManager import syncListeners, addtask, addalltask
@@ -125,7 +127,7 @@ class daCog(commands.Cog):
                             use_sentry = configData["sentry-enabled"]
                             if use_sentry:
                                 sentry_url = configData["sentry-url"]
-                                sentry_sdk.init(sentry_url)
+                                sentry_sdk.init(sentry_url, integrations=[AioHttpIntegration()])
                             sensitiveData = json.load(clientjsonFile)
                             configjsonFile.close()
                             clientjsonFile.close()
@@ -488,7 +490,6 @@ class daCog(commands.Cog):
             await ctx.send("The minimum rank required to utilize DeviantCord commands on this server has not been set"
                            " or something is wrong. Someone with Administrator on this server needs to set the minimum"
                            "roleid with the setuprole command. \n setuprole <roleid>")
-            return
         if obtained_prefix is None:
             obtained_prefix = "~"
         glossary = "** __ DeviantCord Glossary__ ** \n **Inverse:** " \
@@ -497,6 +498,7 @@ class daCog(commands.Cog):
                    "folders should be read from the top instead of the bottom.\n" \
                    "** Mature:** - Marked true as to whether Deviations marked as mature on DA should be posted. \n **NOTE:** This includes both" \
                    " mature options Moderate and Strict on DA. Regardless of which one is marked the bot will treat it as mature.\n" \
+                   " RoleID/ChannelID: ID's can be specified as a channel mention or the \n" \
                    "**NOTE:** arguments with quotes around it require quotes when the command is executed and is **Case Sensitive**" \
                    " the artists name and folder need to be exact!\n"
         await ctx.send(glossary)
@@ -673,12 +675,18 @@ class daCog(commands.Cog):
                 await loop.run_in_executor(ThreadPoolExecutor(), self.db_connection.commit)
                 if not ctx.guild.id in self.min_roles:
                     self.min_roles[ctx.guild.id] = {}
-                    self.min_roles[ctx.guild.id]["rank"] = roleid
+                    if not useConvID:
+                        self.min_roles[ctx.guild.id]["rank"] = roleid
+                    elif useConvID:
+                        self.min_roles[ctx.guild.id]["rank"] = convRoleId
                     timestr = datetime.datetime.now()
                     self.min_roles[ctx.guild.id]["last-use"] = timestr
                     self.min_roles["guilds"].append(ctx.guild.id)
                 if ctx.guild.id in self.min_roles:
-                    self.min_roles[ctx.guild.id]["rank"] = roleid
+                    if not useConvID:
+                        self.min_roles[ctx.guild.id]["rank"] = roleid
+                    elif useConvID:
+                        self.min_roles[ctx.guild.id]["rank"] = convRoleId
                     timestr = datetime.datetime.now()
                     self.min_roles[ctx.guild.id]["last-use"] = timestr
                 await ctx.send("Rank has been updated.")
@@ -706,8 +714,11 @@ class daCog(commands.Cog):
         loop = asyncio.get_event_loop()
         await loop.run_in_executor(ThreadPoolExecutor(), list_cursor.execute, sql, (ctx.guild.id,))
         obt_results = await loop.run_in_executor(ThreadPoolExecutor(), list_cursor.fetchall)
-        messages = await createDeviationListString(obt_results, self.bot)
-        await sendListMessage(ctx.message.channel, messages)
+        if not len(obt_results) == 0:
+            messages = await createDeviationListString(obt_results, self.bot)
+            await sendListMessage(ctx.message.channel, messages)
+        else:
+            await ctx.send("You dont currently have any listeners :(")
 
     @commands.command()
     async def deletefolder(self, ctx, artist: str, folder: str, channelid):

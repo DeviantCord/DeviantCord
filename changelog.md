@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## DeviantCord 2
 
+### [bt-2.0.12]
+
+## Improvements
+- Help command was updated to reflect the changes with mentions of ids for roles and channels
+- Sentry now runs with aiohttp
+
+## Fixes
+- Fixed issue with new guilds not being able to access the commands after running setuprole right away 
+due to the list being updated with a string instead of a int.
+- Fixed issue with the help command not showing information when the setuprole was not ran.
+
 ### [bt-2.0.11]
 
 ## Improvements
