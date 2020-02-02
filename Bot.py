@@ -34,6 +34,8 @@ import sentry_sdk
 from logging.handlers import RotatingFileHandler, TimedRotatingFileHandler
 from discord.ext import commands
 from discord.ext.commands import has_permissions
+from sentry_sdk.integrations.aiohttp import AioHttpIntegration
+
 from errite.da.jsonTools import updateprefix, updatelogchannel, update_errite
 from errite.config.configManager import createConfig, createSensitiveConfig
 from errite.tools.mis import fileExists
@@ -45,7 +47,7 @@ from os.path import isfile, join
 
 # DeviantCord Message Variables (Not all are here)
 invalid_cog_errite = "Invalid cog found on reload for discord server "
-print("Starting DeviantCord bt-2.0.11")
+print("Starting DeviantCord bt-2.0.12")
 print("If this causes a HTTP 401 Error when trying to load daCommands your DeviantArt info is wrong. Set it in client.json")
 started = True
 configData = {}
@@ -94,7 +96,7 @@ if passed == True:
                     use_sentry = configData["sentry-enabled"]
                     if use_sentry:
                         sentry_url = configData["sentry-url"]
-                        sentry_sdk.init(sentry_url)
+                        sentry_sdk.init(sentry_url, integrations=[AioHttpIntegration()])
                     sensitiveData = json.load(clientjsonFile)
                     configjsonFile.close()
                     clientjsonFile.close()
