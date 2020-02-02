@@ -436,7 +436,6 @@ class daCog(commands.Cog):
             loop = asyncio.get_event_loop()
             get_cursor = self.db_connection.cursor()
             get_query = "select * from deviantcord.deviation_data"
-            test = int("fuckhalo")
             await loop.run_in_executor(ThreadPoolExecutor(), get_cursor.execute, get_query)
             obt_results = await loop.run_in_executor(ThreadPoolExecutor(), get_cursor.fetchall)
             source_cursor = self.db_connection.cursor()
