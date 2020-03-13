@@ -17,32 +17,34 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -81,18 +83,8 @@
 <li class="toctree-l1"><a class="reference internal" href="botjoin.html">Getting the bot to join your server</a></li>
 <li class="toctree-l1"><a class="reference internal" href="permissions.html">Setting Up Permissions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="addinglisteners.html">Setting Up Listeners</a></li>
-<li class="toctree-l1"><a class="reference internal" href="error-reporting.html">Errite Error Notifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Contacting DeviantCord Support</a></li>
 <li class="toctree-l1"><a class="reference internal" href="additionalinfo.html">Additional Information</a></li>
-</ul>
-<p class="caption"><span class="caption-text">Self Hosting:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="whathost.html">Should I Self Host?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="installpython.html">Setting up DeviantCord</a></li>
-<li class="toctree-l1"><a class="reference internal" href="configure.html">Configuring DeviantCord  (Self Host)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="permissions.html">Setting Up Permissions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="runningbot.html">Running the Bot</a></li>
-<li class="toctree-l1"><a class="reference internal" href="addinglisteners.html">Setting Up Listeners</a></li>
-<li class="toctree-l1"><a class="reference internal" href="choosehost.html">Choosing a host</a></li>
 </ul>
 
             
@@ -164,209 +156,180 @@
 </div>
 <div class="section" id="module-errite.da.daParser">
 <span id="errite-da-daparser-module"></span><h2>errite.da.daParser module<a class="headerlink" href="#module-errite.da.daParser" title="Permalink to this headline">¶</a></h2>
-<p>Copyright 2019 Errite Games LLC / ErriteEpticRikez</p>
-<p>Licensed under the Apache License, Version 2.0 (the “License”);
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at</p>
-<blockquote>
-<div><a class="reference external" href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></div></blockquote>
-<p>Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an “AS IS” BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.</p>
+<p>DeviantCord 2 Discord Bot
+Copyright (C) 2020  Errite Games LLC/ ErriteEpticRikez</p>
+<p>This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.</p>
+<p>This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.</p>
+<p>You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see &lt;<a class="reference external" href="https://www.gnu.org/licenses/">https://www.gnu.org/licenses/</a>&gt;.</p>
 <dl class="function">
 <dt id="errite.da.daParser.checkTokenValid">
-<code class="descclassname">errite.da.daParser.</code><code class="descname">checkTokenValid</code><span class="sig-paren">(</span><em>token</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.checkTokenValid" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.daParser.</code><code class="sig-name descname">checkTokenValid</code><span class="sig-paren">(</span><em class="sig-param">token</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.checkTokenValid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to check if a token is valid, Login tokens on DeviantArt last for 60 minutes.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>token</strong> (<em>string</em>) – The artist’s name that owns the folder.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">int (0 means valid, any other number corresponds with the DeviantArt HTTP Error Code)</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>token</strong> (<em>string</em>) – The artist’s name that owns the folder.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>int (0 means valid, any other number corresponds with the DeviantArt HTTP Error Code)</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="errite.da.daParser.daHasDeviations">
-<code class="descclassname">errite.da.daParser.</code><code class="descname">daHasDeviations</code><span class="sig-paren">(</span><em>artist</em>, <em>accesstoken</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.daHasDeviations" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.daParser.</code><code class="sig-name descname">daHasDeviations</code><span class="sig-paren">(</span><em class="sig-param">artist</em>, <em class="sig-param">accesstoken</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.daHasDeviations" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to check if a an artist has Deviations on DA by checking their Gallery All View.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</li>
-<li><strong>accesstoken</strong> (<em>string</em>) – The name of the gallery folder we are working with. Used for json references</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</p></li>
+<li><p><strong>accesstoken</strong> (<em>string</em>) – The name of the gallery folder we are working with. Used for json references</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">bool</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="errite.da.daParser.findFolderUUID">
-<code class="descclassname">errite.da.daParser.</code><code class="descname">findFolderUUID</code><span class="sig-paren">(</span><em>artist</em>, <em>bool</em>, <em>folder</em>, <em>accesstoken</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.findFolderUUID" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.daParser.</code><code class="sig-name descname">findFolderUUID</code><span class="sig-paren">(</span><em class="sig-param">artist</em>, <em class="sig-param">bool</em>, <em class="sig-param">folder</em>, <em class="sig-param">accesstoken</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.findFolderUUID" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to get the List of Folders from an artist and determine if the folder requested exists.
 If it exists then it returns the UUID
 Returns None if it does not exist.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>artist</strong> (<em>string</em>) – The artist’s name to request the folder’s UUID id’s from</li>
-<li><strong>bool</strong> (<em>bool</em>) – Whether mature folders will show or not.</li>
-<li><strong>folder</strong> (<em>string</em>) – The Exact folder name to grab the UUID of</li>
-<li><strong>accesstoken</strong> (<em>string</em>) – The DA Access token to use for this query</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>artist</strong> (<em>string</em>) – The artist’s name to request the folder’s UUID id’s from</p></li>
+<li><p><strong>bool</strong> (<em>bool</em>) – Whether mature folders will show or not.</p></li>
+<li><p><strong>folder</strong> (<em>string</em>) – The Exact folder name to grab the UUID of</p></li>
+<li><p><strong>accesstoken</strong> (<em>string</em>) – The DA Access token to use for this query</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="errite.da.daParser.getAllFolderArrayResponse">
-<code class="descclassname">errite.da.daParser.</code><code class="descname">getAllFolderArrayResponse</code><span class="sig-paren">(</span><em>artist</em>, <em>bool</em>, <em>accesstoken</em>, <em>offset</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.getAllFolderArrayResponse" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.daParser.</code><code class="sig-name descname">getAllFolderArrayResponse</code><span class="sig-paren">(</span><em class="sig-param">artist</em>, <em class="sig-param">bool</em>, <em class="sig-param">accesstoken</em>, <em class="sig-param">offset</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.getAllFolderArrayResponse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to get the Gallery Folder data all view from deviantart’s API.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>artist</strong> (<em>string</em>) – The artist’s name that owns the folder.</li>
-<li><strong>bool</strong> (<em>bool</em>) – Whether mature folders will show or not.</li>
-<li><strong>accesstoken</strong> (<em>string</em>) – The DA Access token to use for this query</li>
-<li><strong>offset</strong> (<em>int</em>) – The offset value at which to request the gallery folder contents from. The starting value</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>artist</strong> (<em>string</em>) – The artist’s name that owns the folder.</p></li>
+<li><p><strong>bool</strong> (<em>bool</em>) – Whether mature folders will show or not.</p></li>
+<li><p><strong>accesstoken</strong> (<em>string</em>) – The DA Access token to use for this query</p></li>
+<li><p><strong>offset</strong> (<em>int</em>) – The offset value at which to request the gallery folder contents from. The starting value</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="errite.da.daParser.getFolderArrayResponse">
-<code class="descclassname">errite.da.daParser.</code><code class="descname">getFolderArrayResponse</code><span class="sig-paren">(</span><em>artist</em>, <em>bool</em>, <em>folder</em>, <em>accesstoken</em>, <em>offset</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.getFolderArrayResponse" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.daParser.</code><code class="sig-name descname">getFolderArrayResponse</code><span class="sig-paren">(</span><em class="sig-param">artist</em>, <em class="sig-param">bool</em>, <em class="sig-param">folder</em>, <em class="sig-param">accesstoken</em>, <em class="sig-param">offset</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.getFolderArrayResponse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to get the list of folders from an artist from deviantart’s API.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>artist</strong> (<em>string</em>) – The artist’s name that owns the folder.</li>
-<li><strong>bool</strong> (<em>bool</em>) – Whether mature folders will show or not.</li>
-<li><strong>folder</strong> (<em>string</em>) – The Exact folder name to grab the UUID of</li>
-<li><strong>accesstoken</strong> (<em>string</em>) – The DA Access token to use for this query</li>
-<li><strong>offset</strong> (<em>int</em>) – The offset value at which to request the gallery folder contents from. The starting value</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>artist</strong> (<em>string</em>) – The artist’s name that owns the folder.</p></li>
+<li><p><strong>bool</strong> (<em>bool</em>) – Whether mature folders will show or not.</p></li>
+<li><p><strong>folder</strong> (<em>string</em>) – The Exact folder name to grab the UUID of</p></li>
+<li><p><strong>accesstoken</strong> (<em>string</em>) – The DA Access token to use for this query</p></li>
+<li><p><strong>offset</strong> (<em>int</em>) – The offset value at which to request the gallery folder contents from. The starting value</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="errite.da.daParser.getGalleryFolder">
-<code class="descclassname">errite.da.daParser.</code><code class="descname">getGalleryFolder</code><span class="sig-paren">(</span><em>artist</em>, <em>bool</em>, <em>folder</em>, <em>accesstoken</em>, <em>foldername</em>, <em>inverted</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.getGalleryFolder" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.daParser.</code><code class="sig-name descname">getGalleryFolder</code><span class="sig-paren">(</span><em class="sig-param">artist</em>, <em class="sig-param">bool</em>, <em class="sig-param">folder</em>, <em class="sig-param">accesstoken</em>, <em class="sig-param">foldername</em>, <em class="sig-param">inverted</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.getGalleryFolder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to get deviation id’s of new deviations in the folder and returns the new deviation url’s
 in a array.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>artist</strong> (<em>string</em>) – The artist’s name to request the folder’s deviation id’s from</li>
-<li><strong>bool</strong> (<em>bool</em>) – Whether mature images will show or not.</li>
-<li><strong>folder</strong> (<em>string</em>) – The UUID associated with the folder we are grabbing deviations from.</li>
-<li><strong>accesstoken</strong> (<em>string</em>) – The DA Access token to use for this query</li>
-<li><strong>foldername</strong> (<em>string</em>) – The Exact folder name in the artists gallery</li>
-<li><strong>inverted</strong> (<em>bool</em>) – Whether newest deviations are at the top for this folder.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>artist</strong> (<em>string</em>) – The artist’s name to request the folder’s deviation id’s from</p></li>
+<li><p><strong>bool</strong> (<em>bool</em>) – Whether mature images will show or not.</p></li>
+<li><p><strong>folder</strong> (<em>string</em>) – The UUID associated with the folder we are grabbing deviations from.</p></li>
+<li><p><strong>accesstoken</strong> (<em>string</em>) – The DA Access token to use for this query</p></li>
+<li><p><strong>foldername</strong> (<em>string</em>) – The Exact folder name in the artists gallery</p></li>
+<li><p><strong>inverted</strong> (<em>bool</em>) – Whether newest deviations are at the top for this folder.</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="errite.da.daParser.getGalleryFolderArrayResponse">
-<code class="descclassname">errite.da.daParser.</code><code class="descname">getGalleryFolderArrayResponse</code><span class="sig-paren">(</span><em>artist</em>, <em>bool</em>, <em>folder</em>, <em>accesstoken</em>, <em>offset</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.getGalleryFolderArrayResponse" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.daParser.</code><code class="sig-name descname">getGalleryFolderArrayResponse</code><span class="sig-paren">(</span><em class="sig-param">artist</em>, <em class="sig-param">bool</em>, <em class="sig-param">folder</em>, <em class="sig-param">accesstoken</em>, <em class="sig-param">offset</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.getGalleryFolderArrayResponse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to get the Gallery Folder data from deviantart’s API.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>artist</strong> (<em>string</em>) – The artist’s name that owns the folder.</li>
-<li><strong>bool</strong> (<em>bool</em>) – Whether mature folders will show or not.</li>
-<li><strong>folder</strong> (<em>string</em>) – UUID of the folder that data is being grabbed from</li>
-<li><strong>accesstoken</strong> (<em>string</em>) – The DA Access token to use for this query</li>
-<li><strong>offset</strong> (<em>int</em>) – The offset value at which to request the gallery folder contents from. The starting value</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>artist</strong> (<em>string</em>) – The artist’s name that owns the folder.</p></li>
+<li><p><strong>bool</strong> (<em>bool</em>) – Whether mature folders will show or not.</p></li>
+<li><p><strong>folder</strong> (<em>string</em>) – UUID of the folder that data is being grabbed from</p></li>
+<li><p><strong>accesstoken</strong> (<em>string</em>) – The DA Access token to use for this query</p></li>
+<li><p><strong>offset</strong> (<em>int</em>) – The offset value at which to request the gallery folder contents from. The starting value</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="errite.da.daParser.getGalleryFolderFT">
-<code class="descclassname">errite.da.daParser.</code><code class="descname">getGalleryFolderFT</code><span class="sig-paren">(</span><em>artist</em>, <em>bool</em>, <em>folder</em>, <em>accesstoken</em>, <em>foldername</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.getGalleryFolderFT" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.daParser.</code><code class="sig-name descname">getGalleryFolderFT</code><span class="sig-paren">(</span><em class="sig-param">artist</em>, <em class="sig-param">bool</em>, <em class="sig-param">folder</em>, <em class="sig-param">accesstoken</em>, <em class="sig-param">foldername</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.getGalleryFolderFT" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to get the GalleryFolder data devations id’s and populate it into the json file.
 This method in particular is only ran on the first time/when a new folder is added.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>artist</strong> (<em>string</em>) – The artist’s name to request the folder’s deviation id’s from</li>
-<li><strong>bool</strong> (<em>bool</em>) – Whether mature images will show or not.</li>
-<li><strong>folder</strong> (<em>string</em>) – The UUID associated with the folder we are grabbing deviations from.</li>
-<li><strong>accesstoken</strong> (<em>string</em>) – The DA Access token to use for this query</li>
-<li><strong>foldername</strong> (<em>string</em>) – The Exact folder name in the artists gallery</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>artist</strong> (<em>string</em>) – The artist’s name to request the folder’s deviation id’s from</p></li>
+<li><p><strong>bool</strong> (<em>bool</em>) – Whether mature images will show or not.</p></li>
+<li><p><strong>folder</strong> (<em>string</em>) – The UUID associated with the folder we are grabbing deviations from.</p></li>
+<li><p><strong>accesstoken</strong> (<em>string</em>) – The DA Access token to use for this query</p></li>
+<li><p><strong>foldername</strong> (<em>string</em>) – The Exact folder name in the artists gallery</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="errite.da.daParser.getGalleryFolderOLD">
-<code class="descclassname">errite.da.daParser.</code><code class="descname">getGalleryFolderOLD</code><span class="sig-paren">(</span><em>artist</em>, <em>bool</em>, <em>folder</em>, <em>accesstoken</em>, <em>foldername</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.getGalleryFolderOLD" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.daParser.</code><code class="sig-name descname">getGalleryFolderOLD</code><span class="sig-paren">(</span><em class="sig-param">artist</em>, <em class="sig-param">bool</em>, <em class="sig-param">folder</em>, <em class="sig-param">accesstoken</em>, <em class="sig-param">foldername</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.getGalleryFolderOLD" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="errite.da.daParser.getJournalResponse">
-<code class="descclassname">errite.da.daParser.</code><code class="descname">getJournalResponse</code><span class="sig-paren">(</span><em>artist</em>, <em>accesstoken</em>, <em>featuredonly</em>, <em>mature</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.getJournalResponse" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.daParser.</code><code class="sig-name descname">getJournalResponse</code><span class="sig-paren">(</span><em class="sig-param">artist</em>, <em class="sig-param">accesstoken</em>, <em class="sig-param">featuredonly</em>, <em class="sig-param">mature</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.getJournalResponse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to get journal data from the specified artist using deviantart’s API.
 :param artist: The tag that should be searched for.
 :type artist: string
@@ -379,12 +342,12 @@ This method in particular is only ran on the first time/when a new folder is add
 
 <dl class="function">
 <dt id="errite.da.daParser.getJournalsFT">
-<code class="descclassname">errite.da.daParser.</code><code class="descname">getJournalsFT</code><span class="sig-paren">(</span><em>artist</em>, <em>featuredonly</em>, <em>accesstoken</em>, <em>mature</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.getJournalsFT" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.daParser.</code><code class="sig-name descname">getJournalsFT</code><span class="sig-paren">(</span><em class="sig-param">artist</em>, <em class="sig-param">featuredonly</em>, <em class="sig-param">accesstoken</em>, <em class="sig-param">mature</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.getJournalsFT" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="errite.da.daParser.getStatusResponse">
-<code class="descclassname">errite.da.daParser.</code><code class="descname">getStatusResponse</code><span class="sig-paren">(</span><em>artist</em>, <em>accesstoken</em>, <em>mature</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.getStatusResponse" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.daParser.</code><code class="sig-name descname">getStatusResponse</code><span class="sig-paren">(</span><em class="sig-param">artist</em>, <em class="sig-param">accesstoken</em>, <em class="sig-param">mature</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.getStatusResponse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to get status data from the specified artist using deviantart’s API.
 :param artist: The tag that should be searched for.
 :type artist: string
@@ -397,88 +360,76 @@ This method in particular is only ran on the first time/when a new folder is add
 
 <dl class="function">
 <dt id="errite.da.daParser.getToken">
-<code class="descclassname">errite.da.daParser.</code><code class="descname">getToken</code><span class="sig-paren">(</span><em>clientsecret</em>, <em>clientid</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.getToken" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.daParser.</code><code class="sig-name descname">getToken</code><span class="sig-paren">(</span><em class="sig-param">clientsecret</em>, <em class="sig-param">clientid</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.getToken" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to grab a new token from DA and return it, Login tokens on DeviantArt last for 60 minutes.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>clientsecret</strong> (<em>string</em>) – The clientsecret associated with your app registered on DeviantArts Dev Area.</li>
-<li><strong>clientid</strong> (<em>string</em>) – The clientid associated with your app registered on DeviantArts Dev Area.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>clientsecret</strong> (<em>string</em>) – The clientsecret associated with your app registered on DeviantArts Dev Area.</p></li>
+<li><p><strong>clientid</strong> (<em>string</em>) – The clientid associated with your app registered on DeviantArts Dev Area.</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">string</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>string</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="errite.da.daParser.getallFolder">
-<code class="descclassname">errite.da.daParser.</code><code class="descname">getallFolder</code><span class="sig-paren">(</span><em>artist</em>, <em>bool</em>, <em>accesstoken</em>, <em>inverted</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.getallFolder" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.daParser.</code><code class="sig-name descname">getallFolder</code><span class="sig-paren">(</span><em class="sig-param">artist</em>, <em class="sig-param">bool</em>, <em class="sig-param">accesstoken</em>, <em class="sig-param">inverted</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.getallFolder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to get the all view data devations id’s and populate it into the json file.
 This method is different from the getGalleryFolderFT. Designed with Slices in mind
 This method in particular is only ran on the first time/when a new folder is added.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>artist</strong> (<em>string</em>) – The artist’s name to request the folder’s deviation id’s from</li>
-<li><strong>bool</strong> (<em>bool</em>) – Whether mature images will show or not.</li>
-<li><strong>accesstoken</strong> (<em>string</em>) – The DA Access token to use for this query</li>
-<li><strong>inverted</strong> – If the folder is inverted or not.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>artist</strong> (<em>string</em>) – The artist’s name to request the folder’s deviation id’s from</p></li>
+<li><p><strong>bool</strong> (<em>bool</em>) – Whether mature images will show or not.</p></li>
+<li><p><strong>accesstoken</strong> (<em>string</em>) – The DA Access token to use for this query</p></li>
+<li><p><strong>inverted</strong> – If the folder is inverted or not.</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="errite.da.daParser.getallFolderFT">
-<code class="descclassname">errite.da.daParser.</code><code class="descname">getallFolderFT</code><span class="sig-paren">(</span><em>artist</em>, <em>bool</em>, <em>accesstoken</em>, <em>inverted</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.getallFolderFT" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.daParser.</code><code class="sig-name descname">getallFolderFT</code><span class="sig-paren">(</span><em class="sig-param">artist</em>, <em class="sig-param">bool</em>, <em class="sig-param">accesstoken</em>, <em class="sig-param">inverted</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.getallFolderFT" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to get the all view data devations id’s and populate it into the json file.
 This method is different from the getGalleryFolderFT. Designed with Slices in mind
 This method in particular is only ran on the first time/when a new folder is added.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>artist</strong> (<em>string</em>) – The artist’s name to request the folder’s deviation id’s from</li>
-<li><strong>bool</strong> (<em>bool</em>) – Whether mature images will show or not.</li>
-<li><strong>accesstoken</strong> (<em>string</em>) – The DA Access token to use for this query</li>
-<li><strong>inverted</strong> – If the folder is inverted or not.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>artist</strong> (<em>string</em>) – The artist’s name to request the folder’s deviation id’s from</p></li>
+<li><p><strong>bool</strong> (<em>bool</em>) – Whether mature images will show or not.</p></li>
+<li><p><strong>accesstoken</strong> (<em>string</em>) – The DA Access token to use for this query</p></li>
+<li><p><strong>inverted</strong> – If the folder is inverted or not.</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="errite.da.daParser.getstatusFT">
-<code class="descclassname">errite.da.daParser.</code><code class="descname">getstatusFT</code><span class="sig-paren">(</span><em>artist</em>, <em>featuredonly</em>, <em>accesstoken</em>, <em>mature</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.getstatusFT" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.daParser.</code><code class="sig-name descname">getstatusFT</code><span class="sig-paren">(</span><em class="sig-param">artist</em>, <em class="sig-param">featuredonly</em>, <em class="sig-param">accesstoken</em>, <em class="sig-param">mature</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.getstatusFT" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="errite.da.daParser.refindFolderUUID">
-<code class="descclassname">errite.da.daParser.</code><code class="descname">refindFolderUUID</code><span class="sig-paren">(</span><em>artist</em>, <em>bool</em>, <em>folder</em>, <em>accesstoken</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.refindFolderUUID" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.daParser.</code><code class="sig-name descname">refindFolderUUID</code><span class="sig-paren">(</span><em class="sig-param">artist</em>, <em class="sig-param">bool</em>, <em class="sig-param">folder</em>, <em class="sig-param">accesstoken</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.refindFolderUUID" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="errite.da.daParser.searchResponse">
-<code class="descclassname">errite.da.daParser.</code><code class="descname">searchResponse</code><span class="sig-paren">(</span><em>tag</em>, <em>accesstoken</em>, <em>mature</em>, <em>offset</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.searchResponse" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.daParser.</code><code class="sig-name descname">searchResponse</code><span class="sig-paren">(</span><em class="sig-param">tag</em>, <em class="sig-param">accesstoken</em>, <em class="sig-param">mature</em>, <em class="sig-param">offset</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.searchResponse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to get data for deviations with the provided tag from deviantart’s API.
 :param tag: The tag that should be searched for.
 :type tag: string
@@ -493,7 +444,7 @@ This method in particular is only ran on the first time/when a new folder is add
 
 <dl class="function">
 <dt id="errite.da.daParser.tagSearchResponse">
-<code class="descclassname">errite.da.daParser.</code><code class="descname">tagSearchResponse</code><span class="sig-paren">(</span><em>tag</em>, <em>accesstoken</em>, <em>mature</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.tagSearchResponse" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.daParser.</code><code class="sig-name descname">tagSearchResponse</code><span class="sig-paren">(</span><em class="sig-param">tag</em>, <em class="sig-param">accesstoken</em>, <em class="sig-param">mature</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.tagSearchResponse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to get the tagsearch for similiar tags from deviantart’s API.
 :param tag: The tag that should be searched for.
 :type tag: string
@@ -507,7 +458,7 @@ This method in particular is only ran on the first time/when a new folder is add
 
 <dl class="function">
 <dt id="errite.da.daParser.userInfoResponse">
-<code class="descclassname">errite.da.daParser.</code><code class="descname">userInfoResponse</code><span class="sig-paren">(</span><em>username</em>, <em>accesstoken</em>, <em>mature</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.userInfoResponse" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.daParser.</code><code class="sig-name descname">userInfoResponse</code><span class="sig-paren">(</span><em class="sig-param">username</em>, <em class="sig-param">accesstoken</em>, <em class="sig-param">mature</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.daParser.userInfoResponse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to get the tagsearch for similiar tags from deviantart’s API.
 :param tag: The tag that should be searched for.
 :type tag: string
@@ -522,346 +473,308 @@ This method in particular is only ran on the first time/when a new folder is add
 </div>
 <div class="section" id="module-errite.da.debugJsonTools">
 <span id="errite-da-debugjsontools-module"></span><h2>errite.da.debugJsonTools module<a class="headerlink" href="#module-errite.da.debugJsonTools" title="Permalink to this headline">¶</a></h2>
+<p>DeviantCord 2 Discord Bot
+Copyright (C) 2020  Errite Games LLC/ ErriteEpticRikez</p>
+<p>This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.</p>
+<p>This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.</p>
+<p>You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see &lt;<a class="reference external" href="https://www.gnu.org/licenses/">https://www.gnu.org/licenses/</a>&gt;.</p>
 </div>
 <div class="section" id="module-errite.da.jsonTools">
 <span id="errite-da-jsontools-module"></span><h2>errite.da.jsonTools module<a class="headerlink" href="#module-errite.da.jsonTools" title="Permalink to this headline">¶</a></h2>
+<p>DeviantCord 2 Discord Bot
+Copyright (C) 2020  Errite Games LLC/ ErriteEpticRikez</p>
+<p>This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.</p>
+<p>This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.</p>
+<p>You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see &lt;<a class="reference external" href="https://www.gnu.org/licenses/">https://www.gnu.org/licenses/</a>&gt;.</p>
 <dl class="function">
 <dt id="errite.da.jsonTools.allartistExists">
-<code class="descclassname">errite.da.jsonTools.</code><code class="descname">allartistExists</code><span class="sig-paren">(</span><em>artist</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.allartistExists" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.jsonTools.</code><code class="sig-name descname">allartistExists</code><span class="sig-paren">(</span><em class="sig-param">artist</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.allartistExists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to check if an allartist is already in the ArtData json file.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">bool</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="errite.da.jsonTools.artistExists">
-<code class="descclassname">errite.da.jsonTools.</code><code class="descname">artistExists</code><span class="sig-paren">(</span><em>artist</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.artistExists" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.jsonTools.</code><code class="sig-name descname">artistExists</code><span class="sig-paren">(</span><em class="sig-param">artist</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.artistExists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to check if a artist is already in the ArtData json file.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">bool</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="errite.da.jsonTools.createArtistData">
-<code class="descclassname">errite.da.jsonTools.</code><code class="descname">createArtistData</code><span class="sig-paren">(</span><em>artist</em>, <em>folderid</em>, <em>foldername</em>, <em>channelid</em>, <em>inverted</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.createArtistData" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.jsonTools.</code><code class="sig-name descname">createArtistData</code><span class="sig-paren">(</span><em class="sig-param">artist</em>, <em class="sig-param">folderid</em>, <em class="sig-param">foldername</em>, <em class="sig-param">channelid</em>, <em class="sig-param">inverted</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.createArtistData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to create a new artist in the ArtData json file.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</li>
-<li><strong>folderid</strong> (<em>string</em>) – The UUID of the folder that we are adding to the ArtData json file</li>
-<li><strong>foldername</strong> (<em>string</em>) – The name of the gallery folder we are working with. Used for json references</li>
-<li><strong>channelid</strong> (<em>int</em>) – The Discord channelid that notifications will be posted to.</li>
-<li><strong>inverted</strong> – Whether the newest deviations are posted at the top.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</p></li>
+<li><p><strong>folderid</strong> (<em>string</em>) – The UUID of the folder that we are adding to the ArtData json file</p></li>
+<li><p><strong>foldername</strong> (<em>string</em>) – The name of the gallery folder we are working with. Used for json references</p></li>
+<li><p><strong>channelid</strong> (<em>int</em>) – The Discord channelid that notifications will be posted to.</p></li>
+<li><p><strong>inverted</strong> – Whether the newest deviations are posted at the top.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="errite.da.jsonTools.createArtistDataAll">
-<code class="descclassname">errite.da.jsonTools.</code><code class="descname">createArtistDataAll</code><span class="sig-paren">(</span><em>artist</em>, <em>channelid</em>, <em>inverted</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.createArtistDataAll" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.jsonTools.</code><code class="sig-name descname">createArtistDataAll</code><span class="sig-paren">(</span><em class="sig-param">artist</em>, <em class="sig-param">channelid</em>, <em class="sig-param">inverted</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.createArtistDataAll" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to create a new artist in the ArtData json file. With no new folder, but an allfolder only</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</li>
-<li><strong>channelid</strong> (<em>int</em>) – The Discord channelid that notifications will be posted to.</li>
-<li><strong>inverted</strong> – Whether the newest deviations are posted at the top.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</p></li>
+<li><p><strong>channelid</strong> (<em>int</em>) – The Discord channelid that notifications will be posted to.</p></li>
+<li><p><strong>inverted</strong> – Whether the newest deviations are posted at the top.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="errite.da.jsonTools.createFolderData">
-<code class="descclassname">errite.da.jsonTools.</code><code class="descname">createFolderData</code><span class="sig-paren">(</span><em>artist</em>, <em>folderid</em>, <em>foldername</em>, <em>channelid</em>, <em>inverted</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.createFolderData" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.jsonTools.</code><code class="sig-name descname">createFolderData</code><span class="sig-paren">(</span><em class="sig-param">artist</em>, <em class="sig-param">folderid</em>, <em class="sig-param">foldername</em>, <em class="sig-param">channelid</em>, <em class="sig-param">inverted</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.createFolderData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to create a new folder to an existing artist in the ArtData json file.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</li>
-<li><strong>folderid</strong> (<em>string</em>) – The UUID of the folder that we are adding to the ArtData json file</li>
-<li><strong>foldername</strong> (<em>string</em>) – The name of the gallery folder we are working with. Used for json references</li>
-<li><strong>channelid</strong> (<em>int</em>) – The Discord channelid that notifications will be posted to.</li>
-<li><strong>inverted</strong> – Whether the newest deviations are posted at the top.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</p></li>
+<li><p><strong>folderid</strong> (<em>string</em>) – The UUID of the folder that we are adding to the ArtData json file</p></li>
+<li><p><strong>foldername</strong> (<em>string</em>) – The name of the gallery folder we are working with. Used for json references</p></li>
+<li><p><strong>channelid</strong> (<em>int</em>) – The Discord channelid that notifications will be posted to.</p></li>
+<li><p><strong>inverted</strong> – Whether the newest deviations are posted at the top.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="errite.da.jsonTools.delAllFolder">
-<code class="descclassname">errite.da.jsonTools.</code><code class="descname">delAllFolder</code><span class="sig-paren">(</span><em>artist</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.delAllFolder" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.jsonTools.</code><code class="sig-name descname">delAllFolder</code><span class="sig-paren">(</span><em class="sig-param">artist</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.delAllFolder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to delete a folder in the ArtData json file.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="errite.da.jsonTools.delfolder">
-<code class="descclassname">errite.da.jsonTools.</code><code class="descname">delfolder</code><span class="sig-paren">(</span><em>artist</em>, <em>folder</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.delfolder" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.jsonTools.</code><code class="sig-name descname">delfolder</code><span class="sig-paren">(</span><em class="sig-param">artist</em>, <em class="sig-param">folder</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.delfolder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to delete a folder in the ArtData json file.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</li>
-<li><strong>foldername</strong> (<em>string</em>) – The name of the gallery folder we are working with. Used for json references</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</p></li>
+<li><p><strong>foldername</strong> (<em>string</em>) – The name of the gallery folder we are working with. Used for json references</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">bool</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="errite.da.jsonTools.dumpURLListDebug">
-<code class="descclassname">errite.da.jsonTools.</code><code class="descname">dumpURLListDebug</code><span class="sig-paren">(</span><em>list</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.dumpURLListDebug" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.jsonTools.</code><code class="sig-name descname">dumpURLListDebug</code><span class="sig-paren">(</span><em class="sig-param">list</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.dumpURLListDebug" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="errite.da.jsonTools.findDuplicateElementArray">
-<code class="descclassname">errite.da.jsonTools.</code><code class="descname">findDuplicateElementArray</code><span class="sig-paren">(</span><em>array</em>, <em>element</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.findDuplicateElementArray" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.jsonTools.</code><code class="sig-name descname">findDuplicateElementArray</code><span class="sig-paren">(</span><em class="sig-param">array</em>, <em class="sig-param">element</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.findDuplicateElementArray" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to check if a Deviation UUID is already in the array.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>array</strong> – The array that holds the current processed uuids for the particular artist</li>
-<li><strong>element</strong> (<em>string</em>) – The UUID we are comparing with the JSON file.</li>
-<li><strong>artist</strong> (<em>string</em>) – UNUSED TO BE REMOVED The name of the artist who’s deviations we are working with. This is needed for json references</li>
-<li><strong>foldername</strong> (<em>string</em>) – May be reused: The name of the gallery folder we are working with. Used for json references</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> – The array that holds the current processed uuids for the particular artist</p></li>
+<li><p><strong>element</strong> (<em>string</em>) – The UUID we are comparing with the JSON file.</p></li>
+<li><p><strong>artist</strong> (<em>string</em>) – UNUSED TO BE REMOVED The name of the artist who’s deviations we are working with. This is needed for json references</p></li>
+<li><p><strong>foldername</strong> (<em>string</em>) – May be reused: The name of the gallery folder we are working with. Used for json references</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">bool</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="errite.da.jsonTools.findDuplicateJsonElementGallery">
-<code class="descclassname">errite.da.jsonTools.</code><code class="descname">findDuplicateJsonElementGallery</code><span class="sig-paren">(</span><em>file</em>, <em>element</em>, <em>artist</em>, <em>foldername</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.findDuplicateJsonElementGallery" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.jsonTools.</code><code class="sig-name descname">findDuplicateJsonElementGallery</code><span class="sig-paren">(</span><em class="sig-param">file</em>, <em class="sig-param">element</em>, <em class="sig-param">artist</em>, <em class="sig-param">foldername</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.findDuplicateJsonElementGallery" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to check if a Deviation UUID is already in the ArtData json file.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>file</strong> (<em>string</em>) – UNUSED The name of the json file that would be used to compare the provided UUID with existing UUID’s</li>
-<li><strong>element</strong> (<em>string</em>) – The UUID we are comparing with the JSON file.</li>
-<li><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</li>
-<li><strong>foldername</strong> (<em>string</em>) – The name of the gallery folder we are working with. Used for json references</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file</strong> (<em>string</em>) – UNUSED The name of the json file that would be used to compare the provided UUID with existing UUID’s</p></li>
+<li><p><strong>element</strong> (<em>string</em>) – The UUID we are comparing with the JSON file.</p></li>
+<li><p><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</p></li>
+<li><p><strong>foldername</strong> (<em>string</em>) – The name of the gallery folder we are working with. Used for json references</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">bool</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="errite.da.jsonTools.folderExists">
-<code class="descclassname">errite.da.jsonTools.</code><code class="descname">folderExists</code><span class="sig-paren">(</span><em>artist</em>, <em>foldername</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.folderExists" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.jsonTools.</code><code class="sig-name descname">folderExists</code><span class="sig-paren">(</span><em class="sig-param">artist</em>, <em class="sig-param">foldername</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.folderExists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to check if a folder is already in the ArtData json file.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</li>
-<li><strong>foldername</strong> (<em>string</em>) – The name of the gallery folder we are working with. Used for json references</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</p></li>
+<li><p><strong>foldername</strong> (<em>string</em>) – The name of the gallery folder we are working with. Used for json references</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">bool</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="errite.da.jsonTools.hasAllFolder">
-<code class="descclassname">errite.da.jsonTools.</code><code class="descname">hasAllFolder</code><span class="sig-paren">(</span><em>artist</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.hasAllFolder" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.jsonTools.</code><code class="sig-name descname">hasAllFolder</code><span class="sig-paren">(</span><em class="sig-param">artist</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.hasAllFolder" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="errite.da.jsonTools.localFoldersExists">
-<code class="descclassname">errite.da.jsonTools.</code><code class="descname">localFoldersExists</code><span class="sig-paren">(</span><em>dictionary</em>, <em>artist</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.localFoldersExists" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.jsonTools.</code><code class="sig-name descname">localFoldersExists</code><span class="sig-paren">(</span><em class="sig-param">dictionary</em>, <em class="sig-param">artist</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.localFoldersExists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to check if there are folders already in the ArtData json file.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">bool</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="errite.da.jsonTools.updateDiscordChannel">
-<code class="descclassname">errite.da.jsonTools.</code><code class="descname">updateDiscordChannel</code><span class="sig-paren">(</span><em>artist</em>, <em>foldername</em>, <em>newchannelid</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.updateDiscordChannel" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.jsonTools.</code><code class="sig-name descname">updateDiscordChannel</code><span class="sig-paren">(</span><em class="sig-param">artist</em>, <em class="sig-param">foldername</em>, <em class="sig-param">newchannelid</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.updateDiscordChannel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to update a listeners discord channel id in the ArtData json file.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</li>
-<li><strong>foldername</strong> (<em>string</em>) – The name of the gallery folder we are working with. Used for json references</li>
-<li><strong>newchannelid</strong> (<em>int</em>) – The Discord channelid that notifications will be posted to.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</p></li>
+<li><p><strong>foldername</strong> (<em>string</em>) – The name of the gallery folder we are working with. Used for json references</p></li>
+<li><p><strong>newchannelid</strong> (<em>int</em>) – The Discord channelid that notifications will be posted to.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="errite.da.jsonTools.updateRole">
-<code class="descclassname">errite.da.jsonTools.</code><code class="descname">updateRole</code><span class="sig-paren">(</span><em>roleid</em>, <em>guildid</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.updateRole" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.jsonTools.</code><code class="sig-name descname">updateRole</code><span class="sig-paren">(</span><em class="sig-param">roleid</em>, <em class="sig-param">guildid</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.updateRole" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to update the role that commands check for to make sure a user is authorized.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>roleid</strong> (<em>int</em>) – The roleid that will become the central role to the bot.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>roleid</strong> (<em>int</em>) – The roleid that will become the central role to the bot.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="errite.da.jsonTools.update_errite">
-<code class="descclassname">errite.da.jsonTools.</code><code class="descname">update_errite</code><span class="sig-paren">(</span><em>property</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.update_errite" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.jsonTools.</code><code class="sig-name descname">update_errite</code><span class="sig-paren">(</span><em class="sig-param">property</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.update_errite" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to toggle the errite property in the config.json file.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</li>
-<li><strong>foldername</strong> (<em>string</em>) – The name of the gallery folder we are working with. Used for json references</li>
-<li><strong>hybrid</strong> (<em>bool</em>) – The value the new hybrid should be in the Json file</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</p></li>
+<li><p><strong>foldername</strong> (<em>string</em>) – The name of the gallery folder we are working with. Used for json references</p></li>
+<li><p><strong>hybrid</strong> (<em>bool</em>) – The value the new hybrid should be in the Json file</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="errite.da.jsonTools.updatehybridproperty">
-<code class="descclassname">errite.da.jsonTools.</code><code class="descname">updatehybridproperty</code><span class="sig-paren">(</span><em>artist</em>, <em>foldername</em>, <em>hybrid</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.updatehybridproperty" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.jsonTools.</code><code class="sig-name descname">updatehybridproperty</code><span class="sig-paren">(</span><em class="sig-param">artist</em>, <em class="sig-param">foldername</em>, <em class="sig-param">hybrid</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.updatehybridproperty" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to update a listeners discord channel id in the ArtData json file.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</li>
-<li><strong>foldername</strong> (<em>string</em>) – The name of the gallery folder we are working with. Used for json references</li>
-<li><strong>hybrid</strong> (<em>bool</em>) – The value the new hybrid should be in the Json file</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</p></li>
+<li><p><strong>foldername</strong> (<em>string</em>) – The name of the gallery folder we are working with. Used for json references</p></li>
+<li><p><strong>hybrid</strong> (<em>bool</em>) – The value the new hybrid should be in the Json file</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="errite.da.jsonTools.updateinverseproperty">
-<code class="descclassname">errite.da.jsonTools.</code><code class="descname">updateinverseproperty</code><span class="sig-paren">(</span><em>artist</em>, <em>foldername</em>, <em>inverse</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.updateinverseproperty" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.jsonTools.</code><code class="sig-name descname">updateinverseproperty</code><span class="sig-paren">(</span><em class="sig-param">artist</em>, <em class="sig-param">foldername</em>, <em class="sig-param">inverse</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.updateinverseproperty" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to update a listeners discord channel id in the ArtData json file.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</li>
-<li><strong>foldername</strong> (<em>string</em>) – The name of the gallery folder we are working with. Used for json references</li>
-<li><strong>inverse</strong> (<em>bool</em>) – The value the new inverse should be in the Json file</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>artist</strong> (<em>string</em>) – The name of the artist who’s deviations we are working with. This is needed for json references</p></li>
+<li><p><strong>foldername</strong> (<em>string</em>) – The name of the gallery folder we are working with. Used for json references</p></li>
+<li><p><strong>inverse</strong> (<em>bool</em>) – The value the new inverse should be in the Json file</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="errite.da.jsonTools.updatelogchannel">
-<code class="descclassname">errite.da.jsonTools.</code><code class="descname">updatelogchannel</code><span class="sig-paren">(</span><em>channelid</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.updatelogchannel" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.jsonTools.</code><code class="sig-name descname">updatelogchannel</code><span class="sig-paren">(</span><em class="sig-param">channelid</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.updatelogchannel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to update the logchannelid handles debug logging.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>channelid</strong> (<em>int</em>) – The roleid that will become the central role to the bot.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>channelid</strong> (<em>int</em>) – The roleid that will become the central role to the bot.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="errite.da.jsonTools.updateprefix">
-<code class="descclassname">errite.da.jsonTools.</code><code class="descname">updateprefix</code><span class="sig-paren">(</span><em>prefix</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.updateprefix" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">errite.da.jsonTools.</code><code class="sig-name descname">updateprefix</code><span class="sig-paren">(</span><em class="sig-param">prefix</em><span class="sig-paren">)</span><a class="headerlink" href="#errite.da.jsonTools.updateprefix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method ran to update the prefix that commands use check for to make sure a user is authorized.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>prefix</strong> (<em>string</em>) – The new prefix that will replace the old one</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>prefix</strong> (<em>string</em>) – The new prefix that will replace the old one</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -898,26 +811,16 @@ This method in particular is only ran on the first time/when a new folder is add
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

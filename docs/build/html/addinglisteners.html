@@ -17,34 +17,36 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Errite Error Notifier" href="error-reporting.html" />
+    <link rel="next" title="Contacting DeviantCord Support" href="support.html" />
     <link rel="prev" title="Setting Up Permissions" href="permissions.html" /> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -85,36 +87,16 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Setting Up Listeners</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#things-to-note">Things to Note:</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#folder-properties">Folder Properties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#designating-channels">Designating channels</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#correct-arguments">Correct Arguments</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#removing-folders">Removing Folders</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#discord-developer-mode">Discord Developer Mode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#credits">Credits</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="error-reporting.html">Errite Error Notifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Contacting DeviantCord Support</a></li>
 <li class="toctree-l1"><a class="reference internal" href="additionalinfo.html">Additional Information</a></li>
-</ul>
-<p class="caption"><span class="caption-text">Self Hosting:</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="whathost.html">Should I Self Host?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="installpython.html">Setting up DeviantCord</a></li>
-<li class="toctree-l1"><a class="reference internal" href="configure.html">Configuring DeviantCord  (Self Host)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="permissions.html">Setting Up Permissions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="runningbot.html">Running the Bot</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Setting Up Listeners</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#things-to-note">Things to Note:</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#folder-properties">Folder Properties</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#correct-arguments">Correct Arguments</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#removing-folders">Removing Folders</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#discord-developer-mode">Discord Developer Mode</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#credits">Credits</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="choosehost.html">Choosing a host</a></li>
 </ul>
 
             
@@ -181,43 +163,65 @@
             
   <div class="section" id="setting-up-listeners">
 <h1>Setting Up Listeners<a class="headerlink" href="#setting-up-listeners" title="Permalink to this headline">¶</a></h1>
-<p>There are two commands in DeviantCord that adds listeners that check gallery folders for new deviations.
-Each command is associated with the type of folder. However this page aims to clear misconceptions with configuring listeners.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>DeviantCord’s default prefix is ~</p>
+</div>
+<p>Listeners are what DeviantCord uses to check for new Deviations (the term DeviantArt uses for new postings).
+On DeviantArt all Deviations are put into a folder by an artist.</p>
+<p>However, there are a few things you should note.</p>
 <div class="section" id="things-to-note">
 <h2>Things to Note:<a class="headerlink" href="#things-to-note" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To view your current listners you can use the listfolder command</p>
+</div>
 <ul class="simple">
-<li>The bot needs Exact Foldernames (Case Sensitive)</li>
-<li>The bot needs the artists name exactly (Not Case Sensitive)</li>
-<li>Artist Username should be in quotes</li>
-<li>Folder name should be in quotes</li>
-<li>The addallfolder. Adds the artists All Folder. Meaning the listener will post notifications regarding any deviations</li>
+<li><p>Once you create a listener, the bot will only see it exactly as you specified it at the listeners creation.</p></li>
 </ul>
-<p>the artist posts.
-* The addfolder command adds a listener that will post notifications of new deviations in that folder only.</p>
-<p>An example of an inverted gallery can be seen <a class="reference external" href="https://www.deviantart.com/pkm-150/gallery/58231950/Eeveelution-Squad">here</a></p>
+<p>(Ex: You create a listener for the the Eeveelution Squad folder and specify the foldername as “Eeveelution Squad”
+but when you try to update the listener, you accidently refer to it in commands as “EeVeelution Squad”.
+the bot will not recognize it. The foldername and artist name must be exact.</p>
+<ul class="simple">
+<li><p>The same goes for Artist Names as specified above regarding foldernames.</p></li>
+<li><p>Folder names, and artistnames should be in quotes</p></li>
+<li><p>The addallfolder command, adds the artists All Folder on DeviantArt. Meaning the listener will post notifications regarding any deviations the artist posts.</p></li>
+<li><p>The addfolder command adds a listener that will post notifications of new deviations in that folder only.</p></li>
+</ul>
 <div class="section" id="folder-properties">
 <h3>Folder Properties<a class="headerlink" href="#folder-properties" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">As of version bt-2.0.0, the inverse arguement no longer will automatically apply hybrid to true.</p>
-</div>
+<p>Artists can choose where in the folder they place their deviations at. Some put their newest deviations at the top,
+while some post it to the bottom. DeviantCord cannot automatically detect whether artists post their newer deviations
+at the top, or bottom.</p>
+<p>To solve this, DeviantCord uses Folder Properties that server staff use to designate where deviations need to be found
+and whether to filter certain content.</p>
+<p>You will use these properties with the addfolder and addallfolder command and answer the properties as either true or false</p>
+<p><strong>Properties</strong></p>
 <ul>
-<li><p class="first">Inverse: Listeners that should only check for new deviations at the top of the folder</p>
-</li>
-<li><p class="first">Hybrid: Listeners that should also check for the opposite of what inverse is set to</p>
+<li><p>Inverse: Listeners that should only check for new deviations at the top of the folder</p></li>
+<li><p>Hybrid: Listeners that should also check for the opposite of what inverse is set to</p>
 <blockquote>
-<div><p>ex: Inverse is set to true and hybrid is set to true. Meaning the bottom deviations will also be checked</p>
+<div><p>Example: Inverse is set to true and hybrid is set to true. Due to Hybrid being true
+the bottom deviations will also be checked.</p>
 </div></blockquote>
 </li>
-<li><p class="first">Mature: Whether Deviations flagged as mature in DeviantArt should be posted.</p>
-</li>
+<li><p>Mature: Whether Deviations flagged as mature in DeviantArt should be posted. If you set this flag to true</p></li>
 </ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If your listener has the mature property set to true. The channel must be set to NSFW. Per Discord’s ToS</p>
+</div>
+</div>
+<div class="section" id="designating-channels">
+<h3>Designating channels<a class="headerlink" href="#designating-channels" title="Permalink to this headline">¶</a></h3>
+<p>In any commands for DeviantCord referring to TextChannels, you just mention it like below</p>
+<p>Ex: #general</p>
 </div>
 <div class="section" id="correct-arguments">
 <h3>Correct Arguments<a class="headerlink" href="#correct-arguments" title="Permalink to this headline">¶</a></h3>
-<p>For Example with the addfolder and addallfolder command it is :</p>
-<p>~addfolder <em>&lt;artist_username&gt;</em> <em>&lt;folder&gt;</em> <em>&lt;channel_id&gt;</em> <em>&lt;inverted&gt;</em> <em>&lt;hybrid&gt;</em> <em>&lt;mature&gt;</em></p>
-<p>~addallfolder <em>&lt;artist_username&gt;</em> <em>&lt;channelid&gt;</em> <em>&lt;mature&gt;</em></p>
+<p>The Help command says that the usage for the addfolder and addallfolder commmand is :</p>
+<p>~addfolder <em>&lt;artist_username&gt;</em> <em>&lt;folder&gt;</em> #channelname <em>&lt;inverted&gt;</em> <em>&lt;hybrid&gt;</em> <em>&lt;mature&gt;</em></p>
+<p>~addallfolder <em>&lt;artist_username&gt;</em> #channelname <em>&lt;mature&gt;</em></p>
 <p>If we looked at an artists page, such as the one below</p>
 <img alt="_images/SettingUp.PNG" src="_images/SettingUp.PNG" />
 <p><em>Example image from Zander-The-Artist (With Permission) see his work</em> <a class="reference external" href="https://www.deviantart.com/zander-the-artist">here</a></p>
@@ -226,10 +230,8 @@ Each command is associated with the type of folder. However this page aims to cl
 <p>The artist username field should be the same as the yellow highlighted area in the picture above.</p>
 <p>The folder field for the Hope in Friends Comic folder should be the exactly what it is in the sidebar on the left.
 In this case the folder for the comic Hope In Friends should be “Hope In Friends Comic” not “Hope in Friends”</p>
-<p>$addartist “zander-the-artist” “Hope In Friends Comic” <em>&lt;channel_id&gt;</em> false false true</p>
-<p><em>Inverted in this case would be false, but it depends on what artist and what folder</em>
-<em>Hybrid could be set to true or false in this case. If the artist has been known to accidently leave Deviations out of order</em>
-<em>Mature can be set to your liking, again it depends on the what the folder typically contains</em></p>
+<p>To add this folder we would use the following (replacing channelname with the text channel you want to use
+~addartist “zander-the-artist” “Hope In Friends Comic” #channelname false false false</p>
 </div>
 <div class="section" id="removing-folders">
 <h3>Removing Folders<a class="headerlink" href="#removing-folders" title="Permalink to this headline">¶</a></h3>
@@ -239,10 +241,10 @@ read it first.</p>
 done to prevent accidentally deleting a whole artist from the folder as multiple folders can be stored under an artist.</p>
 <p>As a result you can only delete one listener at a time.
 The command is as follows</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">~</span><span class="n">deletefolder</span> <span class="o">&lt;</span><span class="n">artist_username</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">folder</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">channelid</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">~</span><span class="n">deletefolder</span> <span class="o">&lt;</span><span class="n">artist_username</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">folder</span><span class="o">&gt;</span> <span class="c1">#channelname</span>
 </pre></div>
 </div>
-<p>This will delete the folder from the artist.json file and no more notifications will be posted to Discord for that folder
+<p>This will delete the listener from the database and no more notifications will be posted to Discord for that folder
 unless you readd it.</p>
 <p>Additionally if you are having trouble remembering what folders are currently being listened for new deviations you can
 use the listfolders command</p>
@@ -250,16 +252,6 @@ use the listfolders command</p>
 </pre></div>
 </div>
 </div>
-</div>
-<div class="section" id="discord-developer-mode">
-<h2>Discord Developer Mode<a class="headerlink" href="#discord-developer-mode" title="Permalink to this headline">¶</a></h2>
-<p>Discord Developer Mode is required in order to get text channel id’s,
-you will need to enable it by clicking the gear icon near your name</p>
-<img alt="_images/discordprofile.png" src="_images/discordprofile.png" />
-<p>Once you get into that menu click the Appearance Tab</p>
-<img alt="_images/appearance.png" src="_images/appearance.png" />
-<p>then scroll down to the bottom and enable Developer Mode.</p>
-<img alt="_images/developermode.png" src="_images/developermode.png" />
 </div>
 <div class="section" id="credits">
 <h2>Credits<a class="headerlink" href="#credits" title="Permalink to this headline">¶</a></h2>
@@ -276,10 +268,10 @@ You can see his outstanding comic Hope in Friends <a class="reference external" 
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="error-reporting.html" class="btn btn-neutral float-right" title="Errite Error Notifier" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="support.html" class="btn btn-neutral float-right" title="Contacting DeviantCord Support" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="permissions.html" class="btn btn-neutral" title="Setting Up Permissions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="permissions.html" class="btn btn-neutral float-left" title="Setting Up Permissions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -305,26 +297,16 @@ You can see his outstanding comic Hope in Friends <a class="reference external" 
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>
