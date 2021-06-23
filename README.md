@@ -26,7 +26,7 @@ DeviantCord currently is developed with Python 3.6, versions below are not suppo
 More questions can be seen in the documentation!
 
 # Credits
-- [@deviantart](https://github.com/DeviantArt) for developing the DeviantArt and Sta.ch API
+- [@deviantart](https://github.com/DeviantArt) for developing the DeviantArt and Sta.sh API
 - [@haloman30](https://github.com/haloman30) for creating the DeviantCord logo and giving feedback on the bot. 
 - [@zander-the-artist](https://www.deviantart.com/zander-the-artist) for allowing DeviantCord to feature his gallery in the documentation for an example. His comic Hope In Friends is also awesome check it out!. 
 - [@ErriteEpticRikez](https://github.com/ErriteEpticRikez) for investigating DA's API, creating functionality for it in Python, and overall developing the bot
