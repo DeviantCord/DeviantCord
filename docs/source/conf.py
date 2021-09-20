@@ -24,11 +24,11 @@ master_doc = 'index'
 # -- Project information -----------------------------------------------------
 
 project = 'DeviantCord'
-copyright = '2020, Errite Games LLC'
+copyright = '2021, Errite Games LLC'
 author = 'ErriteEpticRikez'
 
 # The full version, including alpha/beta/rc tags
-release = 'bt-2.0.6'
+release = 'bt-3.0.6'
 
 
 # -- General configuration ---------------------------------------------------

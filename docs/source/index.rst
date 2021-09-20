@@ -7,16 +7,22 @@ Welcome to DeviantCord's documentation!
 =======================================
 
 .. warning::
-    This documentation is still being worked on, while it is largely done here.
-    Some things are still missing. If you need help with something join our discord
+    DeviantCord 3's reaches end of support on December 15th, 2021. V3 will only receive bug fixes until it reaches End of Life.
+    Due to Discord.py being discontinued. Please check the discord server for more information
+    `here <https://discord.gg/ubmkcsk>`_.
+
+.. warning::
+    This documentation has the bare minimum information. If you require assistance.
     `here <https://discord.gg/ubmkcsk>`_.
 
 .. note::
-   This documentation is for DeviantCord 2, which is more geared towards handling large amount of servers.
-   If you are looking for DeviantCord 1, you can access its documentation
+   DeviantCord 3 had a short 3 month life span due to Discord.py being discontinued and we did not have a chance to write documentation.
+   This documentation is largely for DeviantCord 2, if you need assistance please use the server link above.
+    We'd Rather then spend time writing documentation for a version that is discontinued in a couple months. We are focusing
+    on developing V4.
    `right here <https://deviantcord.readthedocs.io/en/bt-1.3.0/>`_.
 
-Welcome to the official documentation for DeviantCord2, a Discord bot that allows the server to stay up to date with
+Welcome to the official documentation for DeviantCord 3, a Discord bot that allows the server to stay up to date with
 their favorite artists.
 
 Unlike DeviantCord 1, you do not need to wait for us to approve your request for the bot to join the server. You can

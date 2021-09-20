@@ -8,13 +8,19 @@
 [DeviantCord Discord Server](https://discord.gg/ubmkcsk)
 
 
-
+### Warning: DeviantCord V3.0 reaches End of Life on Dec 15th. This version will only receive bug fixes. 
 # DeviantCord
 DeviantCord is a Discord bot that will allow artists and fan communities to keep up to date on their favorite artists on DeviantArt through Discord. 
 
 For example posting links to your comic each time you post a new page is something this bot will replace. It will automatically check the configured artists folders for new entries and will post a new message in a specific Discord channel when a new deviation is found with a link to the deviation. 
 
 DeviantCord can be self hosted, or you can use our free service to host the bot for you. 
+
+# Requirements
+- [@deviantart](https://github.com/DeviantCord/Deviant-DBS)
+- [DLS](https://github.com/DeviantCord/DLS) 
+- [Redis](https://redis.io/)
+- [Postges](https://www.postgresql.org/)
 
 # FAQ
 #### What is DeviantCord?

@@ -1,5 +1,5 @@
 {
-    "da-client-id": "none",
-    "da-secret": "none",
-    "discord-token": "none"
+    "da-client-id": "0",
+    "da-secret": "placeholder",
+    "discord-token": "placeholder"
 }
