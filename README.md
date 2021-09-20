@@ -8,7 +8,8 @@
 [DeviantCord Discord Server](https://discord.gg/ubmkcsk)
 
 
-### Warning: DeviantCord V3.0 reaches End of Life on Dec 15th. This version will only receive bug fixes. 
+### Warning: DeviantCord V4.0 is under development. 
+### DeviantCord V3.0 reaches End of Life on Dec 15th. This version will only receive bug fixes. 
 # DeviantCord
 DeviantCord is a Discord bot that will allow artists and fan communities to keep up to date on their favorite artists on DeviantArt through Discord. 
 
