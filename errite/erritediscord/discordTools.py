@@ -270,6 +270,37 @@ async def createDeviationListString(data, bot):
             pass_index = pass_index + 1
     return messages
 
+async def createChannelIDListString(data, bot):
+    messages = []
+    last_artist = None
+    string = ""
+    for entry in data:
+        artist = entry[1]
+        foldername = entry[12]
+        channelid = entry[7]
+        if last_artist == None:
+            string = string + "** " + artist + "'s Listeners: **"
+        elif not last_artist == artist:
+            string = string + "\n** " + artist + "'s Listeners: **"
+        channel_object = bot.get_channel(channelid)
+        if channel_object is None:
+            string = string + "\n Contact DeviantCord Support Reference Errorcode 05"
+        else:
+            string = string + "\n" + foldername +" in " + channel_object.name + " (" + str(channel_object.id) + ")"
+        last_artist = artist
+    divider = ceil(len(string) / 2000)
+    if divider == 1:
+        messages.append(string)
+    else:
+        pass_index = 0
+        first_index = 0
+        while not pass_index > divider:
+            messages.append(string[first_index:first_index + 1999])
+            first_index = first_index + 1999
+            pass_index = pass_index + 1
+    return messages
+
+
 async def sendListMessage(channel_object, data):
     for entry in data:
         if not entry == '':
