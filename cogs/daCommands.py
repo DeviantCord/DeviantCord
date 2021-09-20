@@ -189,6 +189,7 @@ class daCog(commands.Cog):
                               "'port='" + str(self.database_port) + "'password='" + self.database_password + "'"
             print("Connecting to database")
             self.db_connection = psycopg2.connect(connect_str)
+            print("Finished Connecting")
             # Errite LLC Specific Options THIS is for DeviantCord Public Hosting, these settings are what
             # stops the bot from executing code meant for DeviantCord Public Hosting only
             self.errite = configData["errite"]
@@ -772,26 +773,32 @@ class daCog(commands.Cog):
                 emptyfolder = True
             loop = asyncio.get_event_loop()
             await ctx.send("Importing this folder for first time, this may take a bit.")
+            taskShardData = dlsp.getShardResponse(self.dls_host, self.errite_token, "sources")
+            sourceID = taskShardData["chosen-id"]
             await loop.run_in_executor(ThreadPoolExecutor(), addallsource, allfolderData, artistname.upper(),
                                        self.db_connection,
-                                       mature)
+                                       mature, sourceID)
             print("Finished adding source")
+            taskShardData = dlsp.getShardResponse(self.dls_host, self.errite_token, "listeners")
+            taskID = taskShardData["chosen-id"]
             if useConvChannelID:
                 await loop.run_in_executor(ThreadPoolExecutor(), addalltask, ctx.guild.id, convChannelId, artistname.upper(),
-                                           mature, self.db_connection)
+                                           mature, self.db_connection, taskID)
             elif not useConvChannelID:
                 await loop.run_in_executor(ThreadPoolExecutor(), addalltask, ctx.guild.id, channelid, artistname.upper(),
-                                           mature, self.db_connection)
+                                           mature, self.db_connection, taskID)
         else:
             loop = asyncio.get_event_loop()
+            taskShardData = dlsp.getShardResponse(self.dls_host, self.errite_token, "listeners")
+            taskID = taskShardData["chosen-id"]
             if useConvChannelID:
                 await loop.run_in_executor(ThreadPoolExecutor(), addalltask, ctx.guild.id, convChannelId, artistname.upper(),
                                            mature,
-                                           self.db_connection)
+                                           self.db_connection, taskID)
             elif not useConvChannelID:
                 await loop.run_in_executor(ThreadPoolExecutor(), addalltask, ctx.guild.id, channelid, artistname.upper(),
                                            mature,
-                                           self.db_connection)
+                                           self.db_connection, taskID)
         await ctx.send(
             "Listener added for allfolder " + " for artist " + artistname.upper() + " Reminder: The bot only checks for Deviations every 25 to 30 minutes from when the bot is started!")
 
@@ -1110,11 +1117,18 @@ class daCog(commands.Cog):
                            "one. If you want to listen for both inverse and noninverse set hybrid for the listener"
                            "to true using the updatehybrid command")
             return
+        self.deviantlogger.info("Verifying existance of " + artistname.lower() + " in folder " + foldername +" using inverse: " + str(inverted) + " Hybrid: " + str(hybrid) + " and mature property: " + str(mature))
         source_exists = verifySourceExistance(artistname.upper(), foldername.upper(), inverted, hybrid, mature, self.db_connection)
+        self.deviantlogger.info("Source Exists result is " + str(source_exists))
+        self.deviantlogger.info("Finding UUID")
         try:
             folderid = dp.findFolderUUID(artistname.upper(), True, foldername.upper(), self.token)
+            self.deviantlogger.info("Folder ID obtained as " + str(folderid))
         except Exception as ex:
-            print("Fuck this happened")
+            print("Exception encountered " + str(ex))
+            self.deviantlogger.error("Error Encountered while obtaining ID, " + str(ex))
+            await ctx.send("An error has occured while trying to obtain a folders UUID. Please contact DeviantCord support reference error code ad-02. \n You can get access to the support server using the support command")
+            return
         if folderid.upper() == "ERROR":
             await ctx.send("Could not find a folder specified. Is the artist and foldername exactly as they are on DA?")
             check_listener_cursor.close()
@@ -1125,17 +1139,11 @@ class daCog(commands.Cog):
                 return
             loop = asyncio.get_event_loop()
             await ctx.send("Importing this folder for first time, this may take a bit.")
-            try:
-                sourceShardData = dlsp.getShardResponse(self.dls_host, self.errite_token, "sources")
-                shardId = sourceShardData["chosen-id"]
-            except Exception as ex:
-                print("JSON FUCK")
-            try:
-                await loop.run_in_executor(ThreadPoolExecutor(), addsource, artistname.upper(), foldername.upper(), folderid, inverted,
-                                           hybrid, self.token,
-                                           self.db_connection, mature, shardId)
-            except Exception as ex:
-                print("Fuck this happened too.")
+            sourceShardData = dlsp.getShardResponse(self.dls_host, self.errite_token, "sources")
+            shardId = sourceShardData["chosen-id"]
+            await loop.run_in_executor(ThreadPoolExecutor(), addsource, artistname.upper(), foldername.upper(), folderid, inverted,
+                                       hybrid, self.token,
+                                       self.db_connection, mature, shardId)
             print("Finished adding source")
             taskShardData = dlsp.getShardResponse(self.dls_host, self.errite_token, "listeners")
             taskID = taskShardData["chosen-id"]
@@ -1639,6 +1647,8 @@ class daCog(commands.Cog):
     def error_handler(self, loop, context):
         print("Exception: ", context['exception'])
         capture_exception(context['exception'])
+        with configure_scope() as scope:
+            capture_exception(context['exception'])
         logger = logging.getLogger("deviantcog")
         logger.exception(context["exception"])
         if self.failedlogincount >= 3:

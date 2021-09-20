@@ -884,7 +884,7 @@ def getGalleryFolderOLD(artist, bool, folder, accesstoken,foldername):
                             newurls.append(uuid["url"])
                             artdata["art-data"][artist.lower()]["folders"][foldername]["processed-uuids"].append(uuid["deviationid"])
                         if (findDuplicateJsonElementGallery("artdata.json", uuid["deviationid"], artist,foldername) == True):
-                            print("Triggered");
+                            print("Triggered Weird Condition, maybe?");
                         if data["next_offset"] is not None:
                             providedoffset = data["next_offset"]
                             artdata["art-data"][artist.lower()]["folders"][foldername]["offset-value"] = data["next_offset"]

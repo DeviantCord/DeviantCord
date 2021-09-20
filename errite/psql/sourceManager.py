@@ -171,7 +171,6 @@ def updateSources(cursor, con, data, clientToken):
                 last_check = timestr
                 latest_img_url: str = gathered_resources["img-urls"]
                 response = json.dumps(da_response)
-                print("Triggered")
             elif len(last_ids) == 0 and not len(da_response["results"]) == 0:
                 gathered_resources = gatherGalleryFolderResources(da_response)
                 if not didCatchup:
@@ -188,7 +187,6 @@ def updateSources(cursor, con, data, clientToken):
                 last_check = timestr
                 latest_img_url: str = gathered_resources["img-urls"]
                 response = json.dumps(da_response)
-                print("Triggered")
             elif not da_response["results"][0]["deviationid"] == last_ids[0]:
                 gathered_resources = gatherGalleryFolderResources(da_response)
                 if not didCatchup:
@@ -205,7 +203,6 @@ def updateSources(cursor, con, data, clientToken):
                 last_check = timestr
                 latest_img_url:str = gathered_resources["img-urls"]
                 response = json.dumps(da_response)
-                print("Triggered")
             else:
                 last_check = timestr
                 check_only = True

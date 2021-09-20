@@ -47,7 +47,7 @@ from os.path import isfile, join
 
 # DeviantCord Message Variables (Not all are here)
 invalid_cog_errite = "Invalid cog found on reload for discord server "
-print("Starting DeviantCord bt-3.0.3")
+print("Starting DeviantCord bt-3.0.4")
 print("If this causes a HTTP 401 Error when trying to load daCommands your DeviantArt info is wrong. Set it in client.json")
 started = True
 configData = {}
@@ -169,9 +169,9 @@ async def timeout_prefixes():
 
 if passedJson == True:
     prefix = configData["prefix"]
-    bot_client = commands.Bot(command_prefix=grab_prefix)
     intents = discord.Intents(messages=True, guilds=True)
-    client = discord.Client(intents=intents)
+    client = commands.Bot(command_prefix=grab_prefix, intents=intents)
+
     # WEB API
     clientsecret = sensitiveData["da-secret"]
     clientid = sensitiveData["da-client-id"]
@@ -204,7 +204,7 @@ if __name__ == '__main__':
             if not extension == "__init__":
                 print("Trying")
                 print("Loading " + extension)
-                bot_client.load_extension(cogs_dir + "." + extension)
+                client.load_extension(cogs_dir + "." + extension)
         except (discord.ClientException, ModuleNotFoundError):
             print('Failed to load extension {extension}.')
             traceback.print_exc()
@@ -241,8 +241,10 @@ async def recoverConnection():
         print("Connecting to database")
         db_connection = psycopg2.connect(connect_str)
         setRecover(False)
+
 @client.event
 async def on_guild_join(guild):
+    print("Test")
     sql = grab_sql("new_server")
     ns_cursor = db_connection.cursor()
     await client.loop.run_in_executor(ThreadPoolExecutor(), ns_cursor.execute, sql,(guild.id, '~', False, 0,))
@@ -250,6 +252,7 @@ async def on_guild_join(guild):
 
 @client.event
 async def on_guild_remove(guild):
+    print("Test")
     sql = grab_sql("delete_server_config")
     delserver_cursor = db_connection.cursor()
     await client.loop.run_in_executor(ThreadPoolExecutor(), delserver_cursor.execute, sql,(guild.id,))
@@ -266,7 +269,7 @@ async def on_ready():
     print('We have logged in as {0.user}'.format(client))
 
 
-@bot_client.command()
+@client.command()
 async def setprefix(ctx, suppliedprefix):
     skiprolecheck = False
     if ctx.guild is None:
@@ -339,5 +342,5 @@ def error_handler(loop, context):
         print("Exception encountered: ", context['exception'])
 
 
-bot_client.remove_command("setlogchannel")
+client.remove_command("setlogchannel")
 client.run(sensitiveData["discord-token"])
