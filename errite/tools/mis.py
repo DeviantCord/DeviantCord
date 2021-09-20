@@ -19,7 +19,7 @@
 
 """
 from errite.da.jsonTools import findDuplicateElementArray
-
+from markdownify import markdownify as md
 
 def enumerateAllID(data):
     length = len(data)
@@ -57,6 +57,27 @@ def checkHybridResources(da_data, artdata):
             data_resources["all-hybrid-img-urls"].append(entry["content"]["src"])
     return data_resources
 
+def gatherJournal(data):
+    data_resources = {}
+    data_resources["ids"] = []
+    data_resources["urls"] = []
+    data_resources["titles"] = []
+    data_resources["img-urls"] = []
+    data_resources["excerpts"] = []
+    data_resources["profilepic"] = "none"
+    if not len(data["results"]) == 0:
+        data_resources["profilepic"] = data["results"][0]["author"]["usericon"]
+    for entry in data["results"]:
+        data_resources["titles"].append(entry["title"])
+        data_resources["excerpts"].append(md(entry["excerpt"]))
+        data_resources["urls"].append(entry["url"])
+        data_resources["ids"].append(entry["deviationid"])
+        if not len(entry["thumbs"]) == 0:
+            data_resources["img-urls"].append(entry["thumbs"][0]["src"])
+        else:
+            data_resources["img-urls"].append(None)
+    return data_resources
+
 def createIDList(data):
     hybrid_ids = []
     for entry in data["results"]:
@@ -91,8 +112,60 @@ def gatherGalleryFolderResources(data):
         except KeyError:
             data_resources["deviation-ids"].append(entry["deviationid"])
             data_resources["deviation-urls"].append(entry["url"])
-            data_resources["img-urls"].append(entry["content"]["src"])
+            try:
+                data_resources["img-urls"].append(entry["content"]["src"])
+            except KeyError:
+                print("Trying other formats")
+                try:
+                    data_resources["img-urls"].append(entry["flash"]["src"] + " DEVIANTCORDENDINGUSENONPREVIEW")
+                except KeyError:
+                    try:
+                        data_resources["img-urls"].append(str(entry["videos"][0]["src"]) + str("DEVIANTCORDENDINGUSENONPREVIEW"))
+                    except KeyError:
+                        try:
+                            data_resources["img-urls"].append(entry["thumbs"]["src"])
+
+                        except:
+                            data_resources["img-urls"].append("IGNORETHISDEVIATION")
+
     return data_resources
+
+def createJournalInfoList(data):
+    """
+                Method ran to compile needed journal data for the database into a dictionary the specified artist using deviantart's API.
+                :param data: The tag that should be searched for.
+                :type data: dict
+                :return: dict
+        """
+    data_resources = {}
+    data_resources["titles"] = []
+    data_resources["profilepic"] = "none"
+    data_resources["deviation-ids"] = []
+    data_resources["thumbnails-img-urls"] = []
+    #Thumbnail ID's contains the deviation-id's that have thumbnails.
+    data_resources["thumbnail-ids"] = []
+    data_resources["journal-urls"] = []
+    data_resources["excerpts"] = []
+    if not len(data) == 0:
+        data_resources["profilepic"] = data[0]["author"]["usericon"]
+    for entry in data:
+        data_resources["deviation-ids"].append(entry["deviationid"])
+        data_resources["journal-urls"].append(entry["url"])
+        data_resources["titles"].append(entry["title"])
+        if not len(entry["thumbs"]) == 0:
+            try:
+                data_resources["thumbnails-img-urls"].append(entry["thumbs"][0]["src"])
+                data_resources["thumbnail-ids"].append(entry["deviationid"])
+            except KeyError as KE:
+                print("Did not detect thumbnail for journal id " + entry["deviationid"])
+                data_resources["thumbnails-img-urls"].append("none")
+                #data_resources["thumbnail-ids"].append("none")
+        elif len(entry["thumbs"]) == 0:
+            data_resources["thumbnails-img-urls"].append("none")
+        data_resources["excerpts"].append(entry["excerpt"])
+    return data_resources
+
+
 
 def convertBoolString(bool):
     if bool == True:

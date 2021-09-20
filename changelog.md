@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## DeviantCord 2
 
+### [2.0.22-beta]
+## Bug Fixes
+
+
+### [bt-2.0.21]
+
+## Bug Fixes
+- Reimplemented some fixes regarding indexes that was accidently overwritten in the 2.0.20 branch
+
+
+### [bt-2.0.20]
+There were many small bug fixes done since the last version that were never documented, just pushed to the Bot by Michael
+Due to the Corona Virus taking much of Michael's time, notes were kept to a minimum
+
+## Bug Fixes
+- Fixed a bug in datools with localdetermineNewDevations that would result in an index exception
+
 ### [bt-2.0.12]
 
 ## Improvements

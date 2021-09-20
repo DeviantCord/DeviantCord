@@ -47,7 +47,7 @@ from os.path import isfile, join
 
 # DeviantCord Message Variables (Not all are here)
 invalid_cog_errite = "Invalid cog found on reload for discord server "
-print("Starting DeviantCord bt-2.0.12")
+print("Starting DeviantCord bt-3.0.0")
 print("If this causes a HTTP 401 Error when trying to load daCommands your DeviantArt info is wrong. Set it in client.json")
 started = True
 configData = {}
@@ -100,8 +100,8 @@ if passed == True:
                     sensitiveData = json.load(clientjsonFile)
                     configjsonFile.close()
                     clientjsonFile.close()
-                    if sensitiveData["da-client-id"] is not "id here":
-                        if sensitiveData["da-secret"] is not "secret":
+                    if not sensitiveData["da-client-id"]  == "id here":
+                        if not sensitiveData["da-secret"] == "secret":
                             passedJson = True
         if fileExists("db.json"):
             with open("db.json") as BotdbJsonFile:
@@ -111,19 +111,20 @@ if passed == True:
                 database_host2 = dbInfo["database-host2"]
                 database_host3 = dbInfo["database-host3"]
                 database_password = dbInfo["database-password"]
+                database_port = dbInfo["database-port"]
                 database_user = dbInfo["database-username"]
                 if database_host2 == "none":
                     connect_str = "dbname='" + database_name + "' user='" + database_user \
                                   + "'host='" + database_host + "' " + \
-                                  "password='" + database_password + "'"
+                                  "'port='" + str(database_port) + "password='" + database_password + "'"
                 elif database_host3 == "none":
                     connect_str = "dbname='" + database_name + "' user='" + database_user \
                                   + "'host='" + database_host + "," + database_host2 + "' " + \
-                                  "password='" + database_password + "'"
+                                  "'port='" + str(database_port) + "password='" + database_password + "'"
                 else:
                     connect_str = "dbname='" + database_name + "' user='" + database_user \
-                                  + "'host='" + database_host + "," + database_host2 + "," + database_host3 + "' " + \
-                                  "password='" + database_password + "'"
+                                  + "'host='" + database_host + "," + database_host2 + "," + database_host3 + "'" + \
+                                  "port='" + str(database_port) + "'password='" + database_password + "'"
                 print("DeviantCord Main Bot component now connecting to DB")
                 db_connection = psycopg2.connect(connect_str)
 
@@ -252,6 +253,8 @@ async def on_guild_remove(guild):
     await client.loop.run_in_executor(ThreadPoolExecutor(), delserver_cursor.execute, sql,(guild.id,))
     sql = grab_sql("delete_server_data")
     await client.loop.run_in_executor(ThreadPoolExecutor(), delserver_cursor.execute, sql, (guild.id,))
+    sql = grab_sql("cleanup_journal_Listener_leave")
+    await client.loop.run_in_executor(ThreadPoolExecutor(), delserver_cursor.execute, sql,(guild.id,))
     await asyncio.get_event_loop().run_in_executor(ThreadPoolExecutor(), db_connection.commit)
 
 

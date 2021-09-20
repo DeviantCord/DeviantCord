@@ -18,9 +18,13 @@
 
 
 """
+from urllib3 import Retry, PoolManager
+
 from errite.tools.mis import convertBoolString
-import urllib.request, json;
-import urllib.error;
+import urllib.request, json
+import urllib.error
+import urllib3.util
+import urllib3
 import logging
 from errite.da.jsonTools import findDuplicateJsonElementGallery, findDuplicateElementArray
 
@@ -114,17 +118,19 @@ def getFolderArrayResponse(artist, bool, folder, accesstoken, offset):
             :return: array
     """
     finished = False;
+    retries = Retry(connect=5, read=2, redirect=5, backoff_factor=3)
     logger = logging.getLogger('errite.da.daparser')
     logger.info("GetFolderArrayResponse: Started")
     with open("artdata.json", "r") as jsonFile:
-        # artdata = json.loads(jsonFile)
             logger.debug("GetFolderArray: Offset:" + str(offset))
             folderRequestURL = "https://www.deviantart.com/api/v1/oauth2/gallery/folders?access_token=" + accesstoken + "&username=" + artist + "&calculate_size=false&ext_preload=false&limit=10&mature_content=" + convertBoolString(
                 bool) + "&offset=" + str(offset)
             # print(folderRequestURL)
-            with urllib.request.urlopen(folderRequestURL) as url:
-                data = json.loads(url.read().decode())
-                return data;
+
+            http = PoolManager(retries=retries)
+            heroes = http.request('GET', folderRequestURL)
+            data = json.loads(heroes.data.decode('UTF-8'))
+            return data
 
 
 def getAllFolderArrayResponse(artist,bool, accesstoken, offset):
@@ -166,13 +172,15 @@ def getGalleryFolderArrayResponse(artist, bool, folder, accesstoken, offset):
         :return: array
         """
     finished = False;
-
+    retries = Retry(connect=5, read=5, redirect=5, backoff_factor=4)
     folderRequestURL = "https://www.deviantart.com/api/v1/oauth2/gallery/" + folder + "?username=" + artist + "&access_token=" + accesstoken + "&limit=10&mature_content=" + convertBoolString(
         bool) + "&offset=" + str(offset)
     # print(offset)
-    with urllib.request.urlopen(folderRequestURL) as url:
-        data = json.loads(url.read().decode())
-        return data;
+    http = PoolManager(retries=retries)
+    heroes = http.request('GET', folderRequestURL)
+    data = json.loads(heroes.data.decode('UTF-8'))
+    return data
+
 
 def tagSearchResponse(tag, accesstoken, mature):
     """
@@ -237,6 +245,8 @@ def getJournalResponse(artist, accesstoken, featuredonly, mature):
             Method ran to get journal data from the specified artist using deviantart's API.
             :param artist: The tag that should be searched for.
             :type artist: string
+            :param featuredonly: Fetch only journals that are feature
+            :type featuredonly: bool
             :param accesstoken: The DA Access token to use for this query
             :type accesstoken: string
             :param mature: Whether the mature tags should be returned
@@ -245,7 +255,6 @@ def getJournalResponse(artist, accesstoken, featuredonly, mature):
     """
     requestURL = "https://www.deviantart.com/api/v1/oauth2/browse/user/journals?access_token=" + accesstoken + "&username=" \
                  + artist + "&featured=" + str(featuredonly) + "&mature_content=" + str(mature)
-    print(requestURL)
     with urllib.request.urlopen(requestURL) as url:
         data = json.loads(url.read().decode())
         return data;

@@ -1,10 +1,10 @@
 {
-    "database-host": "none",
-    "database-host2": "none",
-    "database-host3": "none",
-    "database-username": "none",
-    "database-password": "none",
-    "database-port": 5432,
-    "database-name": "none",
+    "database-host": "localhost",
+    "database-host2": "localhost",
+    "database-host3": "localhost",
+    "database-username": "user",
+    "database-password": "pass",
+    "database-port": 5448,
+    "database-name": "prod_deviantcord",
     "trigger-file": "/tmp/trigger_file"
 }
