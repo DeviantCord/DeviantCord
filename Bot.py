@@ -47,7 +47,7 @@ from os.path import isfile, join
 
 # DeviantCord Message Variables (Not all are here)
 invalid_cog_errite = "Invalid cog found on reload for discord server "
-print("Starting DeviantCord bt-3.0.0")
+print("Starting DeviantCord bt-3.0.3")
 print("If this causes a HTTP 401 Error when trying to load daCommands your DeviantArt info is wrong. Set it in client.json")
 started = True
 configData = {}
@@ -169,7 +169,9 @@ async def timeout_prefixes():
 
 if passedJson == True:
     prefix = configData["prefix"]
-    client = commands.Bot(command_prefix=grab_prefix)
+    bot_client = commands.Bot(command_prefix=grab_prefix)
+    intents = discord.Intents(messages=True, guilds=True)
+    client = discord.Client(intents=intents)
     # WEB API
     clientsecret = sensitiveData["da-secret"]
     clientid = sensitiveData["da-client-id"]
@@ -202,7 +204,7 @@ if __name__ == '__main__':
             if not extension == "__init__":
                 print("Trying")
                 print("Loading " + extension)
-                client.load_extension(cogs_dir + "." + extension)
+                bot_client.load_extension(cogs_dir + "." + extension)
         except (discord.ClientException, ModuleNotFoundError):
             print('Failed to load extension {extension}.')
             traceback.print_exc()
@@ -264,7 +266,7 @@ async def on_ready():
     print('We have logged in as {0.user}'.format(client))
 
 
-@client.command()
+@bot_client.command()
 async def setprefix(ctx, suppliedprefix):
     skiprolecheck = False
     if ctx.guild is None:
@@ -337,5 +339,5 @@ def error_handler(loop, context):
         print("Exception encountered: ", context['exception'])
 
 
-client.remove_command("setlogchannel")
+bot_client.remove_command("setlogchannel")
 client.run(sensitiveData["discord-token"])

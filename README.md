@@ -17,7 +17,7 @@ For example posting links to your comic each time you post a new page is somethi
 DeviantCord can be self hosted, or you can use our free service to host the bot for you. 
 
 # Requirements
-- [@deviantart](https://github.com/DeviantCord/Deviant-DBS)
+- [DBS](https://github.com/DeviantCord/Deviant-DBS)
 - [DLS](https://github.com/DeviantCord/DLS) 
 - [Redis](https://redis.io/)
 - [Postges](https://www.postgresql.org/)
