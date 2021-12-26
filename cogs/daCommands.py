@@ -728,9 +728,30 @@ class daCog(commands.Cog):
         source_exists = verifySourceExistanceAll(artistname.upper(), mature, self.db_connection)
 
         if not source_exists:
-            await ctx.send("Importing All Folder, this may take a bit.")
             passedAllFolder = False
-            passedGroupCheck = True
+            passedGroupCheck = False
+            try:
+                userinfo = dp.userInfoResponse(artistname.upper(), self.token, True)
+                passedGroupCheck = True
+            except urllib.error.HTTPError as err:
+                if err.code == 400:
+                    if not passedGroupCheck:
+                        await ctx.send("You have designated a group user and DeviantCord does not currently support them."
+                                       "Support for All Folders for groups is coming soon!")
+
+                        return
+                    if passedGroupCheck:
+                        await ctx.send("A bug has occurred. Contact DeviantCord Support and reference error code 04-a")
+                        return
+                if err.code == 500:
+                    if not passedGroupCheck:
+                        await ctx.send(
+                            "You have designated a group user and DeviantCord does not currently support them."
+                            "Support for All Folders for groups is coming soon!")
+                        return
+                    if passedGroupCheck:
+                        await ctx.send("A bug has occurred. Contact DeviantCord Support and reference error code 04-b")
+                        return
             try:
                 allfolderData = dp.getAllFolderArrayResponse(artistname.upper(), mature, self.token, mature)
                 passedAllFolder = True
@@ -746,47 +767,24 @@ class daCog(commands.Cog):
                     check_listener_cursor.close()
                     return
             except Exception as ex:
-                print("Diag")
-            try:
-                userinfo = dp.userInfoResponse(artistname.upper(), self.token, True)
-                passedGroupCheck = True
-            except urllib.error.HTTPError as err:
-                if err.code == 400:
-                    if not passedAllFolder:
-                        await ctx.send("A bug has occured. Contact DeviantCord Support and reference error code 04")
-                        return
-                    if passedAllFolder:
-                        await ctx.send("You have designated a group user. Groups do not have all folders."
-                                       " Use the addfolder command instead. Unfortunately this is a limitation by DA :(")
-                    print("This is from a group, setting dummy profile picture")
-                    pp_picture = "none"
-                if err.code == 500:
-                    if not passedAllFolder:
-                        await ctx.send("A bug has occured. Contact DeviantCord Support and reference error code 04")
-                        return
-                    if passedAllFolder:
-                        await ctx.send("You have designated a group user. Groups do not have all folders."
-                                       " Use the addfolder command instead. Unfortunately this is a limitation by DA :(")
-                        return
-                    print("This is from a group, setting dummy profile picture")
-                    pp_picture = "none"
-                emptyfolder = True
-            loop = asyncio.get_event_loop()
-            await ctx.send("Importing this folder for first time, this may take a bit.")
-            taskShardData = dlsp.getShardResponse(self.dls_host, self.errite_token, "sources")
-            sourceID = taskShardData["chosen-id"]
-            await loop.run_in_executor(ThreadPoolExecutor(), addallsource, allfolderData, artistname.upper(),
-                                       self.db_connection,
-                                       mature, sourceID)
-            print("Finished adding source")
-            taskShardData = dlsp.getShardResponse(self.dls_host, self.errite_token, "listeners")
-            taskID = taskShardData["chosen-id"]
-            if useConvChannelID:
-                await loop.run_in_executor(ThreadPoolExecutor(), addalltask, ctx.guild.id, convChannelId, artistname.upper(),
-                                           mature, self.db_connection, taskID)
-            elif not useConvChannelID:
-                await loop.run_in_executor(ThreadPoolExecutor(), addalltask, ctx.guild.id, channelid, artistname.upper(),
-                                           mature, self.db_connection, taskID)
+                capture_exception(ex)
+            if passedAllFolder:
+                loop = asyncio.get_event_loop()
+                await ctx.send("Importing this folder for first time, this may take a bit.")
+                taskShardData = dlsp.getShardResponse(self.dls_host, self.errite_token, "sources")
+                sourceID = taskShardData["chosen-id"]
+                await loop.run_in_executor(ThreadPoolExecutor(), addallsource, allfolderData, artistname.upper(),
+                                           self.db_connection,
+                                           mature, sourceID)
+                print("Finished adding source")
+                taskShardData = dlsp.getShardResponse(self.dls_host, self.errite_token, "listeners")
+                taskID = taskShardData["chosen-id"]
+                if useConvChannelID:
+                    await loop.run_in_executor(ThreadPoolExecutor(), addalltask, ctx.guild.id, convChannelId, artistname.upper(),
+                                               mature, self.db_connection, taskID)
+                elif not useConvChannelID:
+                    await loop.run_in_executor(ThreadPoolExecutor(), addalltask, ctx.guild.id, channelid, artistname.upper(),
+                                               mature, self.db_connection, taskID)
         else:
             loop = asyncio.get_event_loop()
             taskShardData = dlsp.getShardResponse(self.dls_host, self.errite_token, "listeners")
