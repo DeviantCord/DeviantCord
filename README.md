@@ -9,7 +9,7 @@
 
 
 ### Warning: DeviantCord V4.0 is under development. 
-### DeviantCord V3.0 reaches End of Life on Feb 15th. This version will only receive bug fixes. 
+### DeviantCord V3.0 reaches End of Life on Feb 11th, 2022. This version will only receive bug fixes. 
 # DeviantCord
 DeviantCord is a Discord bot that will allow artists and fan communities to keep up to date on their favorite artists on DeviantArt through Discord. 
 
