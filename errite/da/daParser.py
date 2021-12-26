@@ -214,7 +214,6 @@ def userInfoResponse(username, accesstoken, mature):
     """
     requestURL = "https://www.deviantart.com/api/v1/oauth2/user/profile/" + username + "?ext_collections=false&ext_galleries=false" \
                  + "&access_token=" + accesstoken + "&mature_content=" + str(mature)
-    print("HERE: " + requestURL)
     with urllib.request.urlopen(requestURL) as url:
         data = json.loads(url.read().decode())
         return data;

@@ -47,7 +47,7 @@ from os.path import isfile, join
 
 # DeviantCord Message Variables (Not all are here)
 invalid_cog_errite = "Invalid cog found on reload for discord server "
-print("Starting DeviantCord bt-3.0.6")
+print("Starting DeviantCord bt-3.0.7")
 print("If this causes a HTTP 401 Error when trying to load daCommands your DeviantArt info is wrong. Set it in client.json")
 started = True
 configData = {}
@@ -277,14 +277,17 @@ async def setprefix(ctx, suppliedprefix):
     elif not ctx.guild is None:
         if ctx.author.guild_permissions.administrator:
             print("Entered")
-            setup_cursor = db_connection.cursor()
-            sql = grab_sql("update_prefix")
-            timestr = datetime.datetime.now()
-            await client.loop.run_in_executor(ThreadPoolExecutor(), setup_cursor.execute, sql,(suppliedprefix, timestr, ctx.guild.id,))
-            print("Committing")
-            await client.loop.run_in_executor(ThreadPoolExecutor(), db_connection.commit)
-            server_prefixes[ctx.guild.id]["prefix"] = suppliedprefix
-            await ctx.send("Prefix has been updated.")
+            if not len(suppliedprefix) == 1:
+                await ctx.send("DeviantCord only currently accepts single character prefixes for commands!")
+            else:
+                setup_cursor = db_connection.cursor()
+                sql = grab_sql("update_prefix")
+                timestr = datetime.datetime.now()
+                await client.loop.run_in_executor(ThreadPoolExecutor(), setup_cursor.execute, sql,(suppliedprefix, timestr, ctx.guild.id,))
+                print("Committing")
+                await client.loop.run_in_executor(ThreadPoolExecutor(), db_connection.commit)
+                server_prefixes[ctx.guild.id]["prefix"] = suppliedprefix
+                await ctx.send("Prefix has been updated.")
         elif not ctx.author.guild_permissions.administrator:
             await ctx.send("You need to have a rank with Administrator permissions")
 
