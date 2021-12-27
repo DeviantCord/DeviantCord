@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## DeviantCord 3
 
+
+### [bt-3.0.8]
+## Changes
+- Made getUserInfo from daParser use BackOff Factor
+- getUserInfo from daParser now uses urllib3
+- Made the necessary changes to the group checks for AddAllFolder to check HTTP Status code, since getting an error 500 or 400 no longer will raise an exception under urllib3
+
+
 ### [bt-3.0.7]
 ## Bug Fixes
 - Fixed two checks for AllFolders that was supposed to prevent allfolders for groups.
