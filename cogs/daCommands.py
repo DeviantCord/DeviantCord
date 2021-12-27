@@ -730,28 +730,21 @@ class daCog(commands.Cog):
         if not source_exists:
             passedAllFolder = False
             passedGroupCheck = False
-            try:
-                userinfo = dp.userInfoResponse(artistname.upper(), self.token, True)
+            userinfo = dp.userInfoResponse(artistname.upper(), self.token, True)
+            if userinfo["response"].status == 400:
+                await ctx.send("You have designated a group user and DeviantCord does not currently support them."
+                      "Support for All Folders for groups is coming soon!")
+                return
+            elif userinfo["response"].status == 500:
+                await ctx.send(
+                    "DeviantArt's servers gave a Internal Server error, try again in a few minutes. DA's API may be having issues."
+                    "If the issues persists, contact DeviantCord Support with the support command. ")
+                return
+            elif userinfo["response"].status == 200:
                 passedGroupCheck = True
-            except urllib.error.HTTPError as err:
-                if err.code == 400:
-                    if not passedGroupCheck:
-                        await ctx.send("You have designated a group user and DeviantCord does not currently support them."
-                                       "Support for All Folders for groups is coming soon!")
-
-                        return
-                    if passedGroupCheck:
-                        await ctx.send("A bug has occurred. Contact DeviantCord Support and reference error code 04-a")
-                        return
-                if err.code == 500:
-                    if not passedGroupCheck:
-                        await ctx.send(
-                            "You have designated a group user and DeviantCord does not currently support them."
-                            "Support for All Folders for groups is coming soon!")
-                        return
-                    if passedGroupCheck:
-                        await ctx.send("A bug has occurred. Contact DeviantCord Support and reference error code 04-b")
-                        return
+            else:
+                await ctx.send("A bug has occurred. Contact DeviantCord Support and reference error code 04")
+                return
             try:
                 allfolderData = dp.getAllFolderArrayResponse(artistname.upper(), mature, self.token, mature)
                 passedAllFolder = True

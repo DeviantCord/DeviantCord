@@ -212,11 +212,16 @@ def userInfoResponse(username, accesstoken, mature):
             :return: array
             :param offset: The number of items to offset the results by
     """
+    info = {}
+    retries = Retry(connect=5, read=5, redirect=5, backoff_factor=4)
     requestURL = "https://www.deviantart.com/api/v1/oauth2/user/profile/" + username + "?ext_collections=false&ext_galleries=false" \
                  + "&access_token=" + accesstoken + "&mature_content=" + str(mature)
-    with urllib.request.urlopen(requestURL) as url:
-        data = json.loads(url.read().decode())
-        return data;
+    http = PoolManager(retries=retries)
+    results = http.request('GET', requestURL)
+    data = json.loads(results.data.decode('UTF-8'))
+    info["data"] = data
+    info["response"] = results
+    return info
 
 def searchResponse(tag, accesstoken, mature, offset):
     """
