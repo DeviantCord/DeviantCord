@@ -1,0 +1,10 @@
+{
+    "database-host": "none",
+    "database-host2": "none",
+    "database-host3": "none",
+    "database-username": "none",
+    "database-password": "none",
+    "database-port": 5432,
+    "database-name": "none",
+    "trigger-file": "/tmp/trigger_file"
+}

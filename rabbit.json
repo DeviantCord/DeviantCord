@@ -1,0 +1,7 @@
+{
+    "Hostname": "changeme",
+    "Username": "changeme",
+    "Password": "changeme",
+    "Port": 5672,
+    "queue": "deviantcord_prod"
+}

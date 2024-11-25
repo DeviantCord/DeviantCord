@@ -1,0 +1,47 @@
+plugins {
+    id 'java'
+}
+
+group 'org.errite.deviantcord'
+version '4.0.9-beta'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+    implementation 'org.javacord:javacord:3.8.0', 'junit:junit:4.13.2','commons-codec:commons-codec:1.16.1',
+            'com.googlecode.json-simple:json-simple:1.1.1', 'io.sentry:sentry:6.3.0', 'io.rest-assured:rest-assured:5.4.0', 'com.zaxxer:HikariCP:5.0.1',
+            'org.postgresql:postgresql:42.7.3', 'org.apache.commons:commons-pool2:2.11.1', 'redis.clients:jedis:4.4.8',
+            'com.rabbitmq:amqp-client:5.20.0', 'org.json:json:20231013'
+}
+
+test {
+    useJUnitPlatform()
+}
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'org.errite.deviantcord.DeviantCordBot',
+        )
+    }
+}
+
+task fatJar(type: Jar) {
+    manifest.from jar.manifest
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    classifier = 'all'
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    } {
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+    }
+    with jar
+}
+artifacts {
+    archives fatJar
+}

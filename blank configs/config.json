@@ -1,0 +1,18 @@
+{
+    "client": "discord-server-name",
+    "sentry-url": "none",
+    "sentry-enabled": false,
+    "errite": false,
+    "errite-channel": 0,
+    "guildid": 0,
+    "logchannelid": 0,
+    "logging": true,
+    "prefix": "$",
+    "publicmode": false,
+    "region": "not-setup",
+    "roleid": 0,
+    "rolesetup-enabled": false,
+    "server": "server-name",
+    "sync-time": 900,
+    "version": "bt-2.0.0"
+}
