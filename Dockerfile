@@ -25,7 +25,7 @@ FROM eclipse-temurin:17-jdk-jammy
 WORKDIR /app
 
 # Copy the specific JAR file
-COPY --from=builder /app/build/libs/DeviantCord-4.0.5-beta-all.jar app.jar
+COPY --from=builder /app/build/libs/DeviantCord-4.0.10-beta-all.jar app.jar
 COPY --from=builder /app/*.json ./
 
 # Set the command to run the application

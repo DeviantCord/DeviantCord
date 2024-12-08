@@ -73,13 +73,20 @@ public class DeleteStatus {
                 deletestmt.setString(2, obt_listener.get("artist"));
                 deletestmt.setLong(3, Long.valueOf(obt_listener.get("channelid")));
                 deletestmt.executeUpdate();
+                sql_conn.commit();
                 mci.createFollowupMessageBuilder()
                         .setContent("Status Listener for artist " + obt_listener.get("artist") +
                                 " has been deleted for this channel").send();
                 sci.createFollowupMessageBuilder()
                         .setContent("Status listener deleted!").send();
 
-            } catch (SQLException e) {
+            } catch (SQLException e) {  
+                try{
+                    sql_conn.rollback();
+                }
+                catch(SQLException e2){
+                    e2.addSuppressed(e);
+                }
                 throw new RuntimeException(e);
             }
 

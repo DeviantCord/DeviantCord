@@ -130,10 +130,9 @@ public class DeviantCordBot {
 
     public static void main(String[] args) {
         System.out.println("NOTE: THIS IS AN TESTING BUILD, ");
-        System.out.println("DeviantCord Beta-V4.0.9");
+        System.out.println("DeviantCord Beta-V4.0.10");
         System.out.println("Developed by Errite Softworks LLC, 2024");
         System.out.println("Current Javacord Version " + Javacord.VERSION);
-        System.out.println("\nStarting Sentry...");
         JSONParser configparser = new JSONParser();
         System.out.println("Reading Configs");
         Path currentPath = Paths.get(System.getProperty("user.dir"));
@@ -150,6 +149,7 @@ public class DeviantCordBot {
             boolean use_sentry = (boolean) mainconfJsonObject.get("use_sentry");
             if(use_sentry)
             {
+                System.out.println("\nStarting Sentry...");
                 Sentry.init(options -> {
                     options.setDsn((String) mainconfJsonObject.get("sentry_dsn"));
                     // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
@@ -348,6 +348,7 @@ public class DeviantCordBot {
                     pstmt.setBoolean(3, false);
                     pstmt.setLong(4, 0);
                     pstmt.executeUpdate();
+                    new_con.commit();
                     new_con.close();
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
@@ -373,6 +374,7 @@ public class DeviantCordBot {
                 pstmt = delete_con.prepareStatement(delete_sql);
                 pstmt.setLong(1, server_id);
                 pstmt.executeUpdate();
+                delete_con.commit();
                 delete_con.close();
                } catch (SQLException e) {
                 String eventId = Sentry.captureException(e).toString();

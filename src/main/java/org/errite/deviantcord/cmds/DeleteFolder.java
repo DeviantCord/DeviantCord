@@ -105,8 +105,11 @@ public class DeleteFolder {
         System.out.println(responseId);
         HashMap<String, String> responseProperties = commandIdParser.parseNonChannelReplaceString(responseId);
         String delete_sql = SQLManager.grab_sql("delete_listener");
-        try {
-            Connection sql_conn = ds.getConnection();
+        try(Connection sql_conn = ds.getConnection();)
+        {
+            sql_conn.setAutoCommit(false);      
+            try {
+
             PreparedStatement deletestmt = sql_conn.prepareStatement(delete_sql);
             long obt_serverid = mci.getServer().orElse(null).getId();
             deletestmt.setLong(1, obt_serverid);
@@ -165,18 +168,25 @@ public class DeleteFolder {
             cacheManager.addArtistHash(redis_pool, redisArtists, redisKey);
             cacheManager.addInverseHash(redis_pool, redisInverse, redisKey);
             cacheManager.addMatureHash(redis_pool, redisMature, redisKey);
+            sql_conn.commit();
 
             mci.createFollowupMessageBuilder()
                     .setContent("Deleted listener " + responseProperties.get("folder") + " for artist" + artist)
                     .send();
 
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            }
+            catch(SQLException e){
+                sql_conn.rollback();
+                throw new RuntimeException(e);
+            }
+            catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
         }
 
     }
+
 }

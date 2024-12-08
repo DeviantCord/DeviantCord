@@ -29,67 +29,104 @@ import java.util.UUID;
 import static org.errite.deviantcord.util.mis.gatherJournals;
 
 public class JournalManager {
-    public static void addJournalSource(Response da_response, String artist, HikariDataSource ds, boolean mature) throws SQLException {
-        JournalObject gatheredJournals = gatherJournals(da_response);
-        Connection writeCon = ds.getConnection();
-        String sql = SQLManager.grab_sql("new_journal_source");
-        PreparedStatement pstmt = writeCon.prepareStatement(sql);
-        pstmt.setString(1, artist.toUpperCase(Locale.ROOT));
-        UUID uuid = UUID.randomUUID();
-        pstmt.setString(2,uuid.toString());
-        pstmt.setString(3, gatheredJournals.getLatestTitle());
-        pstmt.setString(4, gatheredJournals.getJournalUrls().get(0));
-        pstmt.setString(5, gatheredJournals.getExcerpts().get(0));
-        pstmt.setArray(6, writeCon.createArrayOf("TEXT",
-                gatheredJournals.getDeviationIds().toArray(new String[0])));
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        pstmt.setTimestamp(7,timestamp);
-        pstmt.setTimestamp(8, timestamp);
-        pstmt.setString(9, gatheredJournals.getProfilePicture());
-        pstmt.setBoolean(10, mature);
-        pstmt.setString(11, gatheredJournals.getThumbnailImgUrls().get(0));
-        pstmt.setArray(12, writeCon.createArrayOf("TEXT",
-                gatheredJournals.getJournalUrls().toArray(new String[0])));
-        pstmt.setArray(12, writeCon.createArrayOf("TEXT",
-                gatheredJournals.getJournalUrls().toArray(new String[0])));
-        pstmt.setArray(13, writeCon.createArrayOf("TEXT",
-                gatheredJournals.getExcerpts().toArray(new String[0])));
-        pstmt.setArray(14, writeCon.createArrayOf("TEXT",
-                gatheredJournals.getTitles().toArray(new String[0])));
-        pstmt.setArray(15, writeCon.createArrayOf("TEXT",
-                gatheredJournals.getThumbnailIds().toArray(new String[0])));
-        pstmt.executeUpdate();
-        writeCon.close();
-
-
-    }
+        public static void addJournalSource(Response da_response, String artist, HikariDataSource ds, boolean mature) throws SQLException {
+                JournalObject gatheredJournals = gatherJournals(da_response);
+                
+                try (Connection writeCon = ds.getConnection();
+                     PreparedStatement pstmt = writeCon.prepareStatement(SQLManager.grab_sql("new_journal_source"))) {
+                    
+                    writeCon.setAutoCommit(false);
+                    
+                    try {
+                        pstmt.setString(1, artist.toUpperCase(Locale.ROOT));
+                        pstmt.setString(2, UUID.randomUUID().toString());
+                        pstmt.setString(3, gatheredJournals.getLatestTitle());
+                        pstmt.setString(4, gatheredJournals.getJournalUrls().get(0));
+                        pstmt.setString(5, gatheredJournals.getExcerpts().get(0));
+                        pstmt.setArray(6, writeCon.createArrayOf("TEXT",
+                                gatheredJournals.getDeviationIds().toArray(new String[0])));
+                        
+                        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                        pstmt.setTimestamp(7, timestamp);
+                        pstmt.setTimestamp(8, timestamp);
+                        pstmt.setString(9, gatheredJournals.getProfilePicture());
+                        pstmt.setBoolean(10, mature);
+                        pstmt.setString(11, gatheredJournals.getThumbnailImgUrls().get(0));
+                        
+                        // Arrays for journal data
+                        pstmt.setArray(12, writeCon.createArrayOf("TEXT",
+                                gatheredJournals.getJournalUrls().toArray(new String[0])));
+                        pstmt.setArray(13, writeCon.createArrayOf("TEXT",
+                                gatheredJournals.getExcerpts().toArray(new String[0])));
+                        pstmt.setArray(14, writeCon.createArrayOf("TEXT",
+                                gatheredJournals.getTitles().toArray(new String[0])));
+                        pstmt.setArray(15, writeCon.createArrayOf("TEXT",
+                                gatheredJournals.getThumbnailIds().toArray(new String[0])));
+                        
+                        pstmt.executeUpdate();
+                        writeCon.commit();
+                        
+                    } catch (SQLException e) {
+                        try {
+                            writeCon.rollback();
+                        } catch (SQLException rollbackEx) {
+                            e.addSuppressed(rollbackEx);
+                        }
+                        throw e;
+                    }
+                }
+            }
+            
     public static void addJournalTask(HikariDataSource ds, String artist, boolean mature, long serverId,
-                                      long channelId) throws SQLException {
-        String obtSourceSQL = SQLManager.grab_sql("grab_journal_source_dcuuid");
-        Connection obtSourceCon = ds.getConnection();
-        PreparedStatement obtSourceStmt = obtSourceCon.prepareStatement(obtSourceSQL);
-        obtSourceStmt.setString(1, artist.toUpperCase());
-        obtSourceStmt.setBoolean(2, mature);
-        ResultSet obtSource = obtSourceStmt.executeQuery();
-        obtSource.next();
-        String obt_dccuid = obtSource.getString(1);
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                                 long channelId) throws SQLException {
+    String obtSourceSQL = SQLManager.grab_sql("grab_journal_source_dcuuid") + " LIMIT 1"; // Added LIMIT 1
+    String listenerSQL = SQLManager.grab_sql("new_journal_listener");
 
-        String listenerSQL = SQLManager.grab_sql("new_journal_listener");
-        PreparedStatement pstmt = obtSourceCon.prepareStatement(listenerSQL);
-        pstmt.setString(1, artist.toUpperCase());
-        pstmt.setString(2, obt_dccuid);
-        pstmt.setArray(3,obtSource.getArray(2));
-        pstmt.setString(4, timestamp.toString());
-        pstmt.setString(5,timestamp.toString());
-        pstmt.setString(6, obtSource.getString(3));
-        pstmt.setBoolean(7, mature);
-        pstmt.setLong(8, serverId);
-        pstmt.setLong(9, channelId);
-        pstmt.executeUpdate();
-        obtSourceCon.close();
+    try (Connection obtSourceCon = ds.getConnection();
+         PreparedStatement obtSourceStmt = obtSourceCon.prepareStatement(obtSourceSQL)) {
+        
+        obtSourceCon.setAutoCommit(false);
+        
+        try {
+            // Get source data
+            obtSourceStmt.setString(1, artist.toUpperCase());
+            obtSourceStmt.setBoolean(2, mature);
+            
+            try (ResultSet obtSource = obtSourceStmt.executeQuery()) {
+                if (!obtSource.next()) {
+                    throw new SQLException("No journal source found for artist: " + artist);
+                }
+                
+                String obtDccuid = obtSource.getString(1);
+                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
+                // Create new journal listener
+                try (PreparedStatement pstmt = obtSourceCon.prepareStatement(listenerSQL)) {
+                    pstmt.setString(1, artist.toUpperCase());
+                    pstmt.setString(2, obtDccuid);
+                    pstmt.setArray(3, obtSource.getArray(2));
+                    pstmt.setString(4, timestamp.toString());
+                    pstmt.setString(5, timestamp.toString());
+                    pstmt.setString(6, obtSource.getString(3));
+                    pstmt.setBoolean(7, mature);
+                    pstmt.setLong(8, serverId);
+                    pstmt.setLong(9, channelId);
+                    
+                    pstmt.executeUpdate();
+                }
+                
+                obtSourceCon.commit();
+            }
+        } catch (SQLException e) {
+            try {
+                obtSourceCon.rollback();
+            } catch (SQLException rollbackEx) {
+                e.addSuppressed(rollbackEx);
+            }
+            throw e;
+        }
     }
+}
     public static boolean verifySourceJournalExists(HikariDataSource ds, String artist, boolean mature) throws SQLException {
         String journalSql = SQLManager.grab_sql("journal_exists");
         Connection journalConn = ds.getConnection();

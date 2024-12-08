@@ -357,9 +357,9 @@ public class UpdateChannel {
             }
         }
         TextChannel used_channel = messageComponentInteraction.getChannel().orElse(null);
+        Connection commitcon = ds.getConnection();
         try {
             ServerTextChannel stc = used_channel.asServerTextChannel().orElse(null);
-            Connection commitcon = ds.getConnection();
             String commit_sql = SQLManager.grab_sql("update_channel");
             PreparedStatement commit_pstmt = commitcon.prepareStatement(commit_sql);
             long testId = channel.asServerTextChannel().orElse(null).getId();
@@ -369,6 +369,7 @@ public class UpdateChannel {
             commit_pstmt.setString(4, responseProperties.get("artist"));
             commit_pstmt.setLong(5, messageComponentInteraction.getServer().orElse(null).getId());
             commit_pstmt.executeUpdate();
+            commitcon.commit();
             List<cacheStatusManager.CacheMonitorType> currentCacheStatus = cacheStatusManager.getMissingHKeys(redis_pool,
                     messageComponentInteraction.getServer().orElse(null).getIdAsString());
             if(!(cacheStatusManager.needsCacheReimport(currentCacheStatus)))
@@ -407,6 +408,7 @@ public class UpdateChannel {
                     .setContent("Listener has been updated successfully.")
                     .send();
         } catch (SQLException e) {
+            commitcon.rollback();
             e.printStackTrace();
         } catch (IOException e) {
             Sentry.captureException(e);
