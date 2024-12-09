@@ -92,9 +92,6 @@ public class SourceManager {
             p_Picture = "none";
         }
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        try{
-
-        
         PreparedStatement pstmt = all_Folder_Con.prepareStatement(sql);
 
         pstmt.setString(1, artist);
@@ -120,14 +117,7 @@ public class SourceManager {
         pstmt.setArray(10, all_Folder_Con.createArrayOf("TEXT", id_temp_array));
         pstmt.setInt(11, shard_id);
         pstmt.executeUpdate();
-        all_Folder_Con.commit();
-        
         return source_information;
-        }
-        catch(SQLException e){
-            all_Folder_Con.rollback();
-            throw e;
-        }
 
 
     }
@@ -142,216 +132,207 @@ public class SourceManager {
         Response hybrid_data = null;
         String new_url = "";
         String p_picture = "";
-        Connection folder_con = ds.getConnection();
         //TO Add a new ID use the following below.
         //source_information.put("normal-ids", source_information.get("normal-ids").add("new id"))
 
         //HOW TO GET NESTED OBJECTS
         //https://stackoverflow.com/questions/14898768/how-to-access-nested-elements-of-json-object-using-getjsonarray-method
-        try{
-            if(inverse == false) {
-                int offset = 0;
+        if(inverse == false) {
+            int offset = 0;
+            boolean has_more = true;
+            while (has_more) {
+                current_data = daParser.getGalleryFolder(artist, mature, folderid, client_token, offset);
+                has_more = current_data.jsonPath().getBoolean("has_more");
+                //This might be questionable
+                if (!(has_more))
+                    break;
+                else
+                    offset = current_data.jsonPath().getInt("next_offset");
+
+            }
+            if (hybrid) {
+                hybrid_data = daParser.getGalleryFolder(artist, mature, folderid, client_token, 0);
+                gathered_hybrids = mis.gatherGalleryFolderResources(hybrid_data);
+
+            }
+            String sql = SQLManager.grab_sql("new_source");
+            gathered_resources = mis.gatherGalleryFolderResources(current_data);
+            Connection folder_con = ds.getConnection();
+            ArrayList<LinkedHashMap> node = current_data.jsonPath().getJsonObject("results");
+            Iterator<LinkedHashMap> iterator = node.iterator();
+            LinkedHashMap entry = new LinkedHashMap<>();
+            if(!(iterator.hasNext())) {
+                p_picture = "none";
+            } else {
+                entry = iterator.next();
+                LinkedHashMap author = (LinkedHashMap) entry.get("author");
+                p_picture = (String) author.get("usericon");
+
+            }
+            if (p_picture.equals("")) {
+                p_picture = "none";
+            }
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            if (gathered_resources.get("deviation-urls").size() == 0) {
+                new_url = null;
+            } else {
+                ArrayList<String> temp_urls = gathered_resources.get("deviation-urls");
+                new_url = temp_urls.get(temp_urls.size() - 1);
+
+            }
+            if (hybrid){
+                PreparedStatement pstmt = folder_con.prepareStatement(sql);
+                pstmt.setString(1, artist);
+                pstmt.setString(2, folder);
+                pstmt.setString(3, folderid);
+                pstmt.setBoolean(4, inverse);
+                pstmt.setString(5,dcuuid);
+                pstmt.setTimestamp(6, timestamp);
+                pstmt.setTimestamp(7, timestamp);
+                String temp_array[] = gathered_resources.get("img-urls").toArray(new String[0]);
+                pstmt.setArray(8, folder_con.createArrayOf("TEXT", temp_array));
+                pstmt.setString(9, new_url);
+                pstmt.setString(10, p_picture);
+                pstmt.setBoolean(11, mature);
+                temp_array = gathered_resources.get("deviation-urls").toArray(new String[0]);
+                pstmt.setArray(12, folder_con.createArrayOf("TEXT", temp_array));
+                temp_array = gathered_resources.get("deviation-ids").toArray(new String[0]);
+                pstmt.setArray(13, folder_con.createArrayOf("TEXT", temp_array));
+                temp_array = gathered_hybrids.get("deviation-ids").toArray(new String[0]);
+                pstmt.setArray(14, folder_con.createArrayOf("TEXT", temp_array));
+                pstmt.setBoolean(15, hybrid);
+                pstmt.setInt(16, offset);
+                temp_array = gathered_hybrids.get("deviation-urls").toArray(new String[0]);
+                pstmt.setArray(17, folder_con.createArrayOf("TEXT", temp_array));
+                temp_array = gathered_hybrids.get("img-urls").toArray(new String[0]);
+                pstmt.setArray(18, folder_con.createArrayOf("TEXT", temp_array));
+                pstmt.setInt(19, shard_id);
+                pstmt.executeUpdate();
+
+
+            }
+            else{
+                PreparedStatement pstmt = folder_con.prepareStatement(sql);
+                pstmt.setString(1, artist);
+                pstmt.setString(2, folder);
+                pstmt.setString(3, folderid);
+                pstmt.setBoolean(4, inverse);
+                pstmt.setString(5,dcuuid);
+                pstmt.setTimestamp(6, timestamp);
+                pstmt.setTimestamp(7, timestamp);
+                String temp_array[] = gathered_resources.get("img-urls").toArray(new String[0]);
+                pstmt.setArray(8, folder_con.createArrayOf("TEXT", temp_array));
+                pstmt.setString(9, new_url);
+                pstmt.setString(10, p_picture);
+                pstmt.setBoolean(11, mature);
+                temp_array = gathered_resources.get("deviation-urls").toArray(new String[0]);
+                pstmt.setArray(12, folder_con.createArrayOf("TEXT", temp_array));
+                temp_array = gathered_resources.get("deviation-ids").toArray(new String[0]);
+                pstmt.setArray(13, folder_con.createArrayOf("TEXT", temp_array));
+                pstmt.setBoolean(14, hybrid);
+                pstmt.setInt(15, offset);
+                pstmt.setInt(16, shard_id);
+                pstmt.executeUpdate();
+            }
+
+        }
+        else if(inverse)
+        {
+            int offset = 0;
+            current_data = daParser.getGalleryFolder(artist, mature, folderid, client_token, 0);
+            if(hybrid)
+            {
                 boolean has_more = true;
-                while (has_more) {
-                    current_data = daParser.getGalleryFolder(artist, mature, folderid, client_token, offset);
-                    has_more = current_data.jsonPath().getBoolean("has_more");
-                    //This might be questionable
-                    if (!(has_more))
+                while(has_more)
+                {
+                    hybrid_data = daParser.getGalleryFolder(artist, mature, folderid, client_token, offset);
+                    if(!(hybrid_data.jsonPath().getBoolean("has_more")))
                         break;
                     else
-                        offset = current_data.jsonPath().getInt("next_offset");
-
+                        offset = hybrid_data.jsonPath().getInt("next_offset");
                 }
-                if (hybrid) {
-                    hybrid_data = daParser.getGalleryFolder(artist, mature, folderid, client_token, 0);
-                    gathered_hybrids = mis.gatherGalleryFolderResources(hybrid_data);
-
-                }
-                String sql = SQLManager.grab_sql("new_source");
-                gathered_resources = mis.gatherGalleryFolderResources(current_data);
-                ArrayList<LinkedHashMap> node = current_data.jsonPath().getJsonObject("results");
-                Iterator<LinkedHashMap> iterator = node.iterator();
-                LinkedHashMap entry = new LinkedHashMap<>();
-                if(!(iterator.hasNext())) {
-                    p_picture = "none";
-                } else {
-                    entry = iterator.next();
-                    LinkedHashMap author = (LinkedHashMap) entry.get("author");
-                    p_picture = (String) author.get("usericon");
-
-                }
-                if (p_picture.equals("")) {
-                    p_picture = "none";
-                }
-                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                if (gathered_resources.get("deviation-urls").size() == 0) {
-                    new_url = null;
-                } else {
-                    ArrayList<String> temp_urls = gathered_resources.get("deviation-urls");
-                    new_url = temp_urls.get(temp_urls.size() - 1);
-
-                }
-                
-                if (hybrid){
-                    PreparedStatement pstmt = folder_con.prepareStatement(sql);
-                    pstmt.setString(1, artist);
-                    pstmt.setString(2, folder);
-                    pstmt.setString(3, folderid);
-                    pstmt.setBoolean(4, inverse);
-                    pstmt.setString(5,dcuuid);
-                    pstmt.setTimestamp(6, timestamp);
-                    pstmt.setTimestamp(7, timestamp);
-                    String temp_array[] = gathered_resources.get("img-urls").toArray(new String[0]);
-                    pstmt.setArray(8, folder_con.createArrayOf("TEXT", temp_array));
-                    pstmt.setString(9, new_url);
-                    pstmt.setString(10, p_picture);
-                    pstmt.setBoolean(11, mature);
-                    temp_array = gathered_resources.get("deviation-urls").toArray(new String[0]);
-                    pstmt.setArray(12, folder_con.createArrayOf("TEXT", temp_array));
-                    temp_array = gathered_resources.get("deviation-ids").toArray(new String[0]);
-                    pstmt.setArray(13, folder_con.createArrayOf("TEXT", temp_array));
-                    temp_array = gathered_hybrids.get("deviation-ids").toArray(new String[0]);
-                    pstmt.setArray(14, folder_con.createArrayOf("TEXT", temp_array));
-                    pstmt.setBoolean(15, hybrid);
-                    pstmt.setInt(16, offset);
-                    temp_array = gathered_hybrids.get("deviation-urls").toArray(new String[0]);
-                    pstmt.setArray(17, folder_con.createArrayOf("TEXT", temp_array));
-                    temp_array = gathered_hybrids.get("img-urls").toArray(new String[0]);
-                    pstmt.setArray(18, folder_con.createArrayOf("TEXT", temp_array));
-                    pstmt.setInt(19, shard_id);
-                    pstmt.executeUpdate();
-                    folder_con.commit();
-
-
-                }
-                else{
-                    PreparedStatement pstmt = folder_con.prepareStatement(sql);
-                    pstmt.setString(1, artist);
-                    pstmt.setString(2, folder);
-                    pstmt.setString(3, folderid);
-                    pstmt.setBoolean(4, inverse);
-                    pstmt.setString(5,dcuuid);
-                    pstmt.setTimestamp(6, timestamp);
-                    pstmt.setTimestamp(7, timestamp);
-                    String temp_array[] = gathered_resources.get("img-urls").toArray(new String[0]);
-                    pstmt.setArray(8, folder_con.createArrayOf("TEXT", temp_array));
-                    pstmt.setString(9, new_url);
-                    pstmt.setString(10, p_picture);
-                    pstmt.setBoolean(11, mature);
-                    temp_array = gathered_resources.get("deviation-urls").toArray(new String[0]);
-                    pstmt.setArray(12, folder_con.createArrayOf("TEXT", temp_array));
-                    temp_array = gathered_resources.get("deviation-ids").toArray(new String[0]);
-                    pstmt.setArray(13, folder_con.createArrayOf("TEXT", temp_array));
-                    pstmt.setBoolean(14, hybrid);
-                    pstmt.setInt(15, offset);
-                    pstmt.setInt(16, shard_id);
-                    pstmt.executeUpdate();
-                }
+                gathered_hybrids = mis.gatherGalleryFolderResources(hybrid_data);
+            }
+            String sql = SQLManager.grab_sql("new_source");
+            gathered_resources = mis.gatherGalleryFolderResources(current_data);
+            Connection folder_con = ds.getConnection();
+            ArrayList<LinkedHashMap> node = current_data.jsonPath().getJsonObject("results");
+            Iterator<LinkedHashMap> iterator = node.iterator();
+            LinkedHashMap entry = new LinkedHashMap<>();
+            if(!(iterator.hasNext()))  {
+                p_picture = "none";
+            } else {
+                entry = iterator.next();
+                LinkedHashMap author = (LinkedHashMap) entry.get("author");
+                p_picture = (String) author.get("usericon");
+            }
+            if (p_picture.equals("")) {
+                p_picture = "none";
+            }
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            if (gathered_resources.get("deviation-urls").size() == 0) {
+                new_url = null;
+            } else {
+                ArrayList<String> temp_urls = gathered_resources.get("deviation-urls");
+                new_url = temp_urls.get(temp_urls.size() - 1);
 
             }
-            else if(inverse)
-            {
-                int offset = 0;
-                current_data = daParser.getGalleryFolder(artist, mature, folderid, client_token, 0);
-                if(hybrid)
-                {
-                    boolean has_more = true;
-                    while(has_more)
-                    {
-                        hybrid_data = daParser.getGalleryFolder(artist, mature, folderid, client_token, offset);
-                        if(!(hybrid_data.jsonPath().getBoolean("has_more")))
-                            break;
-                        else
-                            offset = hybrid_data.jsonPath().getInt("next_offset");
-                    }
-                    gathered_hybrids = mis.gatherGalleryFolderResources(hybrid_data);
-                }
-                String sql = SQLManager.grab_sql("new_source");
-                gathered_resources = mis.gatherGalleryFolderResources(current_data);
-                ArrayList<LinkedHashMap> node = current_data.jsonPath().getJsonObject("results");
-                Iterator<LinkedHashMap> iterator = node.iterator();
-                LinkedHashMap entry = new LinkedHashMap<>();
-                if(!(iterator.hasNext()))  {
-                    p_picture = "none";
-                } else {
-                    entry = iterator.next();
-                    LinkedHashMap author = (LinkedHashMap) entry.get("author");
-                    p_picture = (String) author.get("usericon");
-                }
-                if (p_picture.equals("")) {
-                    p_picture = "none";
-                }
-                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                if (gathered_resources.get("deviation-urls").size() == 0) {
-                    new_url = null;
-                } else {
-                    ArrayList<String> temp_urls = gathered_resources.get("deviation-urls");
-                    new_url = temp_urls.get(temp_urls.size() - 1);
+            if (hybrid){
+                PreparedStatement pstmt = folder_con.prepareStatement(sql);
+                pstmt.setString(1, artist);
+                pstmt.setString(2, folder);
+                pstmt.setString(3, folderid);
+                pstmt.setBoolean(4, inverse);
+                pstmt.setString(5,dcuuid);
+                pstmt.setTimestamp(6, timestamp);
+                pstmt.setTimestamp(7, timestamp);
+                String temp_array[] = gathered_resources.get("img-urls").toArray(new String[0]);
+                pstmt.setArray(8, folder_con.createArrayOf("TEXT", temp_array));
+                pstmt.setString(9, new_url);
+                pstmt.setString(10, p_picture);
+                pstmt.setBoolean(11, mature);
+                temp_array = gathered_resources.get("deviation-urls").toArray(new String[0]);
+                pstmt.setArray(12, folder_con.createArrayOf("TEXT", temp_array));
+                temp_array = gathered_resources.get("deviation-ids").toArray(new String[0]);
+                pstmt.setArray(13, folder_con.createArrayOf("TEXT", temp_array));
+                temp_array = gathered_hybrids.get("deviation-ids").toArray(new String[0]);
+                pstmt.setArray(14, folder_con.createArrayOf("TEXT", temp_array));
+                pstmt.setBoolean(15, hybrid);
+                pstmt.setInt(16, offset);
+                temp_array = gathered_hybrids.get("deviation-urls").toArray(new String[0]);
+                pstmt.setArray(17, folder_con.createArrayOf("TEXT", temp_array));
+                temp_array = gathered_hybrids.get("img-urls").toArray(new String[0]);
+                pstmt.setArray(18, folder_con.createArrayOf("TEXT", temp_array));
+                pstmt.setInt(19, shard_id);
+                pstmt.executeUpdate();
 
-                }
-                if (hybrid){
-                    PreparedStatement pstmt = folder_con.prepareStatement(sql);
-                    pstmt.setString(1, artist);
-                    pstmt.setString(2, folder);
-                    pstmt.setString(3, folderid);
-                    pstmt.setBoolean(4, inverse);
-                    pstmt.setString(5,dcuuid);
-                    pstmt.setTimestamp(6, timestamp);
-                    pstmt.setTimestamp(7, timestamp);
-                    String temp_array[] = gathered_resources.get("img-urls").toArray(new String[0]);
-                    pstmt.setArray(8, folder_con.createArrayOf("TEXT", temp_array));
-                    pstmt.setString(9, new_url);
-                    pstmt.setString(10, p_picture);
-                    pstmt.setBoolean(11, mature);
-                    temp_array = gathered_resources.get("deviation-urls").toArray(new String[0]);
-                    pstmt.setArray(12, folder_con.createArrayOf("TEXT", temp_array));
-                    temp_array = gathered_resources.get("deviation-ids").toArray(new String[0]);
-                    pstmt.setArray(13, folder_con.createArrayOf("TEXT", temp_array));
-                    temp_array = gathered_hybrids.get("deviation-ids").toArray(new String[0]);
-                    pstmt.setArray(14, folder_con.createArrayOf("TEXT", temp_array));
-                    pstmt.setBoolean(15, hybrid);
-                    pstmt.setInt(16, offset);
-                    temp_array = gathered_hybrids.get("deviation-urls").toArray(new String[0]);
-                    pstmt.setArray(17, folder_con.createArrayOf("TEXT", temp_array));
-                    temp_array = gathered_hybrids.get("img-urls").toArray(new String[0]);
-                    pstmt.setArray(18, folder_con.createArrayOf("TEXT", temp_array));
-                    pstmt.setInt(19, shard_id);
-                    pstmt.executeUpdate();
-                    folder_con.commit();
-
-
-                }
-                else{
-                    PreparedStatement pstmt = folder_con.prepareStatement(sql);
-                    pstmt.setString(1, artist);
-                    pstmt.setString(2, folder);
-                    pstmt.setString(3, folderid);
-                    pstmt.setBoolean(4, inverse);
-                    pstmt.setString(5,dcuuid);
-                    pstmt.setTimestamp(6, timestamp);
-                    pstmt.setTimestamp(7, timestamp);
-                    String temp_array[] = gathered_resources.get("img-urls").toArray(new String[0]);
-                    pstmt.setArray(8, folder_con.createArrayOf("TEXT", temp_array));
-                    pstmt.setString(9, current_data.jsonPath().get().toString());
-                    pstmt.setString(10, new_url);
-                    pstmt.setString(11, p_picture);
-                    pstmt.setBoolean(12, mature);
-                    temp_array = gathered_resources.get("deviation-urls").toArray(new String[0]);
-                    pstmt.setArray(13, folder_con.createArrayOf("TEXT", temp_array));
-                    temp_array = gathered_resources.get("deviation-ids").toArray(new String[0]);
-                    pstmt.setArray(14, folder_con.createArrayOf("TEXT", temp_array));
-                    pstmt.setBoolean(15, hybrid);
-                    pstmt.setInt(16, 0);
-                    pstmt.setInt(17, shard_id);
-                    pstmt.executeUpdate();
-                    folder_con.commit();
-                }
 
             }
-        }
-        catch(SQLException e){
-            folder_con.rollback();
-            throw e;
+            else{
+                PreparedStatement pstmt = folder_con.prepareStatement(sql);
+                pstmt.setString(1, artist);
+                pstmt.setString(2, folder);
+                pstmt.setString(3, folderid);
+                pstmt.setBoolean(4, inverse);
+                pstmt.setString(5,dcuuid);
+                pstmt.setTimestamp(6, timestamp);
+                pstmt.setTimestamp(7, timestamp);
+                String temp_array[] = gathered_resources.get("img-urls").toArray(new String[0]);
+                pstmt.setArray(8, folder_con.createArrayOf("TEXT", temp_array));
+                pstmt.setString(9, current_data.jsonPath().get().toString());
+                pstmt.setString(10, new_url);
+                pstmt.setString(11, p_picture);
+                pstmt.setBoolean(12, mature);
+                temp_array = gathered_resources.get("deviation-urls").toArray(new String[0]);
+                pstmt.setArray(13, folder_con.createArrayOf("TEXT", temp_array));
+                temp_array = gathered_resources.get("deviation-ids").toArray(new String[0]);
+                pstmt.setArray(14, folder_con.createArrayOf("TEXT", temp_array));
+                pstmt.setBoolean(15, hybrid);
+                pstmt.setInt(16, 0);
+                pstmt.setInt(17, shard_id);
+                pstmt.executeUpdate();
+            }
+
         }
 
         return source_information;

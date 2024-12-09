@@ -358,9 +358,9 @@ public class UpdateInverse {
         else{
             obtInverse = folder_inverse.get(inverseKey);
         }
-        Connection commitcon = ds.getConnection();
+
         try{
-            
+            Connection commitcon = ds.getConnection();
             //inverse key has the same value that maturelist would need
             boolean given_inverse_exists = SourceManager.verifySourceExistance(
                     responseProperties.get("artist"), responseProperties.get("folder"), mis.InvertBoolean(obtInverse), true,
@@ -402,7 +402,6 @@ public class UpdateInverse {
                 inverseStatement.setString(8, obt_folderid);
                 inverseStatement.setString(9, "regular");
                 inverseStatement.executeUpdate();
-                commitcon.commit();
                 List<cacheStatusManager.CacheMonitorType> currentCacheStatus = cacheStatusManager.getMissingHKeys(redis_pool,
                         messageComponentInteraction.getServer().orElse(null).getIdAsString());
                 if(!(cacheStatusManager.needsCacheReimport(currentCacheStatus)))
@@ -467,9 +466,9 @@ public class UpdateInverse {
             }
 
         }
+
         catch (SQLException e) {
             e.printStackTrace();
-            commitcon.rollback();
             Sentry.captureException(e);
             messageComponentInteraction.createFollowupMessageBuilder()
                     .setContent("An error has occurred, contact DeviantCord support if this issue persists. Reference errorcode db-ui-01")

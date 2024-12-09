@@ -52,7 +52,6 @@ public class setupRole {
                 long roleId = optionalRole.get().getRoleValue().orElse(null).getId();
                 long roleIdServer = optionalRole.get().getRoleValue().orElse(null).getServer().getId();
                 long slashCommandServerId = slashCommandInteraction.getServer().orElse(null).getId();
-                Connection srConnection = ds.getConnection();
                 if(roleIdServer == slashCommandServerId)
                 {
                     try {
@@ -63,20 +62,19 @@ public class setupRole {
                         redis.expire(String.valueOf(slashCommandServerId)+ "-role", time);
                         redis.close();
                         String sql = SQLManager.grab_sql("update_rank");
+                        Connection srConnection = ds.getConnection();
                         PreparedStatement pstmt = srConnection.prepareStatement(sql);
                         pstmt.setLong(1, roleId);
                         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
                         pstmt.setTimestamp(2, timestamp);
                         pstmt.setLong(3,slashCommandServerId);
                         pstmt.executeUpdate();
-                        srConnection.commit();
                         srConnection.close();
                         slashCommandInteraction.createFollowupMessageBuilder()
                             .setContent("DeviantCord rank has been setup! You can now use DeviantCord fully!")
                             .send();
                     } catch (SQLException e) {
                         Sentry.captureException(e);
-                        srConnection.rollback();
                         throw new RuntimeException(e);
                     }
                 }
@@ -123,30 +121,20 @@ public class setupRole {
         redis.expire(String.valueOf(serverId)+ "-role", time);
         redis.close();
         String sql = SQLManager.grab_sql("update_rank");
-        try(Connection srConnection = ds.getConnection();)
-        {
-            srConnection.setAutoCommit(false);
-            try {
-                
+        try {
+            Connection srConnection = ds.getConnection();
             PreparedStatement pstmt = srConnection.prepareStatement(sql);
             pstmt.setLong(1, obtRoleId);
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             pstmt.setTimestamp(2, timestamp);
             pstmt.setLong(3,serverId);
             pstmt.executeUpdate();
-            srConnection.commit();
             srConnection.close();
         } catch (SQLException e) {
             Sentry.captureException(e);
-            srConnection.rollback();
             throw new RuntimeException(e);
         }
         messageComponentInteraction.createFollowupMessageBuilder()
                 .setContent("DeviantCord rank has been setup! You can now use DeviantCord fully!").send();
-        }
-        catch(SQLException e){
-            Sentry.captureException(e);
-            throw new RuntimeException(e);
-        }
     }
 }

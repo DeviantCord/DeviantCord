@@ -97,7 +97,7 @@ public class SQLManager {
     public static String get_listener = "SELECT * from deviantcord.deviation_listeners WHERE artist = ? AND foldername = ? AND channelid = ?;";
     public static String grab_source_import = "SELECT * FROM deviantcord.deviation_data WHERE folderid = ? AND inverse_folder = ? AND hybrid = ? AND mature = ?;";
     public static String grab_all_journal_import = "SELECT * FROM deviantcord.journal_data";
-    public static String grab_all_source_import = "SELECT * FROM deviantcord.deviation_data_all WHERE artist = ? and mature = ? LIMIT 1";
+    public static String grab_all_source_import = "SELECT * FROM deviantcord.deviation_data_all WHERE artist = ? and mature = ?";
     public static String new_journal_source = "INSERT into deviantcord.journal_data(artist, dc_uuid, latest_title, latest_url, latest_excerpt, " +
             "last_ids, last_check, latest_update, latest_pp, mature, thumb_img_url, last_urls, last_excerpts, " +
             "last_titles, thumb_ids) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";

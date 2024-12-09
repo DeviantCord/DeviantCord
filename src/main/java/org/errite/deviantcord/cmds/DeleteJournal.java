@@ -84,18 +84,11 @@ public class DeleteJournal{
                                 deletestmt.setString(2, obt_listener.get("artist"));
                                 deletestmt.setLong(3, Long.valueOf(obt_listener.get("channelid")));
                                 deletestmt.executeUpdate();
-                                sql_conn.commit();
                                 mci.createFollowupMessageBuilder()
                                         .setContent("Journal Listener in this channel deleted for " +
                                                 obt_listener.get("artist")).send();
                                 sci.createFollowupMessageBuilder().setContent("Listener deleted!").send();
                         } catch (SQLException e) {
-                                try{    
-                                    sql_conn.rollback();
-                                }
-                                catch(SQLException e2){
-                                    e2.addSuppressed(e);
-                                }
                                 throw new RuntimeException(e);
                         }
 

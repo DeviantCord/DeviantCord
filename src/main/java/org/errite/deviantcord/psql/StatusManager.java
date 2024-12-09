@@ -33,13 +33,12 @@ public class StatusManager {
     public static void addStatusSource(Response da_response, String artist, HikariDataSource ds) throws SQLException {
         StatusObject gatheredStatuses = gatherStatuses(da_response);
         Connection writeCon = ds.getConnection();
-        try{
-            String sql = SQLManager.grab_sql("new_status_source");
-            PreparedStatement pstmt = writeCon.prepareStatement(sql);
-            pstmt.setString(1, artist.toUpperCase(Locale.ROOT));
-            UUID uuid = UUID.randomUUID();
-            pstmt.setString(2,uuid.toString());
-            pstmt.setArray(3, writeCon.createArrayOf("TEXT", gatheredStatuses.getStatusIds().toArray()));
+        String sql = SQLManager.grab_sql("new_status_source");
+        PreparedStatement pstmt = writeCon.prepareStatement(sql);
+        pstmt.setString(1, artist.toUpperCase(Locale.ROOT));
+        UUID uuid = UUID.randomUUID();
+        pstmt.setString(2,uuid.toString());
+        pstmt.setArray(3, writeCon.createArrayOf("TEXT", gatheredStatuses.getStatusIds().toArray()));
         pstmt.setArray(4, writeCon.createArrayOf("TEXT", gatheredStatuses.getThumbnailImgUrls().toArray(new String[0])));
         pstmt.setArray(5, writeCon.createArrayOf("TEXT", gatheredStatuses.getStatusUrls().toArray()));
         pstmt.setArray(6, writeCon.createArrayOf("TEXT", gatheredStatuses.getExcerpts().toArray(new String[0])));
@@ -49,13 +48,7 @@ public class StatusManager {
         pstmt.setString(9, gatheredStatuses.getProfilePic());
         pstmt.setArray(10, writeCon.createArrayOf("TEXT",gatheredStatuses.getThumbnailIds().toArray()));
         pstmt.executeUpdate();
-        writeCon.commit();
         writeCon.close();
-        }
-        catch(SQLException e){
-            writeCon.rollback();
-            throw e;
-        }
 
 
     }
@@ -63,13 +56,12 @@ public class StatusManager {
                                       long channelId) throws SQLException {
         String obtSourceSQL = SQLManager.grab_sql("grab_status_source_dcuuid");
         Connection obtSourceCon = ds.getConnection();
-        try{
-            PreparedStatement obtSourceStmt = obtSourceCon.prepareStatement(obtSourceSQL);
-            obtSourceStmt.setString(1, artist);
-            ResultSet obtSource = obtSourceStmt.executeQuery();
-            obtSource.next();
-            String obt_dccuid = obtSource.getString(1);
-            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        PreparedStatement obtSourceStmt = obtSourceCon.prepareStatement(obtSourceSQL);
+        obtSourceStmt.setString(1, artist);
+        ResultSet obtSource = obtSourceStmt.executeQuery();
+        obtSource.next();
+        String obt_dccuid = obtSource.getString(1);
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
         String listenerSQL = SQLManager.grab_sql("new_status_listener");
         PreparedStatement pstmt = obtSourceCon.prepareStatement(listenerSQL);
@@ -82,14 +74,7 @@ public class StatusManager {
         pstmt.setLong(7, serverId);
         pstmt.setLong(8, channelId);
         pstmt.executeUpdate();
-        obtSourceCon.commit();
         obtSourceCon.close();
-        }
-        catch(SQLException e){
-            obtSourceCon.rollback();
-            throw e;
-        }
-
 
     }
     public static boolean verifySourceStatusExists(HikariDataSource ds, String artist) throws SQLException {
