@@ -101,7 +101,10 @@ public class DeleteFolder {
                 });
     }
     //TODO This needs to be implemented and the necessary changes above. The below method should grab the information
-    // from Valkey and then update the previously existing message.
+    // from Valkey and then update the previously existing message with the appropriate listeners
+    // This is due to the limit on components from Discord that I was aware of.
+    // Valkey should also track the current index. The command router will need to be updated both in cmds and in sd
+    // for the command ID parser
     public static void nextFolderPage(MessageComponentInteraction mci, HikariDataSource ds, Jedis redis_pool, DiscordApi api)
     {
 
