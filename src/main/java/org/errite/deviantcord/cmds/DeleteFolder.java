@@ -34,7 +34,7 @@ public class DeleteFolder {
     public static void deletefolder(SlashCommandInteraction sci, HikariDataSource ds,
                                      JedisPool redis_pool, DiscordApi api) throws SQLException
     {
-        sci.respondLater(true);
+        //sci.respondLater(true);
         L1CheckObject checkObject = L1Check.checkL1(sci,ds, redis_pool);
         TextChannel used_channel = sci.getChannel().orElse(null);
         if(checkObject.isFailedCheck())
@@ -64,7 +64,11 @@ public class DeleteFolder {
         //TODO This current implementation will work for most people. If they have a lot of listeners then,
         // We need to figure out a way to show the listeners without hitting the character limit
         // https://stackoverflow.com/questions/47062813/how-to-get-the-size-of-a-resultset
+
+        String user_id = sci.getUser().getIdAsString();
+        String
         while(rs.next()) {
+
             //Declare the temporary hashmap that we will put into obt_listeners
             HashMap<String, String> temp_hmap = new HashMap<String, String>();
             //Grab information from the resultset
@@ -86,7 +90,26 @@ public class DeleteFolder {
             index++;
         }
         mb.setFlags(MessageFlag.EPHEMERAL);
-        mb.editOriginalResponse(sci);
+        mb.editOriginalResponse(sci) // Pass the interaction here
+                .thenRun(() -> {
+                    System.out.println("Response for interaction has been sent successfully!");
+                    // Add additional logic if necessary
+                })
+                .exceptionally(ex -> {
+                    System.err.println("Failed to send response for interaction: " + ex.getMessage());
+                    return null; // Handle errors gracefully
+                });
+    }
+    //TODO This needs to be implemented and the necessary changes above. The below method should grab the information
+    // from Valkey and then update the previously existing message.
+    public static void nextFolderPage(MessageComponentInteraction mci, HikariDataSource ds, Jedis redis_pool, DiscordApi api)
+    {
+
+    }
+
+    public static void previousFolderPage(MessageComponentInteraction mci, HikariDataSource ds, Jedis redis_pool, DiscordApi api)
+    {
+
     }
     public static void deleteFolderAction(MessageComponentInteraction mci, HikariDataSource ds,
                                           JedisPool redis_pool, String da_token, 

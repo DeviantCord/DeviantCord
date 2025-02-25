@@ -42,4 +42,15 @@ public class DBUtils {
             return false;
         }
     }
+
+    public static int getResultSetSize(ResultSet given_rs) throws SQLException {
+        int rowCount = 0;
+        while (given_rs.next()) {
+            rowCount++;
+        }
+        // Reset cursor back to the beginning if needed
+        given_rs.beforeFirst();
+        return rowCount;
+
+    }
 }

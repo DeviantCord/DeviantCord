@@ -30,5 +30,7 @@ public class commandRouter {
             setupRole.setupRoleAction(messageComponentInteraction,ds,redis_pool,da_token,api);
         else if(obtCommand.equals(commandId.Command.AddPost))
             AddPost.addJournalAction(messageComponentInteraction,ds,redis_pool,da_token,api);
+        else if(obtCommand.equals(commandId.Command.NextFolderPage))
+            DeleteFolder.
     }
 }
