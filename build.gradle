@@ -5,13 +5,6 @@ plugins {
 group 'org.errite.deviantcord'
 version '4.0.9-beta'
 
-// Use Java 17 for compilation
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
-}
-
 repositories {
     mavenCentral()
 }
@@ -28,7 +21,6 @@ dependencies {
 test {
     useJUnitPlatform()
 }
-
 jar {
     manifest {
         attributes(
@@ -40,7 +32,7 @@ jar {
 task fatJar(type: Jar) {
     manifest.from jar.manifest
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    archiveClassifier = 'all'
+    classifier = 'all'
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     } {
@@ -50,7 +42,6 @@ task fatJar(type: Jar) {
     }
     with jar
 }
-
 artifacts {
     archives fatJar
 }

@@ -1,10 +1,2 @@
 
 .gradle/
-
-build/
-
-bin/
-
-gradle/
-
-*.json
