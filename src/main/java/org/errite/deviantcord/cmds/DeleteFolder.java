@@ -13,6 +13,7 @@ import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.MessageFlag;
 import org.javacord.api.entity.message.component.ActionRow;
 import org.javacord.api.entity.message.component.Button;
+import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.interaction.MessageComponentInteraction;
 import org.javacord.api.interaction.SlashCommandInteraction;
@@ -105,7 +106,7 @@ public class DeleteFolder {
 
         Jedis redis_conn = redis_pool.getResource();
         redis_conn.setex(redisKeyDirectory.get().get("current-min"), 7200, String.valueOf(0));
-        redis_conn.setex(redisKeyDirectory.get().get("current-max"), 7200, String.valueOf(4));
+        redis_conn.setex(redisKeyDirectory.get().get("current-max"), 7200, String.valueOf(3));
         redis_conn.setex(redisKeyDirectory.get().get("max"), 7200, String.valueOf(index));
         redis_conn.rpush(redisKeyDirectory.get().get("artists"), redisArtists.toArray(new String[0]));
         redis_conn.expire(redisKeyDirectory.get().get("artists"), 7200);
@@ -127,6 +128,7 @@ public class DeleteFolder {
     // for the command ID parser
     public static void nextFolderPage(MessageComponentInteraction mci, HikariDataSource ds, JedisPool redis_pool, DiscordApi api)
     {
+        //mci.respondLater(true);
         //Grabbing the necessary information to interact with the main Directory Hashmap on Redis
         String responseId = mci.getCustomId();
         String responseServerId = commandIdParser.parsePageString(responseId);
@@ -162,15 +164,25 @@ public class DeleteFolder {
                 String buttonKey = artist + "-" + foldername + " in " + channel_name.getName();
                 mb.addComponents(ActionRow.of(Button.primary(responseKey, buttonKey)));
             }
+            index++;
         }
         if (!(max_index == Integer.parseInt(redis_con.get(redis_con.hget(redisDirectoryKey, "max")))))
             mb.addComponents(ActionRow.of(Button.primary("np-" + responseServerId, "Next Page")));
         redis_con.set(redis_con.hget(redisDirectoryKey, "current-min"), String.valueOf(current_index));
         redis_con.set(redis_con.hget(redisDirectoryKey, "current-max"), String.valueOf(max_index));
         redis_con.close();
-        mb.addComponents(ActionRow.of(Button.primary("pr-" + responseServerId, "Previous Page")));
-        mb.setFlags(MessageFlag.EPHEMERAL);
-        mb.editOriginalResponse(mci);
+
+
+        try {
+            mb.addComponents(ActionRow.of(Button.primary("pr-" + responseServerId, "Previous Page")));
+            mb.setFlags(MessageFlag.EPHEMERAL);
+            mb.editOriginalResponse(mci);
+            System.out.println("Message sent");
+        }
+        catch(Exception ex)
+        {
+            System.out.println(ex);
+        }
     }
 
     public static void previousFolderPage(MessageComponentInteraction mci, HikariDataSource ds, JedisPool redis_pool, DiscordApi api)
