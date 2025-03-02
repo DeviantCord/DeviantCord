@@ -32,7 +32,7 @@ jar {
 task fatJar(type: Jar) {
     manifest.from jar.manifest
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    classifier = 'all'
+    archiveClassifier.set('all') // Fixed the typo here
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     } {

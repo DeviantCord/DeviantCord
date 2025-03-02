@@ -22,6 +22,7 @@ import java.util.HashMap;
 public class commandIdParser {
 
 
+    public static String parsePageString(String given_string) { return given_string.substring(2, given_string.length()); }
     public static HashMap<String, String> parseRoleUpdateString(String given_string)
     {
         //uiFI-:-211349864133558272FI-:-Xael-TheArtistFI-:-All FolderFI-:-759461677510557726FI-:-292120646337560579
@@ -217,4 +218,6 @@ public class commandIdParser {
         else
             throw new SecurityException("An invalid matureField was received from a Discord Interaction!");
     }
+
+
 }
