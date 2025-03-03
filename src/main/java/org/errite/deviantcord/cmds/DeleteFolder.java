@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.UUID;
 
 public class DeleteFolder {
 
@@ -62,6 +63,8 @@ public class DeleteFolder {
         ArrayList<HashMap<String, String>> obt_listeners = new ArrayList<HashMap<String, String>>();
         mb.setContent("Please select the listener you want to delete");
         int index = 0;
+        UUID uuid = UUID.randomUUID();
+        String uuid_string = uuid.toString();
         while(rs.next()) {
 
             //Declare the temporary hashmap that we will put into obt_listeners
@@ -93,10 +96,11 @@ public class DeleteFolder {
         }
         if(index > 4)
         {
-            mb.addComponents(ActionRow.of(Button.primary("np-" + String.valueOf(checkObject.getServerId()), "Next Page")));
+            mb.addComponents(ActionRow.of(Button.primary("npFI-:-" + uuid_string + "FI-:-" +
+                    String.valueOf(checkObject.getServerId()), "Next Page")));
         }
         Server obt_server = checkObject.getObtServer();
-        String redisKey = obt_server.getId() + "-deletefolder-";
+        String redisKey = obt_server.getId() + "-deletefolder-" + uuid_string + "-";
         redisKeyDirectory.get().put("current-min", redisKey + "current-min");
         redisKeyDirectory.get().put("current-max", redisKey + "current-max");
         redisKeyDirectory.get().put("channels", redisKey + "channels");
@@ -131,8 +135,11 @@ public class DeleteFolder {
         //mci.respondLater(true);
         //Grabbing the necessary information to interact with the main Directory Hashmap on Redis
         String responseId = mci.getCustomId();
-        String responseServerId = commandIdParser.parsePageString(responseId);
-        String redisDirectoryKey = responseServerId + "-deletefolder-keys";
+        HashMap<String, String> obt_properties = commandIdParser.parsePageString(responseId);
+        String responseServerId = obt_properties.get("serverid");
+        String responseUUID = obt_properties.get("uuid");
+        String redisKey = responseServerId + "-deletefolder-" + responseUUID + "-";
+        String redisDirectoryKey = responseServerId + "-deletefolder-"+ responseUUID + "-keys";
 
         //Grab the cached information from Redis/Valkey, and put only the needed information using the current index
         // and max index
@@ -167,14 +174,14 @@ public class DeleteFolder {
             index++;
         }
         if (!(max_index == Integer.parseInt(redis_con.get(redis_con.hget(redisDirectoryKey, "max")))))
-            mb.addComponents(ActionRow.of(Button.primary("np-" + responseServerId, "Next Page")));
+            mb.addComponents(ActionRow.of(Button.primary("npFI-:-" + responseUUID + "FI-:-" + responseServerId, "Next Page")));
         redis_con.set(redis_con.hget(redisDirectoryKey, "current-min"), String.valueOf(current_index));
         redis_con.set(redis_con.hget(redisDirectoryKey, "current-max"), String.valueOf(max_index));
         redis_con.close();
 
 
         try {
-            mb.addComponents(ActionRow.of(Button.primary("pr-" + responseServerId, "Previous Page")));
+            mb.addComponents(ActionRow.of(Button.primary("prFI-:-" + responseUUID + "FI-:-" + responseServerId, "Previous Page")));
             mb.setFlags(MessageFlag.EPHEMERAL);
             mb.editOriginalResponse(mci);
             System.out.println("Message sent");
@@ -189,8 +196,11 @@ public class DeleteFolder {
     {
         //Grabbing the necessary information to interact with the main Directory Hashmap on Redis
         String responseId = mci.getCustomId();
-        String responseServerId = commandIdParser.parsePageString(responseId);
-        String redisDirectoryKey = responseServerId + "-deletefolder-keys";
+        HashMap<String, String> obt_properties = commandIdParser.parsePageString(responseId);
+        String responseServerId = obt_properties.get("serverid");
+        String responseUUID = obt_properties.get("uuid");
+        String redisKey = responseServerId + "-deletefolder-" + responseUUID + "-";
+        String redisDirectoryKey = responseServerId + "-deletefolder-"+ responseUUID + "-keys";
 
         //Grab the cached information from Redis/Valkey, and put only the needed information using the current index
         // and max index
@@ -222,12 +232,14 @@ public class DeleteFolder {
                 mb.addComponents(ActionRow.of(Button.primary(responseKey, buttonKey)));
             }
         }
+        //"prFI-:-30b1a925-cbf9-4bd4-abad-d4ae08815db0FI-:-575459125232795652"
         if (!(current_index == 0))
-            mb.addComponents(ActionRow.of(Button.primary("pr-" + responseServerId, "Previous Page")));
+            mb.addComponents(ActionRow.of(Button.primary("prFI-:-" + responseUUID + "FI-:-" + responseServerId,
+                    "Previous Page")));
         redis_con.set(redis_con.hget(redisDirectoryKey, "current-min"), String.valueOf(current_index));
         redis_con.set(redis_con.hget(redisDirectoryKey, "current-max"), String.valueOf(max_index));
         redis_con.close();
-        mb.addComponents(ActionRow.of(Button.primary("np-" + responseServerId, "Next Page")));
+        mb.addComponents(ActionRow.of(Button.primary("npFI-:-" + responseUUID + "FI-:-" + responseServerId, "Next Page")));
         mb.setFlags(MessageFlag.EPHEMERAL);
         mb.editOriginalResponse(mci);
 
