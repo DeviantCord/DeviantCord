@@ -173,23 +173,19 @@ public class DeleteFolder {
             }
             index++;
         }
-        if (!(max_index == Integer.parseInt(redis_con.get(redis_con.hget(redisDirectoryKey, "max")))))
+        if (!(index < 3))
             mb.addComponents(ActionRow.of(Button.primary("npFI-:-" + responseUUID + "FI-:-" + responseServerId, "Next Page")));
+
         redis_con.set(redis_con.hget(redisDirectoryKey, "current-min"), String.valueOf(current_index));
         redis_con.set(redis_con.hget(redisDirectoryKey, "current-max"), String.valueOf(max_index));
         redis_con.close();
 
 
-        try {
-            mb.addComponents(ActionRow.of(Button.primary("prFI-:-" + responseUUID + "FI-:-" + responseServerId, "Previous Page")));
-            mb.setFlags(MessageFlag.EPHEMERAL);
-            mb.editOriginalResponse(mci);
-            System.out.println("Message sent");
-        }
-        catch(Exception ex)
-        {
-            System.out.println(ex);
-        }
+        mb.addComponents(ActionRow.of(Button.primary("prFI-:-" + responseUUID + "FI-:-" + responseServerId, "Previous Page")));
+        mb.setFlags(MessageFlag.EPHEMERAL);
+        mb.editOriginalResponse(mci);
+        System.out.println("Message sent");
+
     }
 
     public static void previousFolderPage(MessageComponentInteraction mci, HikariDataSource ds, JedisPool redis_pool, DiscordApi api)
@@ -231,6 +227,7 @@ public class DeleteFolder {
                 String buttonKey = artist + "-" + foldername + " in " + channel_name.getName();
                 mb.addComponents(ActionRow.of(Button.primary(responseKey, buttonKey)));
             }
+            ++index;
         }
         //"prFI-:-30b1a925-cbf9-4bd4-abad-d4ae08815db0FI-:-575459125232795652"
         if (!(current_index == 0))

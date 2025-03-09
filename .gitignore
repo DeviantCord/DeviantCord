@@ -10,3 +10,7 @@ gradle/
 *.json
 
 .idea/
+
+rabbit.json
+
+redis.json
