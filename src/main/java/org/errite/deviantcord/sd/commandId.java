@@ -30,6 +30,8 @@ public class commandId {
         AddPost,
         AddFolder,
         AddAllFolder,
+        NextPage,
+        PreviousPage,
         SecurityExploit
     }
 
@@ -51,6 +53,10 @@ public class commandId {
                 return Command.DeleteJournal;
             case "df":
                 return Command.DeleteFolder;
+            case "np":
+                return Command.NextPage;
+            case "pr":
+                return Command.PreviousPage;
             case "sr":
                 return Command.SetupRole;
             case "uc":

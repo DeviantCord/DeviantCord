@@ -1,2 +1,16 @@
 
 .gradle/
+
+build/
+
+bin/
+
+gradle/
+
+*.json
+
+.idea/
+
+rabbit.json
+
+redis.json

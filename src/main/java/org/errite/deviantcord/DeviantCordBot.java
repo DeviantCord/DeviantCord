@@ -19,18 +19,15 @@ package org.errite.deviantcord;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import io.restassured.response.Response;
 import io.sentry.Sentry;
 
 import org.errite.deviantcord.cache.RedisConfig;
 import org.errite.deviantcord.cmds.*;
-import org.errite.deviantcord.dls.DlsParser;
 import org.errite.deviantcord.psql.SQLManager;
 import org.errite.deviantcord.types.DeviantRole;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.Javacord;
-import org.javacord.api.entity.server.Server;
 import org.javacord.api.event.server.ServerJoinEvent;
 import org.javacord.api.event.server.ServerLeaveEvent;
 import org.javacord.api.interaction.*;
@@ -43,13 +40,8 @@ import org.errite.deviantcord.notifications.RabbitMQManager;
 import org.errite.deviantcord.notifications.notificationManager;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-import redis.clients.jedis.Protocol;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.DeliverCallback;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
-import java.util.Map;
 
 
 
@@ -58,29 +50,19 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.*;
-import java.time.Duration;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Properties;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
-
-import com.zaxxer.hikari.HikariPoolMXBean;
-
 import org.javacord.api.entity.intent.Intent;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import org.javacord.api.entity.message.MessageFlag;
 
 import org.errite.deviantcord.threading.ExecutorManager;
 import org.errite.deviantcord.health.DatabaseHealthManager;
-import org.errite.deviantcord.notifications.RabbitMQManager;
 import org.errite.deviantcord.util.configreader;
 import org.errite.deviantcord.cmds.CommandHandler;
 
-import org.errite.deviantcord.cache.RedisConfig;
 public class DeviantCordBot {
 
     // Add at class level with other static variables
@@ -130,8 +112,8 @@ public class DeviantCordBot {
 
     public static void main(String[] args) {
         System.out.println("NOTE: THIS IS AN TESTING BUILD, ");
-        System.out.println("DeviantCord Beta-V4.0.9");
-        System.out.println("Developed by Errite Softworks LLC, 2024");
+        System.out.println("DeviantCord Beta-V4.0.10");
+        System.out.println("Developed by Errite Softworks LLC, 2025");
         System.out.println("Current Javacord Version " + Javacord.VERSION);
         System.out.println("\nStarting Sentry...");
         JSONParser configparser = new JSONParser();

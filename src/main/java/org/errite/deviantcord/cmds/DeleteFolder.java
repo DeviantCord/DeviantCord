@@ -13,6 +13,8 @@ import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.MessageFlag;
 import org.javacord.api.entity.message.component.ActionRow;
 import org.javacord.api.entity.message.component.Button;
+import org.javacord.api.entity.message.embed.EmbedBuilder;
+import org.javacord.api.entity.server.Server;
 import org.javacord.api.interaction.MessageComponentInteraction;
 import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.interaction.callback.InteractionMessageBuilder;
@@ -28,6 +30,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.UUID;
 
 public class DeleteFolder {
 
@@ -44,50 +47,201 @@ public class DeleteFolder {
                     .send();
             return;
         }
-        AtomicReference<HashMap<String, Boolean>> redisMature = new AtomicReference<>(new HashMap<>());
-        AtomicReference<HashMap<String, Boolean>> redisInverse = new AtomicReference<>(new HashMap<>());
-        AtomicReference<HashMap<String, List<String>>> redisFolders = new AtomicReference<>(new HashMap<>());
-        AtomicReference<HashMap<String, List<Long>>> redisChannels = new AtomicReference<>(new HashMap<>());
-        AtomicReference<HashSet<String>> redisArtists = new AtomicReference<>(new HashSet<>());
+        //Redis
+        AtomicReference<HashMap<String, String>> redisKeyDirectory = new AtomicReference<>(new HashMap<>());
+        ArrayList<String> redisFolders = new ArrayList<>();
+        ArrayList<String> redisChannels = new ArrayList<>();
+        ArrayList<String> redisArtists = new ArrayList<>();
         Connection sql_conn = ds.getConnection();
         String channel_sql = SQLManager.grab_sql("get_channels_by_server");
         PreparedStatement pstmt = sql_conn.prepareStatement(channel_sql);
         pstmt.setLong(1, checkObject.getServerId());
 
-        //TODO check what happens what the size is when invalid artist is sent
         ResultSet rs = pstmt.executeQuery();
         InteractionMessageBuilder mb = new InteractionMessageBuilder();
         int current_index = 0;
         ArrayList<HashMap<String, String>> obt_listeners = new ArrayList<HashMap<String, String>>();
         mb.setContent("Please select the listener you want to delete");
         int index = 0;
-        //TODO This current implementation will work for most people. If they have a lot of listeners then,
-        // We need to figure out a way to show the listeners without hitting the character limit
-        // https://stackoverflow.com/questions/47062813/how-to-get-the-size-of-a-resultset
+        UUID uuid = UUID.randomUUID();
+        String uuid_string = uuid.toString();
         while(rs.next()) {
+
             //Declare the temporary hashmap that we will put into obt_listeners
             HashMap<String, String> temp_hmap = new HashMap<String, String>();
             //Grab information from the resultset
             long obt_id = rs.getLong("channelid");
             String artist = rs.getString("artist");
             String foldername = rs.getString("foldername");
+            TextChannel obt_tc = api.getTextChannelById(obt_id).orElse(null);
+            ServerTextChannel channel_name = obt_tc.asServerTextChannel().orElse(null);
+            redisChannels.add(String.valueOf(obt_id));
+            redisFolders.add(foldername);
+            redisArtists.add(artist);
+
             //Put necessary information into the Hashmap
             temp_hmap.put("artist", artist);
             temp_hmap.put("foldername", foldername);
-            TextChannel obt_tc = api.getTextChannelById(obt_id).orElse(null);
-            ServerTextChannel channel_name = obt_tc.asServerTextChannel().orElse(null);
             temp_hmap.put("channelname", channel_name.getName());
             temp_hmap.put("channelid", String.valueOf(obt_id));
-            String responseKey = "dfFI-:-" + channel_name.getIdAsString() + "FI-:-" + artist.toUpperCase() + "FI-:-"
-                    + foldername.toUpperCase();
-            String buttonKey = artist + "-" + foldername + " in " + channel_name.getName();
-            mb.addComponents(ActionRow.of(Button.primary(responseKey, buttonKey)));
+            if(index < 4)
+            {
+                String responseKey = "dfFI-:-" + channel_name.getIdAsString() + "FI-:-" + artist.toUpperCase() + "FI-:-"
+                        + foldername.toUpperCase();
+                String buttonKey = artist + "-" + foldername + " in " + channel_name.getName();
+                mb.addComponents(ActionRow.of(Button.primary(responseKey, buttonKey)));
+            }
             obt_listeners.add(temp_hmap);
             index++;
         }
+        if(index > 4)
+        {
+            mb.addComponents(ActionRow.of(Button.primary("npFI-:-" + uuid_string + "FI-:-" +
+                    String.valueOf(checkObject.getServerId()), "Next Page")));
+        }
+        Server obt_server = checkObject.getObtServer();
+        String redisKey = obt_server.getId() + "-deletefolder-" + uuid_string + "-";
+        redisKeyDirectory.get().put("current-min", redisKey + "current-min");
+        redisKeyDirectory.get().put("current-max", redisKey + "current-max");
+        redisKeyDirectory.get().put("channels", redisKey + "channels");
+        redisKeyDirectory.get().put("folders", redisKey + "folders");
+        redisKeyDirectory.get().put("artists", redisKey + "artists");
+        redisKeyDirectory.get().put("max", redisKey + "max");
+
+        Jedis redis_conn = redis_pool.getResource();
+        redis_conn.setex(redisKeyDirectory.get().get("current-min"), 7200, String.valueOf(0));
+        redis_conn.setex(redisKeyDirectory.get().get("current-max"), 7200, String.valueOf(3));
+        redis_conn.setex(redisKeyDirectory.get().get("max"), 7200, String.valueOf(index));
+        redis_conn.rpush(redisKeyDirectory.get().get("artists"), redisArtists.toArray(new String[0]));
+        redis_conn.expire(redisKeyDirectory.get().get("artists"), 7200);
+        redis_conn.rpush(redisKeyDirectory.get().get("folders"), redisFolders.toArray(new String[0]));
+        redis_conn.expire(redisKeyDirectory.get().get("folders"), 7200);
+        redis_conn.rpush(redisKeyDirectory.get().get("channels"), redisChannels.toArray(new String[0]));
+        redis_conn.expire(redisKeyDirectory.get().get("channels"), 7200);
+        redis_conn.hmset(redisKey + "keys", redisKeyDirectory.get());
+        redis_conn.expire(redisKey + "keys", 7200);
+        redis_conn.close();
+
         mb.setFlags(MessageFlag.EPHEMERAL);
         mb.editOriginalResponse(sci);
     }
+    //TODO This needs to be implemented and the necessary changes above. The below method should grab the information
+    // from Valkey and then update the previously existing message with the appropriate listeners
+    // This is due to the limit on components from Discord that I was aware of.
+    // Valkey should also track the current index. The command router will need to be updated both in cmds and in sd
+    // for the command ID parser
+    public static void nextFolderPage(MessageComponentInteraction mci, HikariDataSource ds, JedisPool redis_pool, DiscordApi api)
+    {
+        //mci.respondLater(true);
+        //Grabbing the necessary information to interact with the main Directory Hashmap on Redis
+        String responseId = mci.getCustomId();
+        HashMap<String, String> obt_properties = commandIdParser.parsePageString(responseId);
+        String responseServerId = obt_properties.get("serverid");
+        String responseUUID = obt_properties.get("uuid");
+        String redisKey = responseServerId + "-deletefolder-" + responseUUID + "-";
+        String redisDirectoryKey = responseServerId + "-deletefolder-"+ responseUUID + "-keys";
+
+        //Grab the cached information from Redis/Valkey, and put only the needed information using the current index
+        // and max index
+        Jedis redis_con = redis_pool.getResource();
+        int current_index = Integer.parseInt(redis_con.get(redis_con.hget(redisDirectoryKey, "current-min"))) + 3;
+        int max_index = Integer.parseInt(redis_con.get(redis_con.hget(redisDirectoryKey, "current-max"))) + 3;
+        List<String> channels = redis_con.lrange(redis_con.hget(redisDirectoryKey, "channels"), current_index, max_index);
+        List<String> folders = redis_con.lrange(redis_con.hget(redisDirectoryKey, "folders"), current_index, max_index);
+        List<String> artists = redis_con.lrange(redis_con.hget(redisDirectoryKey, "artists"), current_index, max_index);
+        InteractionMessageBuilder mb = new InteractionMessageBuilder();
+        mb.setContent("Please select the listener you want to delete");
+        int index = 0;
+
+        for(String channel : channels)
+        {
+            //Iterate through the necessary information. and add the required buttons
+            String artist = artists.get(index);
+            String foldername = folders.get(index);
+            long channel_id = Long.valueOf(channel);
+            TextChannel obt_tce = api.getTextChannelById(channel_id).orElse(null);
+            ServerTextChannel channel_name = obt_tce.asServerTextChannel().orElse(null);
+
+            // We will only adding 3 listeners at a time to account for the previous and next button possibly being
+            // present
+            if(index < 3)
+            {
+                String responseKey = "dfFI-:-" + channel_name.getIdAsString() + "FI-:-" + artist.toUpperCase() + "FI-:-"
+                        + foldername.toUpperCase();
+                String buttonKey = artist + "-" + foldername + " in " + channel_name.getName();
+                mb.addComponents(ActionRow.of(Button.primary(responseKey, buttonKey)));
+            }
+            index++;
+        }
+        if (!(index < 3))
+            mb.addComponents(ActionRow.of(Button.primary("npFI-:-" + responseUUID + "FI-:-" + responseServerId, "Next Page")));
+
+        redis_con.set(redis_con.hget(redisDirectoryKey, "current-min"), String.valueOf(current_index));
+        redis_con.set(redis_con.hget(redisDirectoryKey, "current-max"), String.valueOf(max_index));
+        redis_con.close();
+
+
+        mb.addComponents(ActionRow.of(Button.primary("prFI-:-" + responseUUID + "FI-:-" + responseServerId, "Previous Page")));
+        mb.setFlags(MessageFlag.EPHEMERAL);
+        mb.editOriginalResponse(mci);
+        System.out.println("Message sent");
+
+    }
+
+    public static void previousFolderPage(MessageComponentInteraction mci, HikariDataSource ds, JedisPool redis_pool, DiscordApi api)
+    {
+        //Grabbing the necessary information to interact with the main Directory Hashmap on Redis
+        String responseId = mci.getCustomId();
+        HashMap<String, String> obt_properties = commandIdParser.parsePageString(responseId);
+        String responseServerId = obt_properties.get("serverid");
+        String responseUUID = obt_properties.get("uuid");
+        String redisKey = responseServerId + "-deletefolder-" + responseUUID + "-";
+        String redisDirectoryKey = responseServerId + "-deletefolder-"+ responseUUID + "-keys";
+
+        //Grab the cached information from Redis/Valkey, and put only the needed information using the current index
+        // and max index
+        Jedis redis_con = redis_pool.getResource();
+        int current_index = Integer.parseInt(redis_con.get(redis_con.hget(redisDirectoryKey, "current-min"))) -3;
+        int max_index = Integer.parseInt(redis_con.get(redis_con.hget(redisDirectoryKey, "current-max"))) -3;
+        List<String> channels = redis_con.lrange(redis_con.hget(redisDirectoryKey, "channels"), current_index, max_index);
+        List<String> folders = redis_con.lrange(redis_con.hget(redisDirectoryKey, "folders"), current_index, max_index);
+        List<String> artists = redis_con.lrange(redis_con.hget(redisDirectoryKey, "artists"), current_index, max_index);
+        InteractionMessageBuilder mb = new InteractionMessageBuilder();
+        mb.setContent("Please select the listener you want to delete");
+        int index = 0;
+        for(String channel : channels)
+        {
+            //Iterate through the necessary information. and add the required buttons
+            String artist = artists.get(index);
+            String foldername = folders.get(index);
+            long channel_id = Long.valueOf(channel);
+            TextChannel obt_tce = api.getTextChannelById(channel_id).orElse(null);
+            ServerTextChannel channel_name = obt_tce.asServerTextChannel().orElse(null);
+
+            // We will only adding 3 listeners at a time to account for the previous and next button possibly being
+            // present
+            if(index < 3)
+            {
+                String responseKey = "dfFI-:-" + channel_name.getIdAsString() + "FI-:-" + artist.toUpperCase() + "FI-:-"
+                        + foldername.toUpperCase();
+                String buttonKey = artist + "-" + foldername + " in " + channel_name.getName();
+                mb.addComponents(ActionRow.of(Button.primary(responseKey, buttonKey)));
+            }
+            ++index;
+        }
+        //"prFI-:-30b1a925-cbf9-4bd4-abad-d4ae08815db0FI-:-575459125232795652"
+        if (!(current_index == 0))
+            mb.addComponents(ActionRow.of(Button.primary("prFI-:-" + responseUUID + "FI-:-" + responseServerId,
+                    "Previous Page")));
+        redis_con.set(redis_con.hget(redisDirectoryKey, "current-min"), String.valueOf(current_index));
+        redis_con.set(redis_con.hget(redisDirectoryKey, "current-max"), String.valueOf(max_index));
+        redis_con.close();
+        mb.addComponents(ActionRow.of(Button.primary("npFI-:-" + responseUUID + "FI-:-" + responseServerId, "Next Page")));
+        mb.setFlags(MessageFlag.EPHEMERAL);
+        mb.editOriginalResponse(mci);
+
+    }
+
     public static void deleteFolderAction(MessageComponentInteraction mci, HikariDataSource ds,
                                           JedisPool redis_pool, String da_token, 
                                           DiscordApi api) throws IOException, ClassNotFoundException, SQLException {
